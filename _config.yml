@@ -1,9 +1,9 @@
 # Setup
-title:               Math 50
-tagline:             'Linear regression modeling'
-description:         'A course on linear regression modeling techniques and applications.'
+title:               Math 106
+tagline:             'Stochastic processes'
+description:         'A course on stochastic processes and their applications.'
 url: "https://elevien.github.io"   # no trailing slash
-baseurl: "/math50_2025" 
+baseurl: "/math106" 
 permalink:           pretty
 
 # About/contact
