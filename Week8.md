@@ -8,4 +8,3 @@ bibliography:
 
 # Week 8 Content
 
-(To be added)

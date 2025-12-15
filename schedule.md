@@ -5,7 +5,7 @@ bibliography:
 - refs.bib
 ---
 
-Unless otherwise noted all readings are from *Applied Stochastic Analysis* by E, Li and Vanden-Eijnden.
+Unless otherwise noted all readings are from *Applied Stochastic Analysis* by E, Li and Vanden-Eijnden. Other textbooks are given on the <a href="{{ '/' | relative_url }}">home page</a>. Click the Week links for details on what we cover and suggestions on navigating the readings. I will update these the Friday before we cover the material. 
 
 <table>
   <thead>
@@ -14,7 +14,6 @@ Unless otherwise noted all readings are from *Applied Stochastic Analysis* by E,
       <th>Date</th>
       <th>Topics</th>
       <th>Readings</th>
-      <th>Exercises</th>
     </tr>
   </thead>
   <tbody>
@@ -22,7 +21,7 @@ Unless otherwise noted all readings are from *Applied Stochastic Analysis* by E,
     {% assign week_number = w.week | slice: 1, 1 %}
     <tr>
       <td><a href="{{ '/Week' | append: week_number | append: '/' | relative_url }}"><strong>{{ w.week }}</strong></a></td>
-      <td></td><td></td><td></td><td></td>
+      <td></td><td></td><td></td>
     </tr>
     {% for m in w.meetings %}
     <tr>
@@ -30,7 +29,6 @@ Unless otherwise noted all readings are from *Applied Stochastic Analysis* by E,
       <td>{{ m.date }}</td>
       <td>{{ m.topics }}</td>
       <td>{{ m.readings }}</td>
-      <td>{{ m.exercises }}</td>
     </tr>
     {% endfor %}
   {% endfor %}

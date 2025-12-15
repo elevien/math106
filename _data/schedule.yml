@@ -4,118 +4,97 @@
       date: Jan 6
       topics: "No Class (meet Xhours)"
       readings: ""
-      exercises: ""
     - day: Thu
       date: Jan 8
-      topics: "Intro, Probability background"
-      readings: ""
-      exercises: ""
+      topics: "Probability warm-up, Discrete-time Markov chains (finite state space)"
+      readings: "3.1"
     - day: Fri
       date: Jan 9 (Xhours)
-      topics: "Discrete time Markov chains, Ergodic theory"
-      readings: "3.1,3.2,3.3"
-      exercises: ""
-
+      topics: "stationary distributions, Recurrence and transience"
+      readings: "3.2,3.3, D5.3 (optional)"
 - week: W2
   meetings:
     - day: Tue
       date: Jan 13
-      topics: "Poisson processes, Continuous-time Markov chains (Q-processes), time reversal"
-      readings: "3.4,3.5,3.6,3.8"
-      exercises: ""
+      topics: "Poisson processes, Continuous-time Markov chains (finite state space)"
+      readings: "3.4,3.5,3.6"
     - day: Thu
       date: Jan 15
-      topics: "HMM, forward/backward algorithm"
-      readings: "3.9"
-      exercises: ""
+      topics: "Time reversal, detailed balance"
+      readings: "3.8"
 
 - week: W3
   meetings:
     - day: Tue
       date: Jan 20
-      topics: "Probability spaces"
-      readings: "1.2,1.9"
-      exercises: ""
+      topics: "a little measure theory, filtration and stopping times"
+      readings: "1.2,5.1,5.2 Appendix C (optional)"
     - day: Thu
       date: Jan 22
-      topics: "Stochastic processes, filtration and stopping times"
-      readings: "5.1,5.2"
-      exercises: ""
-
+      topics: "general Markov processes, infinitesimal generators"
+      readings: "5.3"
 - week: W4
   meetings:
     - day: Tue
       date: Jan 27
-      topics: "Markov processes, infinitesimal generators"
-      readings: "5.3"
-      exercises: ""
+      topics: "Gaussian processes, Karhunen–Loève theorem"
+      readings: "5.4"
     - day: Thu
       date: Jan 29
-      topics: "Gaussian processes"
-      readings: "5.4"
-      exercises: ""
-
+      topics: "Review for midterm"
+      readings: ""
+    - day: Fri
+      date: Jan 30 (Xhours)
+      topics: "Midterm"
+      readings: ""
 - week: W5
   meetings:
     - day: Tue
       date: Feb 3
-      topics: "Wiener processes as limit of RW (Donsker's theorem)"
-      readings: "6.1,6.2"
-      exercises: ""
+      topics: "Random walks, Donsker's theorem"
+      readings: "6.1,6.2, D7.6 (optional)"
     - day: Thu
       date: Feb 5
-      topics: "Properties of Wiener process, Wiener chaos"
+      topics: "Wiener process, Diffusion equation"
       readings: "6.7"
-      exercises: ""
-
 - week: W6
   meetings:
     - day: Tue
       date: Feb 10
-      topics: "Itô integral, Itô formula"
+      topics: "Itô integral, Itô's lemma"
       readings: "7.1,7.2"
-      exercises: ""
     - day: Thu
       date: Feb 12
-      topics: "SDEs, OU process"
-      readings: ""
-      exercises: ""
-
+      topics: "SDEs, Langevin equation"
+      readings: "7.3"
 - week: W7
   meetings:
     - day: Tue
       date: Feb 17
-      topics: "Fokker–Planck equation"
+      topics: "Derivation of Fokker–Planck equation"
       readings: "8.1,8.2"
-      exercises: ""
     - day: Thu
       date: Feb 19
-      topics: "Backward equation, duality, equilibrium steady states"
-      readings: "8.4"
-      exercises: ""
-
+      topics: "boundary conditions for FP equation"
+      readings: "8.3"
 - week: W8
   meetings:
     - day: Tue
       date: Feb 24
-      topics: "Markov semigroup, Feynman–Kac formula"
-      readings: "8.5,8.6"
-      exercises: ""
+      topics: "First passage times"
+      readings: "8.4"
     - day: Thu
       date: Feb 26
-      topics: "Asymptotic analysis"
-      readings: ""
-      exercises: ""
+      topics: "Feynman–Kac formula"
+      readings: "8.5,8.6"
 
 - week: W9
   meetings:
     - day: Tue
       date: Mar 3
-      topics: "Project presentations"
+      topics: "Advanced topics (large deviations, applications to machine learning etc.)"
       readings: ""
-      exercises: ""
     - day: Thu
       date: Mar 5
-      topics: "Project presentations"
+      topics:  "Review"
       readings: ""
-      exercises: ""
