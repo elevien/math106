@@ -28,8 +28,6 @@ See <a href="{{ '/schedule/' | relative_url }}">weekly schedule</a> for details.
 
 <p><strong>Expectations:</strong> As this is a graduate course, I will expect a higher level of independence than an undergraduate course when it comes to navigating the material. Specifically, I will expect some familiarity with the definitions and notation in the assigned readings so that I can focus on providing additional context and examples, rather than explaining the basic concepts. No electronics are permitted during lectures. 
 
-<p><strong>Attendance and class rules:</strong> The course meets twice a week and attendance is mandatory. Please do not use phones or computers in class except on Friday. If you have an issue with this policy, please come talk to me.  </p>
-
 
 <p><strong>Grades:</strong> The breakdown of your grade is as follows: 
 <ul>
