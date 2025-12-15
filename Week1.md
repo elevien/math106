@@ -8,14 +8,14 @@ bibliography:
 
 
 ## Probability theory background
+ 
+You should be familiar with the idea of sample spaces, outcomes, events, conditional probability, independence, marginalization, Bayes' theorem, LLN and CLT. These are all covered in the textbook (1.1, 1.3, 1.4) and are easy to find elsewhere (or have GAI explain it). 
 
-I start with a breif reviwer of key topics in (non-measure theoretic) probability theory, but you should be familiar with the idea of sample spaces, outcomes, events, conditional probability, independence, marginalization, Bayes' theorem, LLN and CLT. These are all covered in the textbook (1.1, 1.3, 1.4) and are easy to find elsewhere (or have GAI explain it). 
+I will review Chebyshev's inequality (L 1.15), Jensen's inequality (1.16) since these are important later on. 
 
-I will review Chebyshev's inequality (L 1.15), Jenson's inequality (1.16) since these are important later on. 
+In terms of distributions, you should be comfortable with Bernoulli, Binomial, Exponential, Poisson and Normal distributions. 
 
-In terms of distributions, you should be comfortable with Bernoulli, Binomial, Exponential, Poisson and Normal distributions. I will review multivariate normal, but it will not be the main event so if you have no or limited experience working with multivariate normal distribution, I recommend reviewing this. 
-
-You can skim 1.2 and 1.5, but we will circle back to that later as preparation for the more abstract theory of stochastic processes. Markov chains with finite state spaces can be handled without any measure theory, so I will cover 3.1 first. 
+You can skim 1.2 and 1.5, but we will circle back to that later as preparation for the more abstract theory of stochastic processes. Markov chains with finite state spaces can be handled without any measure theory, so we will begin with Chapter 3. 
 
 ### Exercises 
 

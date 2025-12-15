@@ -6,21 +6,21 @@
       readings: ""
     - day: Thu
       date: Jan 8
-      topics: "Probability warm-up, Discrete-time Markov chains (finite state space)"
+      topics: "Probability warm-up, Discrete-time Markov chains (finite state spaces)"
       readings: "3.1"
     - day: Fri
       date: Jan 9 (Xhours)
-      topics: "stationary distributions, Recurrence and transience"
-      readings: "3.2,3.3, D5.3 (optional)"
+      topics: "stationary distributions, Perron Frobenius and ergodic theorem"
+      readings: "3.2,3.3"
 - week: W2
   meetings:
     - day: Tue
       date: Jan 13
-      topics: "Poisson processes, Continuous-time Markov chains (finite state space)"
+      topics: "Poisson processes, Continuous-time Markov chains (finite state spaces)"
       readings: "3.4,3.5,3.6"
     - day: Thu
       date: Jan 15
-      topics: "Time reversal, detailed balance"
+      topics: "Embedded chain, Time reversal, detailed balance"
       readings: "3.8"
 
 - week: W3
@@ -31,14 +31,15 @@
       readings: "1.2,5.1,5.2 Appendix C (optional)"
     - day: Thu
       date: Jan 22
-      topics: "general Markov processes, infinitesimal generators"
-      readings: "5.3"
+      topics: "Gaussian processes, Karhunen–Loève theorem"
+      readings: "5.4"
 - week: W4
   meetings:
     - day: Tue
       date: Jan 27
-      topics: "Gaussian processes, Karhunen–Loève theorem"
-      readings: "5.4"
+      topics: "general Markov processes, infinitesimal generators, OU Processes"
+      readings: "5.3"
+
     - day: Thu
       date: Jan 29
       topics: "Review for midterm"
@@ -51,7 +52,7 @@
   meetings:
     - day: Tue
       date: Feb 3
-      topics: "Random walks, Donsker's theorem"
+      topics: "Review of limit theorems, Wiener process, Donsker's theorem"
       readings: "6.1,6.2, D7.6 (optional)"
     - day: Thu
       date: Feb 5
@@ -61,11 +62,11 @@
   meetings:
     - day: Tue
       date: Feb 10
-      topics: "Itô integral, Itô's lemma"
+      topics: "Stochastic integrals"
       readings: "7.1,7.2"
     - day: Thu
       date: Feb 12
-      topics: "SDEs, Langevin equation"
+      topics: "Itô's lemma, SDEs"
       readings: "7.3"
 - week: W7
   meetings:
@@ -81,18 +82,18 @@
   meetings:
     - day: Tue
       date: Feb 24
-      topics: "First passage times"
+      topics: "First passage time problems"
       readings: "8.4"
     - day: Thu
       date: Feb 26
-      topics: "Feynman–Kac formula"
+      topics: "Feynman–Kac formula, application to Monte Carlo methods"
       readings: "8.5,8.6"
 
 - week: W9
   meetings:
     - day: Tue
       date: Mar 3
-      topics: "Advanced topics (large deviations, applications to machine learning etc.)"
+      topics: "Large deviations"
       readings: ""
     - day: Thu
       date: Mar 5
