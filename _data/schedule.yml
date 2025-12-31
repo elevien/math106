@@ -6,7 +6,7 @@
       readings: ""
     - day: Thu
       date: Jan 8
-      topics: "Probability warm-up, Discrete-time Markov chains (finite state spaces)"
+      topics: "Probability warm-up, Discrete-time Markov chains"
       readings: "3.1"
     - day: Fri
       date: Jan 9 (Xhours)
@@ -16,7 +16,7 @@
   meetings:
     - day: Tue
       date: Jan 13
-      topics: "Poisson processes, Continuous-time Markov chains (finite state spaces)"
+      topics: "Poisson processes, Continuous-time Markov chains"
       readings: "3.4,3.5,3.6"
     - day: Thu
       date: Jan 15
@@ -27,8 +27,8 @@
   meetings:
     - day: Tue
       date: Jan 20
-      topics: "a little measure theory, filtration and stopping times"
-      readings: "1.2,5.1,5.2 Appendix C (optional)"
+      topics: "a little measure theory, filtrations, Kolmogorov's extension theorem"
+      readings: "1.2,5.1,5.2, D Theorem 5.8 on pg. 261"
     - day: Thu
       date: Jan 22
       topics: "Gaussian processes, Karhunen–Loève theorem"
@@ -37,7 +37,7 @@
   meetings:
     - day: Tue
       date: Jan 27
-      topics: "general Markov processes, infinitesimal generators, OU Processes"
+      topics: "infinitesimal generators, OU Processes as Markovian Gaussian processes"
       readings: "5.3"
 
     - day: Thu
@@ -52,12 +52,12 @@
   meetings:
     - day: Tue
       date: Feb 3
-      topics: "Review of limit theorems, Wiener process, Donsker's theorem"
+      topics: "Wiener process, Donsker's theorem"
       readings: "6.1,6.2, D7.6 (optional)"
     - day: Thu
       date: Feb 5
-      topics: "Wiener process, Diffusion equation"
-      readings: "6.7"
+      topics: "Properties of Wiener process (The Invariance Principle, LIL) , Diffusion equation"
+      readings: "6.5"
 - week: W6
   meetings:
     - day: Tue
@@ -76,7 +76,7 @@
       readings: "8.1,8.2"
     - day: Thu
       date: Feb 19
-      topics: "boundary conditions for FP equation"
+      topics: "Boundary conditions for FP equation"
       readings: "8.3"
 - week: W8
   meetings:

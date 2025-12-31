@@ -16,7 +16,7 @@ Poisson process are the warm-up for continuous time Markov chains (with finite s
 
 ## Continuous time Markov chains/Q-processes (3.5,3.6)
 
-Here is where we start to connect stochastic processes to differential equations. It's a good idea to review basic ideas of linear differential equations, like matrix exponential and linear stability theory. 
+Here is where we start to connect stochastic processes to differential equations. If needed, you should review basic ideas of linear differential equations, like matrix exponential and linear stability theory. 
 
 ## Time reversal and detailed balance 
 
@@ -26,6 +26,11 @@ Time reversal is an important idea both in physics (relating to out of equilibri
 
 I won't say much about Hidden Markov Models in 3.9, but I recommend skimming this as it comes up in a lot of places. I will mention some ideas for projects involving HMM. 
 
-## Exercises 
+### Exercises 
 
-(TBD)
+- 3.7
+- 3.8 This is the very imporant Kolmogorov backward equation
+- 3.11
+- 3.12 This gets at an important connections between Poisson point processes and partitions which is important in disordered systems. 
+- 3.13
+- 3.16 The connection between Boundary value problems and first passage times will come back later. 

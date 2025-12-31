@@ -5,7 +5,9 @@ bibliography:
 - refs.bib
 ---
 
-Unless otherwise noted all readings are from *Applied Stochastic Analysis* by E, Li and Vanden-Eijnden. Other textbooks are given on the <a href="{{ '/' | relative_url }}">home page</a>. Click the Week links for details on what we cover and suggestions on navigating the readings. I will update these the Friday before we cover the material. 
+Unless otherwise noted all readings are from *Applied Stochastic Analysis* by E, Li and Vanden-Eijnden. Other textbooks are given on the <a href="{{ '/' | relative_url }}">home page</a>. Click the Week links for details on what we cover and suggestions on navigating the readings. **I will update these the Friday before we cover the material. Remember to refresh the webpage throughout the term!** 
+
+The exercises listed on the Weekly pages should be completed by the Monday of the following week. They are not collected, but they are essential for exam preparation. It is strongly recommended that you attempt all exercises in the text related to the material we cover. If you cannot obtain a solution in a reasonable amount of time on your own, you may use ChatGPT for assistance.
 
 <table>
   <thead>
