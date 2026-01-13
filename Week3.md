@@ -15,7 +15,9 @@ This is where things get a bit more mathy. To give a proper presentation of stoc
 
 ### Exercises 
 
-1.11,1.12,1.13
+- 1.11
+- 1.12
+- 1.13
 
 
 

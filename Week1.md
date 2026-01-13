@@ -29,13 +29,16 @@ The plan is to cover
 - Stationary distribution/invariant distribution
 - L 3.5 (spectral radius of stochastic matrix)
 - D 3.6 (Irreducibility)
-- L 3.7
+- L 3.7 
 - T 3.8
 - D 1.10
 - T 3.11
 
-### Exercises
+## Class notes
 
+
+
+### Exercises
 
 - 1.4
 - 1.6
