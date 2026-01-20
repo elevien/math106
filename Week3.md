@@ -48,13 +48,6 @@ I will define non-negative operators since they don't define this in class and a
 - Write code to generate samples of a mean zero Gaussian process with given covariance function at times $t_1,\dots,t_n$. Experiment with different paramaters in the Matern kernel family [Matérn covariance function](https://en.wikipedia.org/wiki/Mat%C3%A9rn_covariance_function). 
 - Let $X_t$ be stationary OU with correlation
   $$K(s,t) = \frac{\sigma^2}{2\theta} e^{-\theta |t-s|}, \qquad t,s\in [-L,L]. \tag{5}$$
-  
-  (a) Show that the eigenfunctions satisfy a boundary value problem of the form
+  Show that the eigenfunctions satisfy a boundary value problem of the form
   $$\lambda \phi''(t) = \theta^2 \lambda \phi(t) - \sigma^2 \phi(t), \tag{6}$$
-  with appropriate boundary conditions derived from the integral equation.
-  
-  (b) Derive the transcendental equation for the eigenvalues.
-  
-  (c) Explain why the OU KL basis differs from its Fourier basis except in the limit $\theta \to 0$.
-
-
+  with appropriate boundary conditions. 
