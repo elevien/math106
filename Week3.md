@@ -32,7 +32,7 @@ The goal here is to understand mathematicians think about stochastic processes i
 ## Gaussian processes (5.4)
 
 Gaussian process are the only example of a non-Markovian process we will spend significant time on. They are very important for machine learning and if time permits we will discuss some applications. Also, a number of SDEs we will consider are also Gaussian processes and it is helpful to have the two views.  
-I will define non-negative operators since they don't define this in class and also convergence in $L_{t}^{\ifnty}L_{\omega}^2$. Focus on 5.12 and 5.13.
+I will define non-negative operators since they don't define this in class and also convergence in $L_{t}^{\infty}L_{\omega}^2$. Focus on 5.12 and 5.13.
 
 - D 5.6 (Gaussian process)
 - T 5.10 You can safely skip this, the important takeaway is that we can associated the kernel with a linear operator on square-integrable functions, and this is a ``nice'' operator
