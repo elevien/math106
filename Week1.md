@@ -34,10 +34,6 @@ The plan is to cover
 - D 1.10
 - T 3.11
 
-## Class notes
-
-
-
 ### Exercises
 
 - 1.4

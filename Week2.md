@@ -36,9 +36,9 @@ Time reversal is an important idea both in physics (relating to out of equilibri
 
 
 
-## Hidden Markov models 
+## Hidden Markov models (3.10)
 
-I won't say much about Hidden Markov Models in 3.9, but I recommend skimming this as it comes up in a lot of places. I will mention some ideas for projects involving HMM. 
+We don't cover this, but it's very useful to review particularly for your projects. 
 
 ### Exercises 
 

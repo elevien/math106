@@ -1,0 +1,295 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathtools}
+\usepackage{tikz}
+\usepackage{enumitem}
+\usepackage[margin=1in]{geometry}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem*{theorem*}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{definition}{Definition}
+\newtheorem*{definition*}{Definition}
+\newtheorem{proposition}{Proposition}
+\newtheorem{remark}{Remark}
+
+
+
+\title{Math 106 -- Notes \\ Week 1: January 9, 2026}
+\author{Ethan Levien}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section*{Time Reversal and Detailed Balance (3.8)}
+
+Let $\{X_t\}_{t \ge 0}$ be a $Q$-process on $\Omega = \{1,\dots,I\}$ initialized in a steady state $\pi$, and define the time-reversed process
+\begin{equation}
+\hat{X}_t = X_{T-t},
+\end{equation}
+where $T>0$ is arbitrary (since $X$ is initialized in a steady state). We seek to describe the process $\hat{X}_t$. Using Bayes' theorem, we can easily see that it is a Markov process whose transition matrix $\hat{P}_{i,j}(t)$ is given by 
+\begin{equation}
+\hat{P}_{i,j}(t) 
+= \mathbb{P}(X_{s-t}=j \mid X_s = i) 
+= \mathbb{P}(X_s=i \mid X_{s-t} = j)\,\frac{\mathbb{P}(X_{s-t} = j)}{\mathbb{P}(X_s = i)}
+= P_{j,i}(t)\,\frac{\pi_j}{\pi_i}.
+\end{equation}
+
+\subsection*{Generator of the time-reversed process}
+
+Let $\hat{Q}$ denote the generator of $\hat{X}$. By the {\bf backward equation}
+\begin{equation}
+\frac{d}{dt}\hat{P}_{i,j}(t) = \sum_{k=1}^I\hat{Q}_{i,k} \hat{P}_{k,j}(t)
+\end{equation}
+On the other hand, using the {\bf forward equation} for $X$, 
+\begin{align}
+\frac{d}{dt}\hat{P}_{i,j}(t) 
+&= \frac{d}{dt}\Big(P_{j,i}(t)\frac{\pi_j}{\pi_i}\Big)
+= \sum_{k=1}^I P_{j,k}(t)Q_{k,i}\,\frac{\pi_j}{\pi_i} 
+= \sum_{k=1}^I \left( P_{j,k}(t)\frac{\pi_j}{\pi_k}\right) \left( Q_{k,i} \frac{\pi_k}{\pi_i} \right)\\
+&= \sum_{k=1}^I \hat{Q}_{i,k}\hat{P}_{k,j}(t)
+\quad \text{ with }\quad 
+\hat{Q}_{i,j} = \frac{\pi_j}{\pi_i}Q_{j,i}.
+\end{align}
+\subsection*{Detailed balance and probability fluxes}
+
+The chain is said to satisfy \emph{detailed balance} with respect to $\pi$ if
+\begin{equation}
+\pi_i Q_{i,j} = \pi_j Q_{j,i}, \qquad \text{for all } i\neq j.
+\end{equation}
+Comparing with the formula for $\hat{Q}$, we see that detailed balance is equivalent to
+\begin{equation}
+\hat{Q}_{i,j} = Q_{i,j} \quad \text{for all } i,j.
+\end{equation}
+Thus, a stationary $Q$-process is reversible if and only if it satisfies detailed balance; in that case the time-reversed process has the same generator as the forward process.
+
+To interpret detailed balance, note that in stationarity the average rate at which the process makes transitions from state $i$ to state $j$ is
+\begin{equation}
+J_{i\to j} \coloneqq \pi_i Q_{i,j}.
+\end{equation}
+This quantity has the interpretation of a \emph{probability flux} along the directed edge $i\to j$. The net flux along the undirected edge $\{i,j\}$ is
+\begin{equation}
+J_{i\leftrightarrow j}^{\mathrm{net}}
+= J_{i\to j} - J_{j\to i}
+= \pi_i Q_{i,j} - \pi_j Q_{j,i}.
+\end{equation}
+The detailed balance condition
+is precisely the requirement that 
+\begin{equation}
+J_{i\leftrightarrow j}^{\mathrm{net}} = 0 \quad \text{for every pair } i,j,
+\end{equation}
+i.e.\ the flux from $i$ to $j$ is exactly balanced by the flux from $j$ to $i$ on each edge. 
+
+Mere stationarity of $\pi$ only requires
+\begin{equation}
+\sum_{j=1}^I \pi_i Q_{i,j} = 0 \quad \text{for each } i,
+\end{equation}
+which says that the total outgoing flux from each state $i$ is balanced by the total incoming flux, but allows for nonzero \emph{circulating currents} around cycles. Detailed balance rules out such circulating probability currents; at equilibrium the chain looks statistically the same when run forwards or backwards in time.
+
+\subsection*{Hermitian structure}
+
+Assume that $Q$ is reversible with respect to $\pi$, i.e.\ it satisfies detailed balance. Let $D_\pi$ be the diagonal matrix
+\begin{equation}
+(D_\pi)_{i,i} = \pi_i, \qquad (D_\pi)_{i,j}=0 \text{ for } i\neq j.
+\end{equation}
+Consider the similarity transform
+\begin{equation}
+S \coloneqq D_\pi^{1/2}\,Q\,D_\pi^{-1/2}.
+\end{equation}
+The $(i,j)$-entry of $S$ is
+\begin{equation}
+S_{i,j}
+= (D_\pi^{1/2})_{i,i} Q_{i,j} (D_\pi^{-1/2})_{j,j}
+= \sqrt{\pi_i}\,Q_{i,j}\,\frac{1}{\sqrt{\pi_j}}.
+\end{equation}
+Using detailed balance,
+\begin{equation}
+\pi_i Q_{i,j} = \pi_j Q_{j,i}
+\quad \Longrightarrow \quad
+\sqrt{\pi_i}\,Q_{i,j}\,\frac{1}{\sqrt{\pi_j}}
+= \sqrt{\pi_j}\,Q_{j,i}\,\frac{1}{\sqrt{\pi_i}},
+\end{equation}
+so
+\begin{equation}
+S_{i,j} = S_{j,i}.
+\end{equation}
+Hence $S$ is real symmetric.
+
+Because $Q$ is similar to the symmetric matrix $S$, it follows that $Q$ is diagonalizable with real eigenvalues. More precisely, there exists an invertible matrix $S$ and a real diagonal matrix $\Lambda$ such that
+\begin{equation}
+Q = S \Lambda S^{-1}, \qquad \Lambda = \mathrm{diag}(\lambda_1,\dots,\lambda_I), \quad \lambda_k \in \mathbb{R}.
+\end{equation}
+For a finite, irreducible $Q$-process, $0$ is a simple eigenvalue with eigenvector $\mathbf{1}$, and all other eigenvalues satisfy
+\begin{equation}
+\lambda_k < 0 \quad \text{for } k\ge 2.
+\end{equation}
+The transition semigroup then has the spectral representation
+\begin{equation}
+P(t) = e^{tQ} = S\,e^{t\Lambda}\,S^{-1},
+\end{equation}
+so each nontrivial mode decays as a pure exponential $e^{\lambda_k t}$ with a real decay rate $\lambda_k<0$. In particular, an equilibrium $Q$-process (one satisfying detailed balance) does not relax via oscillations: there are no complex-conjugate pairs of eigenvalues, and thus no oscillatory components in the relaxation dynamics; all deviations from equilibrium decay monotonically in time along real exponential modes.
+\end{document}
+
+\section*{Appendix: Basic facts about real symmetric matrices (optional)}
+
+We collect here a few standard facts about real symmetric matrices used above, together with proofs.
+
+\subsection*{Real eigenvalues}
+
+\begin{lemma}
+If $A \in \mathbb{R}^{I\times I}$ is symmetric, $A = A^\top$, then every eigenvalue of $A$ is real.
+\end{lemma}
+
+\begin{proof}
+Let $\lambda \in \mathbb{C}$ and $v \in \mathbb{C}^I\setminus\{0\}$ satisfy
+\begin{equation}
+A v = \lambda v.
+\end{equation}
+Consider the standard Hermitian inner product $\langle x,y\rangle = x^* y$ on $\mathbb{C}^I$ (where $x^*$ denotes conjugate transpose). Then
+\begin{equation}
+\langle Av, v\rangle = \langle \lambda v, v\rangle = \lambda \langle v, v\rangle.
+\end{equation}
+On the other hand, since $A$ is real symmetric, $A = A^\top = A^*$, so
+\begin{equation}
+\langle Av, v\rangle = \langle v, A^* v\rangle = \langle v, Av\rangle = \langle v, \lambda v\rangle = \overline{\lambda}\,\langle v, v\rangle.
+\end{equation}
+Thus
+\begin{equation}
+\lambda \langle v, v\rangle = \overline{\lambda}\,\langle v, v\rangle.
+\end{equation}
+Since $v\neq 0$, we have $\langle v, v\rangle > 0$, hence $\lambda = \overline{\lambda}$, i.e.\ $\lambda$ is real.
+\end{proof}
+
+\subsection*{Orthogonal diagonalization (spectral theorem)}
+
+\begin{theorem}[Spectral theorem]
+If $A \in \mathbb{R}^{I\times I}$ is symmetric, then there exists an orthogonal matrix $U$ ($U^\top U = I$) and a real diagonal matrix $\Lambda$ such that
+\begin{equation}
+A = U \Lambda U^\top.
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+We sketch a standard proof by induction on $I$.
+
+For $I=1$ the statement is trivial. Assume the theorem holds for $(I-1)\times(I-1)$ real symmetric matrices. Let $A \in \mathbb{R}^{I\times I}$ be symmetric. By the previous lemma, $A$ has a real eigenvalue $\lambda_1$ with real eigenvector $v_1\neq 0$. Normalize $v_1$ so that $\|v_1\|=1$. Extend $\{v_1\}$ to an orthonormal basis $\{v_1,\dots,v_I\}$ of $\mathbb{R}^I$ (e.g.\ by Gram–Schmidt). Let $U_1$ be the orthogonal matrix whose columns are $v_1,\dots,v_I$.
+
+In the basis given by $U_1$, the matrix of $A$ is
+\begin{equation}
+B \coloneqq U_1^\top A U_1.
+\end{equation}
+By construction, $B$ has the block form
+\begin{equation}
+B = \begin{pmatrix}
+\lambda_1 & 0 \\
+0 & A'
+\end{pmatrix},
+\end{equation}
+where $A'$ is an $(I-1)\times(I-1)$ real symmetric matrix (symmetry is preserved under orthogonal similarity). By the induction hypothesis, there exists an orthogonal $(I-1)\times(I-1)$ matrix $U'$ and a real diagonal $(I-1)\times(I-1)$ matrix $\Lambda'$ such that
+\begin{equation}
+A' = U' \Lambda' U'^\top.
+\end{equation}
+Define
+\begin{equation}
+U_2 \coloneqq 
+\begin{pmatrix}
+1 & 0 \\
+0 & U'
+\end{pmatrix},
+\qquad
+\Lambda \coloneqq 
+\begin{pmatrix}
+\lambda_1 & 0 \\
+0 & \Lambda'
+\end{pmatrix}.
+\end{equation}
+Then $U_2$ is orthogonal and
+\begin{equation}
+U_2^\top B U_2 
+= 
+\begin{pmatrix}
+1 & 0 \\
+0 & U'^\top
+\end{pmatrix}
+\begin{pmatrix}
+\lambda_1 & 0 \\
+0 & A'
+\end{pmatrix}
+\begin{pmatrix}
+1 & 0 \\
+0 & U'
+\end{pmatrix}
+=
+\begin{pmatrix}
+\lambda_1 & 0 \\
+0 & \Lambda'
+\end{pmatrix}
+= \Lambda.
+\end{equation}
+Setting $U \coloneqq U_1 U_2$, which is orthogonal as a product of orthogonal matrices, we obtain
+\begin{equation}
+A = U \Lambda U^\top.
+\end{equation}
+This completes the induction.
+\end{proof}
+
+\subsection*{Orthogonality of eigenvectors}
+
+\begin{lemma}
+Let $A \in \mathbb{R}^{I\times I}$ be symmetric. If $v,w \in \mathbb{R}^I$ are eigenvectors with distinct eigenvalues $\lambda,\mu \in \mathbb{R}$, i.e.
+\begin{equation}
+A v = \lambda v, \qquad A w = \mu w, \qquad \lambda \neq \mu,
+\end{equation}
+then $v$ and $w$ are orthogonal:
+\begin{equation}
+v^\top w = 0.
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+Compute
+\begin{equation}
+\lambda\, v^\top w = (A v)^\top w = v^\top A^\top w = v^\top A w = v^\top (\mu w) = \mu\, v^\top w.
+\end{equation}
+Thus
+\begin{equation}
+(\lambda - \mu) v^\top w = 0.
+\end{equation}
+Since $\lambda \neq \mu$, it follows that $v^\top w = 0$.
+\end{proof}
+
+In particular, eigenvectors corresponding to distinct eigenvalues can be chosen to form an orthonormal basis of $\mathbb{R}^I$, as in the spectral theorem.
+
+\subsection*{A.4 Matrix functions and the exponential}
+
+Let $A \in \mathbb{R}^{I\times I}$ be symmetric. By the spectral theorem, there exists an orthogonal matrix $U$ and a diagonal matrix $\Lambda = \mathrm{diag}(\lambda_1,\dots,\lambda_I)$ such that
+\begin{equation}
+A = U \Lambda U^\top.
+\end{equation}
+For any function $f:\mathbb{R}\to\mathbb{R}$ for which $f(\lambda_k)$ is defined for all eigenvalues $\lambda_k$, we define
+\begin{equation}
+f(A) \coloneqq U\,f(\Lambda)\,U^\top,
+\end{equation}
+where $f(\Lambda)$ is the diagonal matrix
+\begin{equation}
+f(\Lambda) = \mathrm{diag}(f(\lambda_1),\dots,f(\lambda_I)).
+\end{equation}
+One checks directly that this definition is independent of the particular orthogonal diagonalization and that $f$ respects algebraic relations satisfied by $A$.
+
+In particular, for the matrix exponential, defined by the convergent power series
+\begin{equation}
+e^{tA} \coloneqq \sum_{n=0}^\infty \frac{t^n}{n!} A^n,
+\end{equation}
+we obtain
+\begin{equation}
+e^{tA} = U\,e^{t\Lambda}\,U^\top,
+\end{equation}
+where
+\begin{equation}
+e^{t\Lambda} = \mathrm{diag}(e^{\lambda_1 t},\dots,e^{\lambda_I t}).
+\end{equation}
+Thus the dynamics generated by $A$ are a superposition of exponential modes $e^{\lambda_k t}$ along the orthonormal eigenvectors of $A$, as used in the discussion of $e^{tQ}$ above.
+
+
+\end{document}

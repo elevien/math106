@@ -6,9 +6,14 @@ bibliography:
 - refs.bib
 ---
 
-## Markov processes 
+## Markov processes (5.3)
+
+The motivation here is to generalize the idea of a $Q$-process to any Markov process in continuous time. This is achieved using the idea of conditioning on filtrations. 
+
+### Exercises 
 
 
-## Gaussian processes 
 
-Focus on 5.12 and 5.13. I will define non-negative operators since they don't define this in class and also convergence in $L_{t}^{\ifnty}L_{\omega}^2$. 
+
+
+
