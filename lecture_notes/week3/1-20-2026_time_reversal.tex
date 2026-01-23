@@ -15,7 +15,7 @@
 
 
 
-\title{Math 106 -- Notes \\ Week 1: January 9, 2026}
+\title{Math 106 -- Notes \\ Week 3: January 20, 2026}
 \author{Ethan Levien}
 \date{}
 
@@ -40,18 +40,21 @@ where $T>0$ is arbitrary (since $X$ is initialized in a steady state). We seek t
 
 Let $\hat{Q}$ denote the generator of $\hat{X}$. By the {\bf backward equation}
 \begin{equation}
-\frac{d}{dt}\hat{P}_{i,j}(t) = \sum_{k=1}^I\hat{Q}_{i,k} \hat{P}_{k,j}(t)
+\frac{d}{dt}\hat{P}_{i,j}(t) = \sum_{k=1}^I\hat{Q}_{i,k} \hat{P}_{k,j}(t).
 \end{equation}
 On the other hand, using the {\bf forward equation} for $X$, 
 \begin{align}
 \frac{d}{dt}\hat{P}_{i,j}(t) 
 &= \frac{d}{dt}\Big(P_{j,i}(t)\frac{\pi_j}{\pi_i}\Big)
-= \sum_{k=1}^I P_{j,k}(t)Q_{k,i}\,\frac{\pi_j}{\pi_i} 
-= \sum_{k=1}^I \left( P_{j,k}(t)\frac{\pi_j}{\pi_k}\right) \left( Q_{k,i} \frac{\pi_k}{\pi_i} \right)\\
-&= \sum_{k=1}^I \hat{Q}_{i,k}\hat{P}_{k,j}(t)
-\quad \text{ with }\quad 
-\hat{Q}_{i,j} = \frac{\pi_j}{\pi_i}Q_{j,i}.
+= \sum_{k=1}^I P_{j,k}(t)Q_{k,i}\,\frac{\pi_j}{\pi_i} \\
+&= \sum_{k=1}^I \left( P_{j,k}(t)\frac{\pi_j}{\pi_k}\right) \left( Q_{k,i} \frac{\pi_k}{\pi_i} \right)
+= \sum_{k=1}^I \hat{Q}_{i,k}\hat{P}_{k,j}(t),
 \end{align}
+with 
+\begin{equation}
+\hat{Q}_{i,j} = \frac{\pi_j}{\pi_i}Q_{j,i}.
+\end{equation}
+
 \subsection*{Detailed balance and probability fluxes}
 
 The chain is said to satisfy \emph{detailed balance} with respect to $\pi$ if
@@ -100,7 +103,6 @@ S \coloneqq D_\pi^{1/2}\,Q\,D_\pi^{-1/2}.
 The $(i,j)$-entry of $S$ is
 \begin{equation}
 S_{i,j}
-= (D_\pi^{1/2})_{i,i} Q_{i,j} (D_\pi^{-1/2})_{j,j}
 = \sqrt{\pi_i}\,Q_{i,j}\,\frac{1}{\sqrt{\pi_j}}.
 \end{equation}
 Using detailed balance,
@@ -116,9 +118,23 @@ S_{i,j} = S_{j,i}.
 \end{equation}
 Hence $S$ is real symmetric.
 
-Because $Q$ is similar to the symmetric matrix $S$, it follows that $Q$ is diagonalizable with real eigenvalues. More precisely, there exists an invertible matrix $S$ and a real diagonal matrix $\Lambda$ such that
+Because $Q$ is similar to the symmetric matrix $S$, it follows that $Q$ is diagonalizable with real eigenvalues. More precisely, since
+\[
+S = D_\pi^{1/2} Q D_\pi^{-1/2}
+\]
+is symmetric, there exists an orthogonal matrix $O$ and a real diagonal matrix $\Lambda$ such that
 \begin{equation}
-Q = S \Lambda S^{-1}, \qquad \Lambda = \mathrm{diag}(\lambda_1,\dots,\lambda_I), \quad \lambda_k \in \mathbb{R}.
+S = O \Lambda O^\top.
+\end{equation}
+Setting
+\begin{equation}
+U \coloneqq D_\pi^{-1/2} O,
+\end{equation}
+we obtain the diagonalization
+\begin{equation}
+Q = U \Lambda U^{-1}, 
+\qquad \Lambda = \mathrm{diag}(\lambda_1,\dots,\lambda_I), 
+\quad \lambda_k \in \mathbb{R}.
 \end{equation}
 For a finite, irreducible $Q$-process, $0$ is a simple eigenvalue with eigenvector $\mathbf{1}$, and all other eigenvalues satisfy
 \begin{equation}
@@ -126,10 +142,14 @@ For a finite, irreducible $Q$-process, $0$ is a simple eigenvalue with eigenvect
 \end{equation}
 The transition semigroup then has the spectral representation
 \begin{equation}
-P(t) = e^{tQ} = S\,e^{t\Lambda}\,S^{-1},
+P(t) = e^{tQ} = U\,e^{t\Lambda}\,U^{-1},
 \end{equation}
 so each nontrivial mode decays as a pure exponential $e^{\lambda_k t}$ with a real decay rate $\lambda_k<0$. In particular, an equilibrium $Q$-process (one satisfying detailed balance) does not relax via oscillations: there are no complex-conjugate pairs of eigenvalues, and thus no oscillatory components in the relaxation dynamics; all deviations from equilibrium decay monotonically in time along real exponential modes.
+
 \end{document}
+
+
+
 
 \section*{Appendix: Basic facts about real symmetric matrices (optional)}
 

@@ -34,6 +34,7 @@ You don't need to read Chapter 13 as I will provide a self contained introductio
 
 Time reversal is an important idea both in physics (relating to out of equilibrium systems and entropy production) and in machine learning (in the context of diffusion models). They talk about detailed balance in the book, but I will introduce an additional concept: Entropy production rate. This is how we quantify how far out of equilibrium a system is. 
 
+**Notes**: [Time reversal and detailed balance](lecture_notes/week3/1-20-2026_time_reversal.pdf)
 
 
 ## Hidden Markov models (3.10)

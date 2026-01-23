@@ -1,0 +1,426 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathtools}
+\usepackage{tikz}
+\usepackage{enumitem}
+\usepackage[margin=1in]{geometry}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem*{theorem*}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{definition}{Definition}
+\newtheorem*{definition*}{Definition}
+\newtheorem{proposition}{Proposition}
+\newtheorem{assumption}{Assumption}
+\newtheorem{remark}{Remark}
+
+
+
+\title{Math 106 -- Notes \\ Week 3: January 22, 2026}
+\author{Ethan Levien}
+\date{}
+
+\begin{document}
+\maketitle
+
+
+\section*{Gaussian process (5.4)}
+\subsection*{Gaussian process as functional generalizations of multivariate normals}
+Throughout this section we assume all random variables and stochastic processes have mean zero. This assumption simplifies notation and calculations and does not affect any of the conceptual conclusions.
+
+\medskip
+
+\noindent
+\textbf{Maximum entropy principle (informal statement).}
+Among all probability distributions on $\mathbb{R}^n$ with a prescribed covariance matrix $\Sigma$, the mean--zero multivariate Gaussian distribution with covariance $\Sigma$ is the unique distribution of maximal entropy. Mathematically, this means the Gaussian density,
+\[
+\rho(x) 
+= \frac{1}{(2\pi)^{n/2} (\det \Sigma)^{1/2}}
+   \exp\!\left(-\frac{1}{2} x^\top \Sigma^{-1} x \right),
+\]
+satisfies the optimization problem
+\begin{equation*}
+\max_{\rho} \left\{
+ -\int_{\mathbb{R}^n} \rho(x)\,\log \rho(x)\,dx
+ \;:\;
+ \int_{\mathbb{R}^n} x\,\rho(x)\,dx = 0,\ 
+ \int_{\mathbb{R}^n} x x^\top \rho(x)\,dx = \Sigma
+\right\}.
+\end{equation*}
+where the max is taken over all probability densities. 
+In this sense it is the ``least informative’’ choice compatible with the covariance $\Sigma$.
+
+\medskip
+
+This maximum--entropy characterization provides a natural motivation for Gaussian processes. Suppose we wish to model a random function $X=\{X_t\}_{t\in {\mathbb R}}$ while specifying only its second--order statistics, encoded by a covariance function
+\begin{equation}
+K(s,t) = \mathrm{cov}(X_s,X_t), \qquad s,t\in {\mathbb R}.
+\end{equation}
+The guiding principle is to choose a stochastic process that is otherwise as unstructured as possible, subject only to this covariance constraint. The reasonable way to construct such a process would be for the finite dimensional distributions to be Gaussian, and the Kolmogorov extension Theorem tells us this process can be extended to the real line or any interval. Thus we have the following definition. 
+
+\begin{definition}[Gaussian process (D5.9)]
+A stochastic process $\{X_t\}_{t\in [0,T]}$ is called a \emph{Gaussian process} (GP) with covariance function $K$ if for every finite collection of indices $t_1,\dots,t_n\in [0,T]$, the random vector
+\begin{equation}
+(X_{t_1},\dots,X_{t_n})
+\end{equation}
+is multivariate normal with mean zero and covariance matrix
+\begin{equation}
+\Sigma_{i,j} = K(t_i,t_j).
+\end{equation}
+\end{definition}
+
+
+
+
+\subsection*{Gaussian process in the context of regression modeling}
+The most obvious application of a GP is as a prior distribution for an unknown function when performing interpolation, or smoothing. In particular, in application we often have measurements $Y_1,Y_2,\dots,Y_n$ which are assumed to be noisy measurements of some true function $f(t)$: 
+\begin{equation}
+Y_i = f(t_i) + \epsilon,\quad \epsilon \sim {\rm Normal}(0,\sigma_{\epsilon}^2).
+\end{equation}
+Often we proceed by picking some parametric class of functions for $f(t)$ and fitting the parameters. To achieve this using least squares the dependence on the parameters $\{\beta_k\}_{k}$ must be linear and therefore $f(t)$ is expressed as an expansion in basis functions $\{\phi_k\}_{k}$; that is,  
+\begin{equation}\label{eq:f}
+f(t) = \sum_{k=1}^m\beta_k \phi_k(t). 
+\end{equation}
+The $\beta_k$ can then be found with least squares by minimizing $||{\bf Y}- {\bf f}||_2^2$ where ${\bf f}$ and ${\bf Y}$ are respectively vectors of measurements and predicted values of the function. Here, we view $f(t)$ as a deterministic function for each set of $\beta_k$. 
+
+
+As $m \to \infty$ we need to regularize and in the Bayesian setting this is done by introducing a prior distribution on the $\beta$. The natural choice is for $\beta_k$ to be Normal and independent between the $k$: 
+\begin{equation}\label{eq:prior}
+\beta_k \sim {\rm Normal}(0,\sigma_{k}^2).
+\end{equation}
+We now can view $f(t)$ as a random function -- in-fact, a GP. We can in principle perform Bayesian inference to obtain the posterior distribution of the $\beta$ from our data; however, we may not care about the $\beta$ since our end goal is actually to perform interpolation, meaning make predictions about the function values at intermediate $t$. The idea of Gaussian processes regression is to perform Bayesian inference directly on the function space. In other words, we treat the random functions $f(t)$ as our parameters.   Let's go back to our usual notation for stochastic processes and write $X_t = f(t)$. 
+
+
+\section*{Eigenfunction expansion}
+
+\subsection*{Linear algebra approach}
+
+The goal of this section is to connect the kernel view to the series expansion/prior distributions (Eq. \ref{eq:f} and Eq. \ref{eq:prior}) and to do this rigorously requires a bit of background on linear operators on Hilbert spaces. However the basic ideas can be understood with more elementary linear algebra calculations.  Using that the $\beta$ are independent, we have  
+\begin{equation}\label{eq:Kexp}
+K(t,s) = {\mathbb E}[X_tX_s] = \sum_{k=1}^{\infty}\sum_{k'=1}^{\infty}{\mathbb E}[\beta_k\beta_k']\phi_k(t)\phi_k(s) = 
+ \sum_{k=1}^{\infty}\sigma_k^2\phi_k(t)\phi_k(s)
+\end{equation}
+Now take a finite set of times $(t_1,\dots,t_k)$ and let $\Sigma$ be the covariance matrix of $(X_{t_1},\dots,X_{t_k})$.  Eq. \ref{eq:Kexp} says that 
+\begin{equation}\label{eq:Sigmadiag}
+\Sigma = \Phi \Lambda \Phi^T
+\end{equation}
+where $\Lambda = {\rm diag}(\sigma_1^2,\sigma_2^2,\dots)$ and $\Phi_{k,i} = \phi_k(t_i)$. Note that $\Phi$ and $\Lambda$ are infinite dimensional matrices but linear algebra still works. Therefore, to go from the kernel view of a GP to the series expansion, the basis functions and weight variances are obtained as the eigenfunctions and eigenvalues of the covariance operator respectively. 
+
+
+
+
+\subsection*{The kernel as a linear operator on $L_2$}
+We are now going to see how the same idea works, but working with linear operators on a function space rather than the covariance matrix. This will then be used to justify the infinite dimensional matrix equation \ref{eq:Sigmadiag}. For a kernel \(K\) on \([0,T]\), introduce the linear operator  
+\begin{equation}
+\mathcal K : L_T^2 \to L_T^2,
+\end{equation}
+where
+\begin{equation}
+L_T^2 = \Big\{ f:[0,T]\to\mathbb R : \int_0^T f(t)^2\,dt < \infty \Big\}.
+\end{equation}
+This operator is given by 
+\begin{equation}\label{eq:mcKdef}
+(\mathcal K f)(s) = \int_0^T K(s,t)\,f(t)\,dt.
+\end{equation}
+
+
+It is important to understand some properties of $L_T^2$. In particular, that this is a Hilbert space $H= L_T^2$. 
+Recall this means that 
+\begin{itemize}
+\item $H$ it is a vector space in the sense that the function can be combined and multiplied by scalers just like ${\mathbb R}^n$
+\item There is an inner product $\langle \cdot,\cdot \rangle: H \times H \to {\mathbb R}$ just like the vector inner product. In particular $\langle f,g \rangle  = \langle g,f \rangle$. In $L_T^2$, 
+\begin{equation}
+\langle f,g \rangle  = \int_0^Tf(t)g(t)dt
+\end{equation}  
+\item The inner product induces a norm, $||f|| = \sqrt{\langle f,g \rangle}$ under which $H$ is complete, meaning sequences $\{f_n\}_n$ which converge in this norm converge to elements of $H$. 
+\end{itemize}
+
+We make the following assumption, which ensures ${\mathcal K}$ has nice behavior. In the book this appears in T5.10. 
+\begin{assumption}\label{ass:varfinite}
+For the GP $\{X_t\}_{t \in [0,T]}$ 
+\begin{equation}
+\int_0^T{\mathbb E}[X_s^2]ds = C < \infty
+\end{equation}
+for some constant $C$ and $K(s,t)$ is continuous in $s$ and $t$. 
+\end{assumption}
+
+The operator ${\mathcal K}$ associated with a process satisfying Assumption \ref{ass:varfinite} has the following properties. 
+\begin{itemize}
+\item First, ${\mathcal K}$ is symmetric in $L_T^2$ (this does not require Assumption \ref{ass:varfinite}) and simply follows from the definition of $K$.  
+\item the linear operator ${\mathcal K}$ is \emph{bounded}, meaning $||{\mathcal K}f|| \le C||f||$. 
+\begin{proof}
+\begin{align}
+||{\mathcal K}f||^2  &=\int_0^T \left( \int_0^T K(s,t)\,f(t)\,dt \right)^2 ds\\
+&\le\;
+\int_0^T  \int_0^T K(s,t)^2\,dt  ds
+\left( \int_0^T f(t)^2\,dt \right) 
+\end{align}
+By Assumption \ref{ass:varfinite}, 
+\begin{align}
+\int_0^T  \int_0^T K(s,t)^2\,dt  ds &= \int_0^T  \int_0^T {\mathbb E}[X_sX_t]^2\,dt  ds\\
+&\le  \int_0^T  \int_0^T {\mathbb E}[X_s^2]{\mathbb E}[X_t^2]\,dt  ds \quad \text{(by Cauchy-Schwarz)}\\
+&=  \int_0^T   {\mathbb E}[X_t^2]\,dt \int_0^T{\mathbb E}[X_t^2]\,dt = C^2 
+\end{align}
+\end{proof}
+\item ${\mathcal K}$ is non-negative, meaning for any $f\in L_T^2$, $\langle f,{\mathcal K}f\rangle \ge 0$. 
+\begin{proof}
+We have
+\begin{align}
+\langle f,{\mathcal K}f\rangle
+& = \int_0^T\!\int_0^T f(s){\mathbb E}[X_sX_t]f(t)\,ds\,dt\\
+&= \mathbb E\Big[\Big(\int_0^T f(t)X_t\,dt\Big)^2\Big] \ge 0.
+\end{align}
+\end{proof}
+\item ${\mathcal K}$ is compact in the sense that the image of any bounded
+subset of $L_T^2$ has compact closure; equivalently, if $\{f_n\}$ is bounded in
+$L_T^2$, then $\{{\mathcal K}f_n\}$ has a norm–convergent subsequence. I won't prove this.
+\end{itemize}
+
+
+In summary, ${\mathcal K}$ is a symmetric, bounded, compact, non-negative operator. There is a general result that tells us such operators behave like symmetric matrices. More specifically, the eigenvalues are real, the eigenvectors are orthogonal, ${\mathcal K}$ has a pure point spectrum such that the only point where the eigenvalues can possibly accumulate is $0$ (we can have $\lambda_k \to 0$ but not $\lambda_k$ tending to any other value) and finally, that ${\mathcal K}$ has an eigenfunction expansion 
+\begin{equation}\label{eq:mcKeigenexp}
+{\mathcal K}f = \sum_{k=1}^{\infty}\lambda_k \langle f,\phi_k \rangle  \phi_k(t). 
+\end{equation}
+This should remind you of Eq. \ref{eq:Sigmadiag}.
+
+\section*{Main results: Mercer's and KL Theorem}
+A subtle but key point about Eq. \ref{eq:mcKeigenexp} is that the sequence of operators ${\mathcal K}_n$ defined by 
+\begin{equation}
+{\mathcal K}_Nf = \sum_{k=1}^{N}\lambda_k \langle f,\phi_k \rangle  \phi_k(t)
+\end{equation}
+converges to ${\mathcal K}$ in $L_T^2$. What this means is that 
+\begin{equation}
+||{\mathcal K}_Nf  - {\mathcal K}f ||^2 = \int_0^T (({\mathcal K}_Nf)(s) - ({\mathcal K}f)(s) )^2ds \to 0. 
+\end{equation}
+It turns out, for ${\mathcal K}$ defined by Eq. \ref{eq:mcKdef}, we can say something even stronger which rigorously justifies the infinite dimensional eigendecomposition of $\Sigma$ given by Eq. \ref{eq:Sigmadiag}. This is Mercer's Theorem.  
+
+\begin{theorem}[Mercer (T5.12)]
+In addition the properties stated above for any symmetric, bounded, compact, non-negative operator, $K$ admits the uniformly and absolutely convergent expansion
+\[
+K(s,t) = \sum_{k=1}^\infty \lambda_k\, \phi_k(s)\phi_k(t). 
+\]
+This means that the kernels
+\[
+K_N(s,t) = \sum_{k=1}^N\lambda_k\, \phi_k(s)\phi_k(t). 
+\]
+convergen uniformly, i.e. 
+\begin{equation}
+\sup_{(s,t) \in [0,T]\times[0,T]}|K(s,t) - K_N(s,t) | \to 0,\quad N \to \infty. 
+\end{equation}
+\end{theorem}
+
+
+We now return to the question of how the process $X_t$ itself can be represented in the series expansion. This is addressed by the following Theorem. 
+\begin{theorem}[Karhunen--Lo\`eve (T5.13)]
+Let $\{X_t\}_{t\in[0,T]}$ be a mean--zero GP satisfying Assumption \ref{ass:varfinite}. Let $\{\lambda_k\}$ and $\{\phi_k\}$ be the eigenvalues and eigenfunctions defined by Mercer's Theorem. 
+The process admits the expansion
+\begin{equation}
+X_t = \sum_{k=1}^\infty \beta_k\, \phi_k(t),\quad \beta_k \sim {\rm Normal}(0,\lambda_k)
+\end{equation}
+and the series converges in the sense that for 
+\begin{equation}
+X_t^N = \sum_{k=1}^N \beta_k\, \phi_k(t)
+\end{equation}
+we have
+\begin{equation}
+\lim_{N \to \infty}\sup_{t \in [0,1]}{\mathbb E}[(X_t^N - X_t)^2] =0 
+\end{equation}
+\end{theorem}
+
+
+\section*{Example: Exponential Kernel}
+Consider the process $\{X_t\}_{t \in {\mathbb R}}$ with kernel 
+\begin{equation}
+K(t,s) = A e^{-\gamma|t-s|}.
+\end{equation}
+As the distance between points grows, the correlations decay, so we expect a process whose fluctuations are in some sense controlled.
+
+Another important feature of this kernel is that it is not differentiable at zero. Let us see what this implies for $X_t$. For $h\neq 0$,
+\begin{align}
+\mathbb{E}\left[\left(\frac{X_{t + h} - X_t}{h}\right)^2\right]
+&= \frac{1}{h^2}\,\mathbb{E}\big[(X_{t+h}-X_t)^2\big]\\
+&= \frac{1}{h^2}\Big(\mathbb{E}[X_{t+h}^2] + \mathbb{E}[X_t^2] - 2\,\mathbb{E}[X_{t+h}X_t]\Big)\\
+&= \frac{1}{h^2}\Big(2K(0) - 2K(h)\Big)= \frac{2}{h^2}\Big(A - A e^{-\gamma|h|}\Big)= \frac{2A}{h^2}\big(1 - e^{-\gamma|h|}\big).
+\end{align}
+Using the expansion $1 - e^{-\gamma|h|} \sim \gamma |h|$ as $h\to 0$, we see
+\begin{equation}
+\mathbb{E}\left[\left(\frac{X_{t + h} - X_t}{h}\right)^2\right]
+\sim \frac{2A\gamma}{|h|} \;\xrightarrow[h\to 0]{}\; \infty,
+\end{equation}
+so the mean--square derivative of $X_t$ does not exist: the process is not differentiable in the mean squared sense. Hence, the trajectories of are $X_t$ very jagged (as we will see, this is a generic feature of continuous Markov process, of which this is an example in disguise). 
+
+\medskip
+
+To obtain the basis $\phi_k$ associated with this kernel, we consider the operator eigenvalue problem 
+\begin{equation}
+{\mathcal K}\phi_k (s) = \lambda_k \phi_k(s),
+\end{equation}
+where
+\begin{equation}
+({\mathcal K}\phi_k)(s) = \int_{-\infty}^{\infty} A e^{-\gamma|t-s|}\,\phi_k(t)\,dt.
+\end{equation}
+For simplicity, we set $A=1$ and $\gamma=1$ (the general case is obtained by a simple rescaling of parameters), so
+\begin{equation}
+({\mathcal K}\phi_k)(s) = \int_{-\infty}^{\infty}\phi_k(t)e^{-|t-s|}\,dt
+= \int_{-\infty}^s \phi_k(t)e^{-(s-t)}\,dt  +  \int_{s}^{\infty} \phi_k(t)e^{-(t-s)}\,dt.
+\end{equation}
+Define
+\begin{equation}
+A(s) = \int_{-\infty}^s \phi_k(t)e^{-(s-t)}\,dt,
+\qquad
+B(s) = \int_{s}^{\infty} \phi_k(t)e^{-(t-s)}\,dt,
+\end{equation}
+so that
+\begin{equation}
+({\mathcal K}\phi_k)(s) = A(s)+B(s).
+\end{equation}
+By differentiating, we obtain 
+\begin{align}
+A'(s) &= -A(s) + \phi_k(s),\\
+B'(s) &= \phantom{-}B(s) - \phi_k(s).
+\end{align}
+Then 
+\begin{align}
+({\mathcal K}\phi_k)'(s) &= A'(s)+B'(s) = B(s) - A(s),\\
+({\mathcal K}\phi_k)''(s) &= B'(s) - A'(s) = \big(B(s)-\phi_k(s)\big) - \big(-A(s)+\phi_k(s)\big)\\
+&= ({\mathcal K}\phi_k)(s) - 2\phi_k(s).
+\end{align}
+The eigenvalue equation ${\mathcal K}\phi_k = \lambda_k \phi_k$, when differentiated twice, becomes 
+\begin{equation}
+\lambda_k \phi_k''(s)
+= \lambda_k \phi_k(s) - 2 \phi_k(s)
+= (\lambda_k - 2)\,\phi_k(s).
+\end{equation}
+Thus the eigenfunctions of the exponential kernel satisfy the second–order ODE
+\begin{equation}
+\phi_k''(s) = \left(1 - \frac{2}{\lambda_k}\right)\phi_k(s),
+\end{equation}
+which is a constant–coefficient Sturm–Liouville problem on $\mathbb{R}$. You may recognize it from an ODE class. 
+
+
+\end{document}
+\appendix
+
+\section{Properties of Gaussian}
+Recall some basic properties of (mean--zero) multivariate Gaussian vectors.  
+If $\mathbf{X}\sim \mathrm{Normal}(0,\Sigma)$, then its moment--generating function (or equivalently its characteristic function) has the closed form
+\begin{equation}
+M_{\mathbf{X}}(t)
+=\mathbb{E}\!\left[e^{\,t^\top \mathbf{X}}\right]
+=\exp\!\left(\tfrac{1}{2} t^\top \Sigma\, t\right),
+\qquad t\in\mathbb{R}^n.
+\end{equation}
+Equivalently, the characteristic function is
+\begin{equation}
+\varphi_{\mathbf{X}}(t)
+=\mathbb{E}\!\left[e^{\,i t^\top \mathbf{X}}\right]
+=\exp\!\left(-\tfrac{1}{2} t^\top \Sigma \, t\right).
+\end{equation}
+
+Several standard consequences follow immediately:
+
+\begin{itemize}
+    \item All mixed moments of $\mathbf{X}$ can be computed by differentiating $M_{\mathbf{X}}(t)$ at $t=0$.
+    \item The covariance matrix satisfies
+    \begin{equation}
+    \mathrm{cov}(X_i,X_j)
+    = \frac{\partial^2}{\partial t_i \partial t_j}
+      \log M_{\mathbf{X}}(t)\bigg|_{t=0}
+    = \Sigma_{i,j}.
+    \end{equation}
+    \item Any linear transformation of a Gaussian vector is again Gaussian:  
+    if $\mathbf{Y}=A\mathbf{X}$, then
+    \begin{equation}
+    \mathbf{Y} \sim \mathrm{Normal}\!\left(0,\; A\Sigma A^\top\right).
+    \end{equation}
+\end{itemize}
+
+These facts will be used repeatedly when we construct Gaussian processes and analyze their finite–dimensional distributions.
+
+\subsection{Spectral expansion}
+
+
+
+\section{Maximum Entropy Characterization of the Gaussian (optional)}\label{app:entropy}
+
+A fundamental characterization of the Gaussian is the following:
+
+\begin{theorem}[Maximum Entropy Characterization]
+\label{thm:maxent}
+Let $\mathcal{P}$ be the class of all absolutely continuous probability distributions $\mu$ on $\mathbb{R}^n$ with mean zero and covariance
+\begin{equation}
+\int_{\mathbb{R}^n} x x^\top \, d\mu(x)=\Sigma,
+\end{equation}
+where $\Sigma$ is a fixed positive--definite matrix.  
+Among all $\mu\in\mathcal{P}$, the differential entropy
+\begin{equation}
+h(\mu) = -\int_{\mathbb{R}^n} f(x)\log f(x)\,dx,
+\end{equation}
+where $f$ is the density of $\mu$, is uniquely maximized by the Gaussian density
+\begin{equation}
+\phi_\Sigma(x)=\frac{1}{(2\pi)^{n/2} (\det \Sigma)^{1/2}}
+\exp\!\left(-\frac{1}{2} x^\top \Sigma^{-1} x\right),
+\end{equation}
+and the maximal entropy equals
+\begin{equation}
+h(\phi_\Sigma)=\frac{1}{2}\log\!\big((2\pi e)^n \det \Sigma\big).
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+Let $\mu$ be any distribution in $\mathcal{P}$ with density $f$, and let $\phi_\Sigma$ be the mean--zero Gaussian density with covariance $\Sigma$.  
+Consider the Kullback--Leibler divergence
+\begin{equation}
+D(f\|\phi_\Sigma)
+= \int_{\mathbb{R}^n} f(x)\log\frac{f(x)}{\phi_\Sigma(x)}\,dx.
+\end{equation}
+Since $D(f\|\phi_\Sigma)\ge 0$ for all $f$, and equality holds if and only if $f=\phi_\Sigma$ almost everywhere, we expand the divergence:
+\begin{equation}
+D(f\|\phi_\Sigma)
+= \int f(x)\log f(x)\,dx - \int f(x)\log \phi_\Sigma(x)\,dx.
+\end{equation}
+The first term equals $-h(f)$.  
+To compute the second term, write
+\begin{equation}
+\log \phi_\Sigma(x)
+= -\frac{n}{2}\log(2\pi)
+   - \frac{1}{2}\log(\det\Sigma)
+   -\frac12 x^\top \Sigma^{-1}x.
+\end{equation}
+Taking expectations under $f$ and using that $\mu$ has covariance $\Sigma$,
+\begin{equation}
+\int f(x)\, x^\top\Sigma^{-1}x\, dx
+= \mathrm{tr}\!\left(\Sigma^{-1}\Sigma\right)
+= n.
+\end{equation}
+Hence
+\begin{align}
+\int f(x)\log\phi_\Sigma(x)\,dx
+&= -\frac{n}{2}\log(2\pi)
+   -\frac{1}{2}\log(\det\Sigma)
+   -\frac12 n.
+\end{align}
+
+Substitute this into the expression for $D(f\|\phi_\Sigma)$:
+\begin{align}
+D(f\|\phi_\Sigma)
+&= -h(f)
+   +\frac{n}{2}\log(2\pi)
+   +\frac{1}{2}\log(\det\Sigma)
+   +\frac12 n.
+\end{align}
+Rearranging yields
+\begin{equation}
+h(f)
+= \frac{n}{2}\log(2\pi e)
+  + \frac12\log(\det\Sigma)
+  - D(f\|\phi_\Sigma).
+\end{equation}
+Since $D(f\|\phi_\Sigma)\ge 0$, we obtain
+\begin{equation}
+h(f)\le \frac{1}{2}\log\!\big((2\pi e)^n \det\Sigma\big),
+\end{equation}
+with equality if and only if $f=\phi_\Sigma$ almost everywhere.  
+Thus $\phi_\Sigma$ is the unique maximizer of entropy subject to the covariance constraint.
+\end{proof}
+\end{document}
