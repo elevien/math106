@@ -75,7 +75,7 @@ is multivariate normal with mean zero and covariance matrix
 \subsection*{Gaussian process in the context of regression modeling}
 The most obvious application of a GP is as a prior distribution for an unknown function when performing interpolation, or smoothing. In particular, in application we often have measurements $Y_1,Y_2,\dots,Y_n$ which are assumed to be noisy measurements of some true function $f(t)$: 
 \begin{equation}
-Y_i = f(t_i) + \epsilon,\quad \epsilon \sim {\rm Normal}(0,\sigma_{\epsilon}^2).
+Y_i = f(t_i) + \epsilon_i,\quad \epsilon_i \sim {\rm Normal}(0,\sigma_{\epsilon}^2).
 \end{equation}
 Often we proceed by picking some parametric class of functions for $f(t)$ and fitting the parameters. To achieve this using least squares the dependence on the parameters $\{\beta_k\}_{k}$ must be linear and therefore $f(t)$ is expressed as an expansion in basis functions $\{\phi_k\}_{k}$; that is,  
 \begin{equation}\label{eq:f}
@@ -109,7 +109,7 @@ where $\Lambda = {\rm diag}(\sigma_1^2,\sigma_2^2,\dots)$ and $\Phi_{k,i} = \phi
 
 
 
-\subsection*{The kernel as a linear operator on $L_2$}
+\subsection*{The kernel as a linear operator on $L_T^2$}
 We are now going to see how the same idea works, but working with linear operators on a function space rather than the covariance matrix. This will then be used to justify the infinite dimensional matrix equation \ref{eq:Sigmadiag}. For a kernel \(K\) on \([0,T]\), introduce the linear operator  
 \begin{equation}
 \mathcal K : L_T^2 \to L_T^2,
@@ -132,7 +132,7 @@ Recall this means that
 \begin{equation}
 \langle f,g \rangle  = \int_0^Tf(t)g(t)dt
 \end{equation}  
-\item The inner product induces a norm, $||f|| = \sqrt{\langle f,g \rangle}$ under which $H$ is complete, meaning sequences $\{f_n\}_n$ which converge in this norm converge to elements of $H$. 
+\item The inner product induces a norm, $||f|| = \sqrt{\langle f,f \rangle}$ under which $H$ is complete, meaning sequences $\{f_n\}_n$ which converge in this norm converge to elements of $H$. 
 \end{itemize}
 
 We make the following assumption, which ensures ${\mathcal K}$ has nice behavior. In the book this appears in T5.10. 
@@ -172,7 +172,7 @@ We have
 \end{align}
 \end{proof}
 \item ${\mathcal K}$ is compact in the sense that the image of any bounded
-subset of $L_T^2$ has compact closure; equivalently, if $\{f_n\}$ is bounded in
+subset of $L_T^2$ has compact closure; equivalently, if $\{f_n\}$ is norm-bounded in
 $L_T^2$, then $\{{\mathcal K}f_n\}$ has a norm–convergent subsequence. I won't prove this.
 \end{itemize}
 
@@ -227,6 +227,7 @@ we have
 \end{equation}
 \end{theorem}
 
+\end{document}
 
 \section*{Example: Exponential Kernel}
 Consider the process $\{X_t\}_{t \in {\mathbb R}}$ with kernel 
@@ -298,129 +299,4 @@ Thus the eigenfunctions of the exponential kernel satisfy the second–order ODE
 which is a constant–coefficient Sturm–Liouville problem on $\mathbb{R}$. You may recognize it from an ODE class. 
 
 
-\end{document}
-\appendix
-
-\section{Properties of Gaussian}
-Recall some basic properties of (mean--zero) multivariate Gaussian vectors.  
-If $\mathbf{X}\sim \mathrm{Normal}(0,\Sigma)$, then its moment--generating function (or equivalently its characteristic function) has the closed form
-\begin{equation}
-M_{\mathbf{X}}(t)
-=\mathbb{E}\!\left[e^{\,t^\top \mathbf{X}}\right]
-=\exp\!\left(\tfrac{1}{2} t^\top \Sigma\, t\right),
-\qquad t\in\mathbb{R}^n.
-\end{equation}
-Equivalently, the characteristic function is
-\begin{equation}
-\varphi_{\mathbf{X}}(t)
-=\mathbb{E}\!\left[e^{\,i t^\top \mathbf{X}}\right]
-=\exp\!\left(-\tfrac{1}{2} t^\top \Sigma \, t\right).
-\end{equation}
-
-Several standard consequences follow immediately:
-
-\begin{itemize}
-    \item All mixed moments of $\mathbf{X}$ can be computed by differentiating $M_{\mathbf{X}}(t)$ at $t=0$.
-    \item The covariance matrix satisfies
-    \begin{equation}
-    \mathrm{cov}(X_i,X_j)
-    = \frac{\partial^2}{\partial t_i \partial t_j}
-      \log M_{\mathbf{X}}(t)\bigg|_{t=0}
-    = \Sigma_{i,j}.
-    \end{equation}
-    \item Any linear transformation of a Gaussian vector is again Gaussian:  
-    if $\mathbf{Y}=A\mathbf{X}$, then
-    \begin{equation}
-    \mathbf{Y} \sim \mathrm{Normal}\!\left(0,\; A\Sigma A^\top\right).
-    \end{equation}
-\end{itemize}
-
-These facts will be used repeatedly when we construct Gaussian processes and analyze their finite–dimensional distributions.
-
-\subsection{Spectral expansion}
-
-
-
-\section{Maximum Entropy Characterization of the Gaussian (optional)}\label{app:entropy}
-
-A fundamental characterization of the Gaussian is the following:
-
-\begin{theorem}[Maximum Entropy Characterization]
-\label{thm:maxent}
-Let $\mathcal{P}$ be the class of all absolutely continuous probability distributions $\mu$ on $\mathbb{R}^n$ with mean zero and covariance
-\begin{equation}
-\int_{\mathbb{R}^n} x x^\top \, d\mu(x)=\Sigma,
-\end{equation}
-where $\Sigma$ is a fixed positive--definite matrix.  
-Among all $\mu\in\mathcal{P}$, the differential entropy
-\begin{equation}
-h(\mu) = -\int_{\mathbb{R}^n} f(x)\log f(x)\,dx,
-\end{equation}
-where $f$ is the density of $\mu$, is uniquely maximized by the Gaussian density
-\begin{equation}
-\phi_\Sigma(x)=\frac{1}{(2\pi)^{n/2} (\det \Sigma)^{1/2}}
-\exp\!\left(-\frac{1}{2} x^\top \Sigma^{-1} x\right),
-\end{equation}
-and the maximal entropy equals
-\begin{equation}
-h(\phi_\Sigma)=\frac{1}{2}\log\!\big((2\pi e)^n \det \Sigma\big).
-\end{equation}
-\end{theorem}
-
-\begin{proof}
-Let $\mu$ be any distribution in $\mathcal{P}$ with density $f$, and let $\phi_\Sigma$ be the mean--zero Gaussian density with covariance $\Sigma$.  
-Consider the Kullback--Leibler divergence
-\begin{equation}
-D(f\|\phi_\Sigma)
-= \int_{\mathbb{R}^n} f(x)\log\frac{f(x)}{\phi_\Sigma(x)}\,dx.
-\end{equation}
-Since $D(f\|\phi_\Sigma)\ge 0$ for all $f$, and equality holds if and only if $f=\phi_\Sigma$ almost everywhere, we expand the divergence:
-\begin{equation}
-D(f\|\phi_\Sigma)
-= \int f(x)\log f(x)\,dx - \int f(x)\log \phi_\Sigma(x)\,dx.
-\end{equation}
-The first term equals $-h(f)$.  
-To compute the second term, write
-\begin{equation}
-\log \phi_\Sigma(x)
-= -\frac{n}{2}\log(2\pi)
-   - \frac{1}{2}\log(\det\Sigma)
-   -\frac12 x^\top \Sigma^{-1}x.
-\end{equation}
-Taking expectations under $f$ and using that $\mu$ has covariance $\Sigma$,
-\begin{equation}
-\int f(x)\, x^\top\Sigma^{-1}x\, dx
-= \mathrm{tr}\!\left(\Sigma^{-1}\Sigma\right)
-= n.
-\end{equation}
-Hence
-\begin{align}
-\int f(x)\log\phi_\Sigma(x)\,dx
-&= -\frac{n}{2}\log(2\pi)
-   -\frac{1}{2}\log(\det\Sigma)
-   -\frac12 n.
-\end{align}
-
-Substitute this into the expression for $D(f\|\phi_\Sigma)$:
-\begin{align}
-D(f\|\phi_\Sigma)
-&= -h(f)
-   +\frac{n}{2}\log(2\pi)
-   +\frac{1}{2}\log(\det\Sigma)
-   +\frac12 n.
-\end{align}
-Rearranging yields
-\begin{equation}
-h(f)
-= \frac{n}{2}\log(2\pi e)
-  + \frac12\log(\det\Sigma)
-  - D(f\|\phi_\Sigma).
-\end{equation}
-Since $D(f\|\phi_\Sigma)\ge 0$, we obtain
-\begin{equation}
-h(f)\le \frac{1}{2}\log\!\big((2\pi e)^n \det\Sigma\big),
-\end{equation}
-with equality if and only if $f=\phi_\Sigma$ almost everywhere.  
-Thus $\phi_\Sigma$ is the unique maximizer of entropy subject to the covariance constraint.
-\end{proof}
 \end{document}

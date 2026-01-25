@@ -37,10 +37,25 @@ For details see <a href="{{ '/lecture_notes/week3/1-22-2026_gaussian-processes.p
 - 5.2 (prove for discrete time)
 - 5.4 
 - Write code to generate samples of a mean zero Gaussian process with given covariance function at times $t_1,\dots,t_n$. Experiment with different paramaters in the Matern kernel family [Matérn covariance function](https://en.wikipedia.org/wiki/Mat%C3%A9rn_covariance_function). 
-- Let $X_t$ be a stationary OU process, which is a Gaussian process with correlation
-  $$K(s,t) = \frac{\sigma^2}{2\theta} e^{-\theta |t-s|}, \qquad t,s\in [-\infty,\infty]. \tag{5}$$
-  Show that the eigenfunctions satisfy a boundary value problem of the form
-  $$\lambda \phi''(t) = \theta^2 \lambda \phi(t) - \sigma^2 \phi(t), \tag{6}$$
-   This can be achieved by differentiating the operator eigenvalue problem twice. You will need to assume the eigenfunctions decay sufficiently fast. 
-  
-  (I recommend focusing on the exam practice problems -- see <a href="{{ '/exams/midterm_practice.pdf' | relative_url }}">midterm practice problems</a>)
+- Consider the stationary Ornstein–Uhlenbeck (OU) process restricted to a finite interval $[0,T]$. Its covariance kernel is
+$$
+K(s,t) = \frac{\sigma^2}{2\theta}\, e^{-\theta \lvert t-s\rvert},
+\qquad s,t\in[0,T].
+$$ Show that any eigenfunction $\phi$ satisfying (E) also satisfies the second–order ODE
+$$
+\lambda\,\phi''(t)
+= \theta^2\,\lambda\,\phi(t) - \sigma^2\,\phi(t),
+\qquad t\in(0,T),
+$$
+together with boundary conditions at $t=0$ and $t=T$ that can be derived from the
+integral representation of $(\mathcal{K}\phi)(t)$ at the endpoints. Hint: Write the operator action explicitly by splitting the integral at $s$:
+$$
+(\mathcal{K}\phi)(s)
+= \int_0^s e^{-\theta(s-t)}\,\phi(t)\,dt
+\;+\;
+\int_s^T e^{-\theta(t-s)}\,\phi(t)\,dt.
+$$
+Differentiate with respect to $s$ to obtain first–order
+relations, differentiate once more, and use the eigenvalue equation. 
+
+(I recommend focusing on the exam practice problems -- see <a href="{{ '/exams/midterm_practice.pdf' | relative_url }}">midterm practice problems</a>)
