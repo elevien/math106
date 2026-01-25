@@ -168,10 +168,11 @@ The definition of a stopping time uses $\{T\le t\}$—not because $\{T=t\}$ is u
 The event $\{T\le t\}$ is the one that makes T a measurable, well-behaved random time.
 
 \subsection*{Combining stopping times}
-If we have multiple stopping times, they generally behave well if we take their min, max, inf, sup. This is what P5.5 is saying. Let's see how this works out for the max. If $T_1$ and $T_2$ are stopping times, let $T =T_1 \vee T_2$ (note $\vee$ mean max and $\wedge$ means min). 
+If we have multiple stopping times, they generally behave well if we take their min, max, inf, sup. This is what P5.5 is saying. Let's see how this works out for the max. If $T_1$ and $T_2$ are stopping times, let $T =T_1 \vee T_2$, then \footnote{note $\vee$ mean max and $\wedge$ means min. This notation is in reference to the fact that $\vee$ looks like $\cup$ and at the set level $[0,T_1]\cup [0,T_2] = [0,T_1\vee T_2]$. However, at the even level we take the intersection for the max} 
 \begin{equation}
-\{T \le t\} = \{T_1 \le t\} \cup \{T_2 \le t\}  \in {\mathcal F}_t^X. 
+\{T \le t\} = \{T_1 \le t\} \cap \{T_2 \le t\}  \in {\mathcal F}_t^X. 
 \end{equation} 
+Note that the max being less than $t$ means $T_1$ AND $T_2$ are less than $t$. 
 Intuitively it should make sense: We can determine if the larger time has happened yet by observing the processes up to time $T$. 
 You should prove the rest of P5.5 (which is exercises 5.2) on your own.
 
