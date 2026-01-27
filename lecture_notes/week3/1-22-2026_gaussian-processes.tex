@@ -97,12 +97,12 @@ We now can view $f(t)$ as a random function -- in-fact, a GP. We can in principl
 
 The goal of this section is to connect the kernel view to the series expansion/prior distributions (Eq. \ref{eq:f} and Eq. \ref{eq:prior}) and to do this rigorously requires a bit of background on linear operators on Hilbert spaces. However the basic ideas can be understood with more elementary linear algebra calculations.  Using that the $\beta$ are independent, we have  
 \begin{equation}\label{eq:Kexp}
-K(t,s) = {\mathbb E}[X_tX_s] = \sum_{k=1}^{\infty}\sum_{k'=1}^{\infty}{\mathbb E}[\beta_k\beta_k']\phi_k(t)\phi_k(s) = 
+K(t,s) = {\mathbb E}[X_tX_s] = \sum_{k=1}^{\infty}\sum_{k'=1}^{\infty}{\mathbb E}[\beta_k\beta_k]\phi_k(t)\phi_k(s) = 
  \sum_{k=1}^{\infty}\sigma_k^2\phi_k(t)\phi_k(s)
 \end{equation}
 Now take a finite set of times $(t_1,\dots,t_k)$ and let $\Sigma$ be the covariance matrix of $(X_{t_1},\dots,X_{t_k})$.  Eq. \ref{eq:Kexp} says that 
 \begin{equation}\label{eq:Sigmadiag}
-\Sigma = \Phi \Lambda \Phi^T
+\Sigma = \Phi^T \Lambda \Phi 
 \end{equation}
 where $\Lambda = {\rm diag}(\sigma_1^2,\sigma_2^2,\dots)$ and $\Phi_{k,i} = \phi_k(t_i)$. Note that $\Phi$ and $\Lambda$ are infinite dimensional matrices but linear algebra still works. Therefore, to go from the kernel view of a GP to the series expansion, the basis functions and weight variances are obtained as the eigenfunctions and eigenvalues of the covariance operator respectively. 
 
@@ -177,7 +177,7 @@ $L_T^2$, then $\{{\mathcal K}f_n\}$ has a norm–convergent subsequence. I won't
 \end{itemize}
 
 
-In summary, ${\mathcal K}$ is a symmetric, bounded, compact, non-negative operator. There is a general result that tells us such operators behave like symmetric matrices. More specifically, the eigenvalues are real, the eigenvectors are orthogonal, ${\mathcal K}$ has a pure point spectrum such that the only point where the eigenvalues can possibly accumulate is $0$ (we can have $\lambda_k \to 0$ but not $\lambda_k$ tending to any other value) and finally, that ${\mathcal K}$ has an eigenfunction expansion 
+In summary, ${\mathcal K}$ is a symmetric, bounded, compact, non-negative operator. There is a general result that tells us such operators behave like symmetric matrices. More specifically, the eigenvalues are real, the eigenvectors are orthogonal, ${\mathcal K}$ has a pure point spectrum such that the only point where the eigenvalues can possibly accumulate is $0$ (we can have $\lambda_k \to 0$ but $\lambda_k$ may not tend to any other value) and finally, that ${\mathcal K}$ has an eigenfunction expansion 
 \begin{equation}\label{eq:mcKeigenexp}
 {\mathcal K}f = \sum_{k=1}^{\infty}\lambda_k \langle f,\phi_k \rangle  \phi_k(t). 
 \end{equation}
@@ -215,88 +215,408 @@ We now return to the question of how the process $X_t$ itself can be represented
 Let $\{X_t\}_{t\in[0,T]}$ be a mean--zero GP satisfying Assumption \ref{ass:varfinite}. Let $\{\lambda_k\}$ and $\{\phi_k\}$ be the eigenvalues and eigenfunctions defined by Mercer's Theorem. 
 The process admits the expansion
 \begin{equation}
-X_t = \sum_{k=1}^\infty \beta_k\, \phi_k(t),\quad \beta_k \sim {\rm Normal}(0,\lambda_k)
+X_t = \sum_{k=1}^\infty \sqrt{\lambda_k}\xi_k\, \phi_k(t),\quad \xi_k \underset{\rm iid}{\sim} {\rm Normal}(0,1)
 \end{equation}
 and the series converges in the sense that for 
 \begin{equation}
-X_t^N = \sum_{k=1}^N \beta_k\, \phi_k(t)
+X_t^N = \sum_{k=1}^N \sqrt{\lambda_k}\xi_k\, \phi_k(t)
 \end{equation}
 we have
-\begin{equation}
+\begin{equation}\label{eq:KLconv}
 \lim_{N \to \infty}\sup_{t \in [0,1]}{\mathbb E}[(X_t^N - X_t)^2] =0 
 \end{equation}
 \end{theorem}
 
-\end{document}
 
-\section*{Example: Exponential Kernel}
-Consider the process $\{X_t\}_{t \in {\mathbb R}}$ with kernel 
+
+\begin{remark}
+The convergence in Eq. \ref{eq:KLconv} can be understood as being in the space 
 \begin{equation}
-K(t,s) = A e^{-\gamma|t-s|}.
+L_t^\infty L_\omega^2
+\coloneqq
+\Big\{
+X:\Omega\times[0,T]\to\mathbb R
+\;:\;
+\sup_{t\in[0,T]}
+\mathbb E\!\left[X_t^2\right]
+<\infty
+\Big\},
 \end{equation}
-As the distance between points grows, the correlations decay, so we expect a process whose fluctuations are in some sense controlled.
-
-Another important feature of this kernel is that it is not differentiable at zero. Let us see what this implies for $X_t$. For $h\neq 0$,
-\begin{align}
-\mathbb{E}\left[\left(\frac{X_{t + h} - X_t}{h}\right)^2\right]
-&= \frac{1}{h^2}\,\mathbb{E}\big[(X_{t+h}-X_t)^2\big]\\
-&= \frac{1}{h^2}\Big(\mathbb{E}[X_{t+h}^2] + \mathbb{E}[X_t^2] - 2\,\mathbb{E}[X_{t+h}X_t]\Big)\\
-&= \frac{1}{h^2}\Big(2K(0) - 2K(h)\Big)= \frac{2}{h^2}\Big(A - A e^{-\gamma|h|}\Big)= \frac{2A}{h^2}\big(1 - e^{-\gamma|h|}\big).
-\end{align}
-Using the expansion $1 - e^{-\gamma|h|} \sim \gamma |h|$ as $h\to 0$, we see
+which has the norm 
 \begin{equation}
-\mathbb{E}\left[\left(\frac{X_{t + h} - X_t}{h}\right)^2\right]
-\sim \frac{2A\gamma}{|h|} \;\xrightarrow[h\to 0]{}\; \infty,
+\|X\|_{L_t^\infty L_\omega^2}
+= \sup_{t\in[0,T]} \mathbb E[X_t^2]^{1/2}. 
+\tag{3}
 \end{equation}
-so the mean--square derivative of $X_t$ does not exist: the process is not differentiable in the mean squared sense. Hence, the trajectories of are $X_t$ very jagged (as we will see, this is a generic feature of continuous Markov process, of which this is an example in disguise). 
+In-fact, this is a complete space (a Banach space) and therefore convergent sequences converge to limits in this space. 
+\end{remark}
 
-\medskip
 
-To obtain the basis $\phi_k$ associated with this kernel, we consider the operator eigenvalue problem 
+\begin{remark}
+If the eigenfunctions in the KL expansion are continuous, then each
+partial sum
+is a continuous function of $t$. Under the convergence guaranteed by the KL
+theorem, $X_t^N$ converges uniformly (along a subsequence) to $X_t$, so $X_t$
+admits a version with continuous sample paths.
+
+However, even if each $\phi_k$ is differentiable, it is generally \emph{not}
+true that $X_t$ is differentiable. Differentiability would require convergence
+of the derivative series
+\[
+\sum_{k=1}^\infty \beta_k \phi_k'(t),
+\]
+which typically fails. In this sense, differentiation amplifies the
+high--frequency components of the expansion, and Gaussian process sample paths
+are generically continuous but nowhere differentiable (we will see examples shortly). 
+\end{remark}
+
+
+\begin{proof}
+ By Mercer’s theorem,
+\[
+\sum_{k=1}^N \lambda_k \phi_k(s)\phi_k(t)\;\longrightarrow\;K(s,t)
+\quad\text{uniformly on }[0,T]\times[0,T].
+\]
+
+Then for $N>M$,
+\[
+\mathbb E[(X_t^N-X_t^M)^2]=\sum_{k=M+1}^N \lambda_k\phi_k(t)^2\;\longrightarrow\;0
+\]
+uniformly in $t\in[0,T]$. Thus $\{X^N\}$ is Cauchy in
+$L_t^\infty L_\omega^2$, and we denote its limit by $X_t$.
+
+For any $t_1,\dots,t_m\in[0,T]$, the vector
+$(X_{t_1}^N,\dots,X_{t_m}^N)$ is Gaussian with mean zero and covariance
+\[
+\mathbb E[X_{t_i}^N X_{t_j}^N]
+=\sum_{k=1}^N \lambda_k\phi_k(t_i)\phi_k(t_j)
+\;\longrightarrow\;K(t_i,t_j).
+\]
+Since $X^N\to X$ in $L_t^\infty L_\omega^2$, we have
+$(X_{t_1}^N,\dots,X_{t_m}^N)\to(X_{t_1},\dots,X_{t_m})$ in mean square.
+Therefore $(X_{t_1},\dots,X_{t_m})$ is Gaussian with covariance
+$K(t_i,t_j)$, and $X$ is a Gaussian process with covariance function $K$.
+\end{proof}
+
+The KL theorem says that $\beta_k \sim {\rm Normal}(0,\lambda_k)$, or equivalently
+$\sigma_k^2 = \lambda_k$ in Eq.~\eqref{eq:prior}. This also says that even though a
+Gaussian process on $[0,T]$ is apparently a very complex object from a
+probabilistic perspective, the randomness is actually generated by a simple iid
+sequence of Normal random variables. To be precise, the underlying probability
+space is $\Omega = {\mathbb R}^{\mathbb N}$ and ${\mathcal F} =
+\sigma(\xi_k;k \in {\mathbb N})$ where the coordinate maps $\xi_k$ are iid.
+
+If we think about the probability space $(\Omega,{\mathcal F}, {\mathbb P})$, the
+probability distribution ${\mathbb P}$ is therefore the probability distribution
+induced by an infinite product of iid Gaussian measures, often written
+heuristically as
+\[
+\prod_{k=1}^{\infty}\frac{1}{\sqrt{2 \pi}}e^{-\xi_k^2/2},
+\]
+although in reality this infinite product density is not well-defined. What is
+well-defined is that every finite collection $(\xi_1,\dots,\xi_n)$ has the usual
+$n$--dimensional standard Gaussian distribution.
+
+To think more concretely about this space, just imagine any event depending on a
+finite collection of the $\xi_k$. For example, for the event
+\[
+\{\xi_1>\xi_2\} \cup \{\xi_1 > 2\},
+\]
+its probability is given by the corresponding two--dimensional Gaussian integral,
 \begin{equation}
-{\mathcal K}\phi_k (s) = \lambda_k \phi_k(s),
+{\mathbb P}\big(\{\xi_1>\xi_2\} \cup \{\xi_1 > 2\}\big)
+=
+\iint_{\{x_1>x_2\}\,\cup\,\{x_1>2\}}
+\frac{1}{2\pi}e^{-(x_1^2+x_2^2)/2}\,dx_1\,dx_2.
+\end{equation}
+
+\section*{Conditional distributions}
+
+In most applications of a GP, we are interested in the distribution of a GP conditional on some points (e.g. in interpolation we condition on the observations). Typically those observations are noisy but let's first consider conditioning on noiseless observations. That is, let $\{X_t\}_{t \in [0,T]}$ be a GP with kernel $K$ and consider the distribution of 
+\begin{equation}
+X_{T}|X_{t_1},\dots,X_{t_k}
+\end{equation}
+where $T$ is the time we want to make a prediction at. 
+This is Normal and can simply be computed by usual Gaussian conditioning formula starting from the joint distribution of $(X_T,X_{t_1},\dots,X_{t_k})$. To describe this, we introduce some notation ${\bf t} = (t_1,\dots,t_k)$ and use $K({\bf t},{\bf t})$  to denote the matrix with entries $K({\bf t},{\bf t})_{i,j} = K(X_{t_i},X_{t_j})$. Then write ${\bf k}(T,{\bf t}) = (K(T,t_1),K(T,t_2),\dots,K(T,t_k))$. Finally let ${\bf X}({\bf t}) = (X_{t_1},\dots,X_{t_k})^T$. 
+
+Now note that the joint distribution is 
+\begin{equation}
+(X_T,X_{t_1},\dots,X_{t_k}) \sim {\rm Normal}(0,\Sigma)
 \end{equation}
 where
 \begin{equation}
-({\mathcal K}\phi_k)(s) = \int_{-\infty}^{\infty} A e^{-\gamma|t-s|}\,\phi_k(t)\,dt.
+\Sigma = \begin{bmatrix}
+K(0,0) & {\bf k}(T,{\bf t})^T\\
+{\bf k}(T,{\bf t}) & K({\bf t},{\bf t})
+\end{bmatrix}
 \end{equation}
-For simplicity, we set $A=1$ and $\gamma=1$ (the general case is obtained by a simple rescaling of parameters), so
+The usual Gaussian conditioning formula (Exercise 1.8) then yields 
 \begin{equation}
-({\mathcal K}\phi_k)(s) = \int_{-\infty}^{\infty}\phi_k(t)e^{-|t-s|}\,dt
-= \int_{-\infty}^s \phi_k(t)e^{-(s-t)}\,dt  +  \int_{s}^{\infty} \phi_k(t)e^{-(t-s)}\,dt.
+X_{T}|{\bf X}({\bf t}) \sim {\rm Normal}({\bf k}(T,{\bf t})^TK({\bf t},{\bf t})^{-1}{\bf X}({\bf t}) ,K(0,0) - {\bf k}(T,{\bf t})^TK({\bf t},{\bf t})^{-1} {\bf k}(T,{\bf t}))
 \end{equation}
-Define
-\begin{equation}
-A(s) = \int_{-\infty}^s \phi_k(t)e^{-(s-t)}\,dt,
-\qquad
-B(s) = \int_{s}^{\infty} \phi_k(t)e^{-(t-s)}\,dt,
-\end{equation}
-so that
-\begin{equation}
-({\mathcal K}\phi_k)(s) = A(s)+B(s).
-\end{equation}
-By differentiating, we obtain 
-\begin{align}
-A'(s) &= -A(s) + \phi_k(s),\\
-B'(s) &= \phantom{-}B(s) - \phi_k(s).
-\end{align}
-Then 
-\begin{align}
-({\mathcal K}\phi_k)'(s) &= A'(s)+B'(s) = B(s) - A(s),\\
-({\mathcal K}\phi_k)''(s) &= B'(s) - A'(s) = \big(B(s)-\phi_k(s)\big) - \big(-A(s)+\phi_k(s)\big)\\
-&= ({\mathcal K}\phi_k)(s) - 2\phi_k(s).
-\end{align}
-The eigenvalue equation ${\mathcal K}\phi_k = \lambda_k \phi_k$, when differentiated twice, becomes 
-\begin{equation}
-\lambda_k \phi_k''(s)
-= \lambda_k \phi_k(s) - 2 \phi_k(s)
-= (\lambda_k - 2)\,\phi_k(s).
-\end{equation}
-Thus the eigenfunctions of the exponential kernel satisfy the second–order ODE
-\begin{equation}
-\phi_k''(s) = \left(1 - \frac{2}{\lambda_k}\right)\phi_k(s),
-\end{equation}
-which is a constant–coefficient Sturm–Liouville problem on $\mathbb{R}$. You may recognize it from an ODE class. 
+The exact same idea can be generalized to predict the joint distribution at multiple times. Essentially, conditioning on some points creates a new Gaussian process which is not mean zero and interpolates between the points we are conditioning on. This procedure is best visualized and you can find many nice visualizations online. 
 
+
+
+\section*{Examples}
+\subsection*{Exponential kernel (Ornstein--Uhlenbeck process)}
+
+Consider the process $\{X_t\}_{t \in \mathbb R}$ with kernel
+\begin{equation}
+K(t,s) = A e^{-\gamma|t-s|}.
+\end{equation}
+As the distance between points grows, the correlations decay, so we expect a
+process whose fluctuations are in some sense controlled. This is also an
+example of a \emph{stationary kernel}, since the covariance depends only on the
+time difference: we can write $K(t,s)=\kappa(|t-s|)$ with
+$\kappa(h)=A e^{-\gamma h}$. The Gaussian process generated by the exponential
+kernel is called the \emph{Ornstein--Uhlenbeck process}. It plays a central role
+in the study of stochastic differential equations, since it is both a Gaussian
+process and the solution of a linear SDE.
+
+The first important feature we discuss is that the process generated by this kernel is not differentiable, a consequence of the fact that the kernel is not differentiable at zero.  Let us see what this implies for $X_t$. To see this, note that 
+\begin{align}
+\mathbb{E}\left[\left(\frac{X_{t + h} - X_t}{h}\right)^2\right]
+&= \frac{1}{h^2}\,\mathbb{E}\big[(X_{t+h}-X_t)^2\big]\\
+&= \frac{1}{h^2}\Big(\mathbb{E}[X_{t+h}^2] + \mathbb{E}[X_t^2]
+ - 2\,\mathbb{E}[X_{t+h}X_t]\Big)\\
+&= \frac{1}{h^2}\Big(2K(0) - 2K(h)\Big)
+ = \frac{2A}{h^2}\big(1 - e^{-\gamma|h|}\big).
+\end{align}
+Using the expansion $1 - e^{-\gamma|h|} \sim \gamma |h|$ as $h\to 0$, we find
+\begin{equation}
+\mathbb{E}\left[\left(\frac{X_{t + h} - X_t}{h}\right)^2\right]
+\sim \frac{2A\gamma}{|h|}
+\;\xrightarrow[h\to 0]{}\; \infty.
+\end{equation}
+Thus the mean--square derivative of $X_t$ does not exist: the process is not
+differentiable in the mean--square sense. Hence the trajectories of $X_t$ are
+very jagged, a generic feature of continuous Markov processes.
+
+Now consider the conditional distributions, which can be understood just by considering $(X_{t_1},X_{t_2},X_T)$ with $T> t_2>t_1$. Let's consider the regression equation 
+\[
+X_T
+= aX_{t_1}+bX_{t_2} + \epsilon 
+\]
+for constants $a,b$ where $\epsilon$ must be independent of $X_{t_1}$ and $X_{t_2}$. Therefore, $a$ and $b$ are determined by the orthogonality conditions
+\[
+\mathbb E\!\left[(X_T-aX_{t_1}-bX_{t_2})X_{t_i}\right]=0,
+\qquad i=1,2.
+\]
+Using the OU covariance, these equations become
+\begin{align}
+e^{-\gamma(T-t_1)} &= a + b\,e^{-\gamma(t_2-t_1)},\\
+e^{-\gamma(T-t_2)} &= a\,e^{-\gamma(t_2-t_1)} + b.
+\end{align}
+Equivalently, in matrix form,
+\begin{equation}
+\begin{bmatrix}
+e^{-\gamma(T-t_1)} \\[4pt]
+e^{-\gamma(T-t_2)}
+\end{bmatrix} = \begin{bmatrix}
+1 & e^{-\gamma(t_2-t_1)} \\
+e^{-\gamma(t_2-t_1)} & 1
+\end{bmatrix}
+\begin{bmatrix}
+a \\[4pt] b
+\end{bmatrix}
+\end{equation}
+Solving this linear system gives
+\[
+a=0,
+\qquad
+b=e^{-\gamma(T-t_2)}.
+\]
+This tells us that the OU process is actually a Markov process (although we haven't defined this in general yet). 
+
+\subsection*{Squared exponential kernel (Gaussian kernel)}
+
+Consider now the process $\{X_t\}_{t \in \mathbb R}$ with the squared exponential
+(or Gaussian) kernel
+\begin{equation}
+K(t,s) = A \exp\!\left(-\frac{(t-s)^2}{2\ell^2}\right),
+\end{equation}
+where $\ell>0$ is a characteristic length scale. As in the exponential case,
+correlations decay as $|t-s|$ increases, but here the decay is much faster than
+exponential. This is again a \emph{stationary kernel}, since the covariance
+depends only on the difference $t-s$.
+
+A key difference from the exponential kernel is that $K(t,s)$ is smooth (in
+fact, real analytic) at $t=s$. This has strong consequences for the regularity
+of the sample paths. To see this, compute
+\begin{align}
+\mathbb{E}\left[\left(\frac{X_{t + h} - X_t}{h}\right)^2\right]
+&= \frac{1}{h^2}\Big(2K(0)-2K(h)\Big)\\
+&= \frac{2A}{h^2}\left(1-\exp\!\left(-\frac{h^2}{2\ell^2}\right)\right).
+\end{align}
+Using the expansion
+\[
+1-\exp\!\left(-\frac{h^2}{2\ell^2}\right)
+\sim \frac{h^2}{2\ell^2}
+\quad \text{as } h\to 0,
+\]
+we find
+\begin{equation}
+\mathbb{E}\left[\left(\frac{X_{t + h} - X_t}{h}\right)^2\right]
+\;\longrightarrow\; \frac{A}{\ell^2},
+\qquad h\to 0.
+\end{equation}
+Thus the mean--square derivative of $X_t$ exists. In fact, one can show that
+sample paths of a GP with squared exponential kernel are almost surely
+infinitely differentiable. This should be contrasted with the exponential
+kernel, where the lack of differentiability of $K$ at the origin leads to very
+rough sample paths.
+
+Finally, consider conditional distributions. As before, fix
+$T>t_2>t_1$ and consider the regression
+\[
+X_T = aX_{t_1}+bX_{t_2}+\epsilon,
+\]
+with $\epsilon$ independent of $(X_{t_1},X_{t_2})$. The coefficients are again
+determined by the orthogonality conditions
+\[
+\mathbb E\!\left[(X_T-aX_{t_1}-bX_{t_2})X_{t_i}\right]=0,
+\qquad i=1,2.
+\]
+Using the squared exponential covariance, these become
+\begin{align}
+\exp\!\left(-\frac{(T-t_1)^2}{2\ell^2}\right)
+&= a + b\,\exp\!\left(-\frac{(t_2-t_1)^2}{2\ell^2}\right),\\
+\exp\!\left(-\frac{(T-t_2)^2}{2\ell^2}\right)
+&= a\,\exp\!\left(-\frac{(t_2-t_1)^2}{2\ell^2}\right) + b.
+\end{align}
+In general, the solution of this system has both $a\neq 0$ and $b\neq 0$. In
+particular, conditioning on $X_{t_2}$ alone is not sufficient to determine the
+conditional law of $X_T$.
+
+This shows that, unlike the Ornstein--Uhlenbeck process, the Gaussian process
+with squared exponential kernel is \emph{not} Markov: information from earlier
+times cannot be discarded without loss. The price paid for
+smoothness of the sample paths is long--range memory in time. 
+
+\subsection*{Brownian motion kernel}
+
+Consider the process $\{X_t\}_{t \in [0,T]}$ with kernel
+\begin{equation}
+K(t,s) = t \wedge s = \min(t,s).
+\end{equation}
+
+For $h\neq 0$, using $K(t+h,t+h) = t+h$, $K(t,t)=t$, and $K(t+h,t)=t$, we have
+\begin{align}
+\mathbb{E}\left[\left(\frac{X_{t + h} - X_t}{h}\right)^2\right]
+&= \frac{1}{h^2}\,\mathbb{E}\big[(X_{t+h}-X_t)^2\big]\\
+&= \frac{1}{h^2}\Big(K(t+h,t+h)+K(t,t)-2K(t+h,t)\Big)\\
+&= \frac{1}{h^2}\big((t+h)+t-2t\big)
+= \frac{|h|}{h^2}
+= \frac{1}{|h|}.
+\end{align}
+Thus
+\[
+\mathbb{E}\left[\left(\frac{X_{t + h} - X_t}{h}\right)^2\right]
+= \frac{1}{|h|}
+\;\xrightarrow[h\to 0]{}\; \infty,
+\]
+so the mean--square derivative of $X_t$ does not exist, and sample paths are
+very jagged (as for the OU process).
+
+Fix $T>t_2>t_1\ge 0$ and consider the regression
+\[
+X_T = a X_{t_1} + b X_{t_2} + \varepsilon,
+\]
+where $\varepsilon$ is independent of $(X_{t_1},X_{t_2})$. As before, the
+coefficients $a,b$ are determined by the orthogonality conditions
+\[
+\mathbb E\!\left[(X_T - aX_{t_1} - bX_{t_2})X_{t_i}\right]=0,
+\qquad i=1,2.
+\]
+Using the Brownian covariance $K(s,t)=s\wedge t$, we have
+\[
+\mathrm{Var}(X_{t_1}) = t_1,\quad
+\mathrm{Var}(X_{t_2}) = t_2,\quad
+\mathrm{Cov}(X_{t_1},X_{t_2}) = t_1,\quad
+\mathrm{Cov}(X_{t_1},X_T) = t_1,\quad
+\mathrm{Cov}(X_{t_2},X_T) = t_2.
+\]
+The orthogonality equations become
+\begin{align}
+t_1 &= a\,t_1 + b\,t_1,\\
+t_2 &= a\,t_1 + b\,t_2.
+\end{align}
+Equivalently,
+\begin{equation}
+\begin{bmatrix}
+t_1 \\[4pt]
+t_2
+\end{bmatrix}
+=
+\begin{bmatrix}
+t_1 & t_1 \\
+t_1 & t_2
+\end{bmatrix}
+\begin{bmatrix}
+a \\[4pt] b
+\end{bmatrix}.
+\end{equation}
+From the first equation $t_1 = t_1(a+b)$, and since $t_1>0$ this gives
+$a+b=1$. Substituting into the second equation,
+\[
+t_2 = a t_1 + b t_2 = (1-b)t_1 + b t_2,
+\]
+so
+\[
+t_2 - b t_2 = t_1 - b t_1
+\;\Longrightarrow\;
+(1-b)(t_2 - t_1) = 0.
+\]
+As $t_2\ne t_1$, we conclude $1-b=0$, hence $b=1$ and $a=0$. 
+\end{document}
+\medskip
+
+\subsubsection*{Eigenfunctions on a finite interval}
+
+To obtain the basis functions $\phi_k$ associated with this kernel, we consider
+the covariance operator on a finite interval $[0,T]$,
+\begin{equation}
+(\mathcal K\phi)(s)
+= \int_0^T A e^{-\gamma|t-s|}\,\phi(t)\,dt,
+\qquad s\in[0,T].
+\end{equation}
+This operator is symmetric, compact, and nonnegative on $L^2([0,T])$, so it has
+a discrete spectrum $\{\lambda_k\}$ with corresponding eigenfunctions
+$\{\phi_k\}$ forming an orthonormal basis of $L^2([0,T])$.
+
+For simplicity, set $A=1$ and $\gamma=1$. Writing
+\begin{equation}
+(\mathcal K\phi)(s)
+= \int_0^s \phi(t)e^{-(s-t)}\,dt
+ + \int_s^T \phi(t)e^{-(t-s)}\,dt,
+\end{equation}
+define
+\begin{equation}
+A(s)=\int_0^s \phi(t)e^{-(s-t)}\,dt,
+\qquad
+B(s)=\int_s^T \phi(t)e^{-(t-s)}\,dt,
+\end{equation}
+so that $(\mathcal K\phi)(s)=A(s)+B(s)$. Differentiating gives
+\begin{align}
+A'(s) &= -A(s)+\phi(s),\\
+B'(s) &= \phantom{-}B(s)-\phi(s),
+\end{align}
+and hence
+\begin{align}
+(\mathcal K\phi)'(s) &= B(s)-A(s),\\
+(\mathcal K\phi)''(s) &= (\mathcal K\phi)(s)-2\phi(s).
+\end{align}
+If $\phi$ is an eigenfunction, $\mathcal K\phi=\lambda\phi$, then
+\begin{equation}
+\lambda \phi''(s) = (\lambda-2)\phi(s),
+\end{equation}
+so $\phi$ satisfies the second--order ODE
+\begin{equation}
+\phi''(s) = \left(1-\frac{2}{\lambda}\right)\phi(s),
+\end{equation}
+together with boundary conditions induced by the integral representation at
+$s=0$ and $s=T$. This yields a discrete spectrum of eigenvalues and eigenfunctions
+on $[0,T]$, consistent with Mercer's theorem. 
 
 \end{document}
