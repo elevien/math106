@@ -153,7 +153,7 @@ The operator ${\mathcal K}$ associated with a process satisfying Assumption \ref
 ||{\mathcal K}f||^2  &=\int_0^T \left( \int_0^T K(s,t)\,f(t)\,dt \right)^2 ds\\
 &\le\;
 \int_0^T  \int_0^T K(s,t)^2\,dt  ds
-\left( \int_0^T f(t)^2\,dt \right) 
+\left( \int_0^T f(t)^2\,dt \right)   \quad \text{(by Cauchy-Schwarz)}
 \end{align}
 By Assumption \ref{ass:varfinite}, 
 \begin{align}
@@ -223,7 +223,7 @@ X_t^N = \sum_{k=1}^N \sqrt{\lambda_k}\xi_k\, \phi_k(t)
 \end{equation}
 we have
 \begin{equation}\label{eq:KLconv}
-\lim_{N \to \infty}\sup_{t \in [0,1]}{\mathbb E}[(X_t^N - X_t)^2] =0 
+\lim_{N \to \infty}\sup_{t \in [0,T]}{\mathbb E}[(X_t^N - X_t)^2] =0 
 \end{equation}
 \end{theorem}
 
@@ -280,7 +280,7 @@ are generically continuous but nowhere differentiable (we will see examples shor
 
 Then for $N>M$,
 \[
-\mathbb E[(X_t^N-X_t^M)^2]=\sum_{k=M+1}^N \lambda_k\phi_k(t)^2\;\longrightarrow\;0
+\mathbb E[(X_t^N-X_t^M)^2]=\sum_{k=M+1}^{\infty} \lambda_k\phi_k(t)^2\;\longrightarrow\;0
 \]
 uniformly in $t\in[0,T]$. Thus $\{X^N\}$ is Cauchy in
 $L_t^\infty L_\omega^2$, and we denote its limit by $X_t$.
@@ -317,18 +317,18 @@ although in reality this infinite product density is not well-defined. What is
 well-defined is that every finite collection $(\xi_1,\dots,\xi_n)$ has the usual
 $n$--dimensional standard Gaussian distribution.
 
-To think more concretely about this space, just imagine any event depending on a
-finite collection of the $\xi_k$. For example, for the event
-\[
-\{\xi_1>\xi_2\} \cup \{\xi_1 > 2\},
-\]
-its probability is given by the corresponding two--dimensional Gaussian integral,
-\begin{equation}
-{\mathbb P}\big(\{\xi_1>\xi_2\} \cup \{\xi_1 > 2\}\big)
-=
-\iint_{\{x_1>x_2\}\,\cup\,\{x_1>2\}}
-\frac{1}{2\pi}e^{-(x_1^2+x_2^2)/2}\,dx_1\,dx_2.
-\end{equation}
+%To think more concretely about this space, just imagine any event depending on a
+%finite collection of the $\xi_k$. For example, for the event
+%\[
+%\{\xi_1>\xi_2\} \cup \{\xi_1 > 2\},
+%\]
+%its probability is given by the corresponding two--dimensional Gaussian integral,
+%\begin{equation}
+%{\mathbb P}\big(\{\xi_1>\xi_2\} \cup \{\xi_1 > 2\}\big)
+%=
+%\iint_{\{x_1>x_2\}\,\cup\,\{x_1>2\}}
+%\frac{1}{2\pi}e^{-(x_1^2+x_2^2)/2}\,dx_1\,dx_2.
+%\end{equation}
 
 \section*{Conditional distributions}
 

@@ -37,8 +37,8 @@
   meetings:
     - day: Tue
       date: Jan 27
-      topics: "infinitesimal generators, OU Processes as Markovian Gaussian processes"
-      readings: "5.3"
+      topics: "OU Processes as Markovian Gaussian processes"
+      readings: "5.4"
 
     - day: Thu
       date: Jan 29
@@ -52,12 +52,12 @@
   meetings:
     - day: Tue
       date: Feb 3
-      topics: "Wiener process, Donsker's theorem"
-      readings: "6.1,6.2, D7.6 (optional)"
+      topics: "General Markov Processes, Infinitesimal generators"
+      readings: "5.3,6.1,6.2, D7.6 (optional)"
     - day: Thu
       date: Feb 5
-      topics: "Properties of Wiener process (The Invariance Principle, LIL) , Diffusion equation"
-      readings: "6.5"
+      topics: "Wiener process, Donsker's theorem, Diffusion equation"
+      readings: "6.1,6.2, D7.6 (optional)"
 - week: W6
   meetings:
     - day: Tue
