@@ -17,12 +17,12 @@ This is where things get a bit more mathy. To give a proper presentation of stoc
 
 ## General stochastic processes and filtrations (5.1,5.2)
 
-For details see <a href="{{ '/lecture_notes/week3/1-22-2026_filtration-stopping-times.pdf' | relative_url }}">Filtration and stopping times</a>
+**Notes**: <a href="{{ '/lecture_notes/week3/1-22-2026_filtration-stopping-times.pdf' | relative_url }}">Filtration and stopping times</a>
 
 
 ## Gaussian processes (5.4)
 
-For details see <a href="{{ '/lecture_notes/week3/1-22-2026_gaussian-processes.pdf' | relative_url }}">Gaussian processes</a>
+**Notes**: <a href="{{ '/lecture_notes/week3/1-22-2026_gaussian-processes.pdf' | relative_url }}">Gaussian processes</a>
 
  
 

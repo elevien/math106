@@ -1,0 +1,301 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathtools}
+\usepackage{tikz}
+\usepackage{enumitem}
+\usepackage[margin=1in]{geometry}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem*{theorem*}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{definition}{Definition}
+\newtheorem*{definition*}{Definition}
+\newtheorem{proposition}{Proposition}
+\newtheorem{assumption}{Assumption}
+\newtheorem{remark}{Remark}
+
+
+
+\title{Math 106 -- Notes \\ Week 5: February 3, 2026}
+\author{Ethan Levien}
+\date{}
+
+\begin{document}
+\maketitle
+
+
+\section*{General continuous time Markov processes (5.3)}
+
+Now we return to Markov processes.  We have already seen that some Gaussian processes are Markov Processes as well. Soon, we will see how these can be represented with the same forward/backward equations as $Q$-processes. Along they way we will encounter other Markov processes. A Markov process is defined as follows. 
+\begin{definition}[Markov processes]
+Let $(\Omega,{\mathcal F},{\mathbb P})$ be a probability space. A process $X_t$ is a Markov processes  if it is ${\mathcal F}_t$-adopted processes and for $s \le t$ and $B \in {\mathcal R}$
+\begin{equation}
+ {\mathbb P}(X_t \in B|{\mathcal F_s}) =  {\mathbb P}(X_t \in B|X_s)
+\end{equation}
+\end{definition}
+
+We will consider homogenous Markov processes which are defined by a transition function
+\begin{equation}
+p(t,x,B) =  {\mathbb P}(X_t \in B|X_0 = x)
+\end{equation}
+we also define an linear operator 
+\begin{equation}
+T_tf(x) = {\mathbb E}[f(X_t)|X_0 = x] 
+\end{equation}
+If there is a density $\rho(t,x,y)$ such that $p(t,x,dy)  = p(t,x,[y,y+dy))  \approx \rho(t,x,y)dy$, then this becomes
+\begin{equation}
+T_tf(x) = \int f(y) \rho(t,x,y)dy
+\end{equation}
+A considerable amount of time will later be spent studying the PDE for $\rho$, but first we spend a bit more time on the general case. 
+
+Note that $p(t,x,B)$ and $T_tf(x)$ correspond respectively to the notation $P_{i,j}(t)$ and $h_{i}(t)$ which was introduced for $Q$-processes.  Let $f$ be bounded and measurable. Using time–homogeneity and the Markov property,
+\begin{align}
+T_t(T_s f)(x)
+&= {\mathbb E}\bigl[T_s f(X_t)\mid X_0=x\bigr] \label{eq:calc1}\\
+&= {\mathbb E}\bigl[{\mathbb E}[f(X_{t+s})\mid X_t]\mid X_0=x\bigr] \label{eq:calc2}\\
+&= {\mathbb E}[f(X_{t+s})\mid X_0=x] \label{eq:calc3}\\
+&= T_{t+s}f(x). \label{eq:calc4}
+\end{align}
+Moreover $T_0 f(x)=f(x)$. Thus $\{T_t\}_{t\ge 0}$ satisfies
+\begin{equation}\label{eq:semigroup}
+T_0=I, \qquad T_{t+s}=T_tT_s,
+\end{equation}
+and is a semigroup of linear operators.
+
+\section*{A brief detour: semigroup theory}
+
+We now pause to introduce the basic semigroup language needed later. 
+
+\begin{definition}[Strongly continuous semigroup DF.1]
+Let $B$ be a Banach space (a complete normed vector space). A family of linear operators $\{T_t\}_{t\ge 0}$ on $B$ is called a \emph{strongly continuous operator semigroup}, or $C_0$-semigroup if
+\begin{align}
+T_0 &= I, \label{eq:sg-identity}\\
+T_{t+s} &= T_t T_s, \qquad t,s\ge 0, \label{eq:sg-law}\\
+\lim_{t \downarrow 0}\|T_t f - f\| &= 0 \quad \text{for all } f\in B. \label{eq:sg-strong}
+\end{align}
+The continuity condition \eqref{eq:sg-strong} is called \emph{strong continuity}. 
+\end{definition}
+
+\begin{remark}
+Recall that for a bounded linear operator $T:X\to X$,
+\begin{equation}\label{eq:operator-norm}
+\|T\|
+\;=\;
+\sup_{f\neq 0}\frac{\|Tf\|}{\|f\|}.
+\end{equation}
+Strong continuity implies that each $T_t$ is a bounded linear operator, so boundedness need not be assumed separately (this is related to the Uniform boundedness principle). 
+\end{remark}
+
+The Markov operators $\{T_t\}$ constructed above always satisfy the algebraic
+properties \eqref{eq:sg-identity}–\eqref{eq:sg-law}. 
+Strong continuity \eqref{eq:sg-strong} is an additional regularity assumption,
+which holds for many Markov processes of interest (e.g.\ diffusions) and expresses the idea that the process evolves continuously in time
+when tested against observables $f$.  
+
+\subsection*{Example: Translation Semigroup}
+A canonical example is the translation semigroup on functions on $\mathbb{R}$,
+\begin{equation}\label{eq:translation}
+(T_t f)(x) = f(x+vt). 
+\end{equation}
+In words, $T_t$ takes a function and translates it horizontally with velocity $v$. From the perspective of stochastic processes, we can view $T_t$ as the semigroup associated with the deterministic process 
+\begin{equation}
+\frac{d}{dt}X_t = v.
+\end{equation}
+Even though $X_t$ is deterministic, we can still formally take the expectation which just gives ${\mathbb E}[f(X_t)|X_0=x] = f(X_t) = f(x + vt)$. 
+
+
+\begin{lemma}
+The translation semigroup is strongly continuous on the Banach space 
+\begin{equation}
+C_0(\mathbb{R}) \coloneqq \left\{f:\mathbb{R} \to \mathbb{R}:\text{$f$ is continuous and }\lim_{x \to \pm \infty} = 0 \right\}
+\end{equation} 
+with the norm $\|f\|_{\infty} = \sup_{x \in {\mathbb R}}|f(x)|$. 
+\end{lemma}
+
+\begin{proof}
+Take $v=1$ for simplify. Note that 
+\[
+\|T_t f\|_\infty
+= \sup_{x\in\mathbb{R}} |f(x+t)|
+= \sup_{y\in\mathbb{R}} |f(y)|
+= \|f\|_\infty,
+\]
+so $T_t$ is a bounded linear operator with $\|T_t\|=1$. The semigroup identities follow immediately from the definition. Thus it remains to show strong continuity. 
+ Fix $f\in C_0(\mathbb{R})$ and $\varepsilon>0$.
+Since $f$ vanishes at infinity, there exists $R>0$ such that
+$|f(x)|<\varepsilon/3$ for $|x|\ge R$. On the compact set $I = [-R-1,R+1]$,
+$f$ is uniformly continuous (this is the Heine-Cantor Theorem), meaning that for all $\varepsilon>0$ there exists $t$ such that 
+\begin{equation}
+\sup_{x \in I}|f(x+t)-f(x)|<\varepsilon/3
+\end{equation}
+Moreover, when $|x|>R$ and $|t|<1$ small, both $|f(x)|$ and $|f(x+t)|$ are $<\varepsilon/3$.
+Thus 
+\begin{equation}
+\|T_t f-f\|_\infty = \sup_{x \in {\mathbb R}}|f(x+t)-f(x)| < 2\sup_{x:|x|>R}|f(x)| + \sup_{x \in I}|f(x+t)-f(x)|\le  \varepsilon
+\end{equation}
+which proves the result. 
+\end{proof}
+
+
+\subsubsection*{Why strong, not uniform, continuity?}
+A stronger notion would be \emph{uniform continuity}, which requires
+\begin{equation}\label{eq:uniform-cont}
+\|T_t - I\| \to 0 \quad \text{as } t\downarrow 0,
+\end{equation}
+i.e.\ \emph{every} function in the unit ball of $B$ is moved only a small amount, uniformly over all such functions, for sufficiently small times. This requirement is too restrictive for most semigroups arising in probability, including the translation semigroup. 
+
+\begin{lemma}
+The translation semigroup is not uniformly continuous on $C_0(\mathbb{R})$. 
+\end{lemma}
+%
+%\begin{proof}
+%Take $g \in C_0({\mathbb R})$ such that $\|g\|_{\infty} = 1$, $g(0) = 1$ and $g(1)=0$. Let $f_n(x) \coloneqq g(nx)$. Then $f_n \in C_0({\mathbb R})$ and $\|f_n\|_{\infty} = 1$. Let $t_n = 1/n$. Then 
+%\begin{equation}
+%\|T_{t_n}f_n - f_n\|_{\infty} = \sup_{x \in {\mathbb R}}|g(nx + 1) - g(nx)| = \sup_{z \in {\mathbb R}}|g(z+1) - g(z)| \ge |g(1)-g(0)| = 1
+%\end{equation}
+%This means that 
+%\begin{equation}
+%\|T_{t_n}f_n - f_n\|  = \sup_{\{f:\|f\|_{\infty}=1\}} \|T_{t_n}f - f\|  \ge 1. 
+%\end{equation}
+%which completes the proof. 
+%\end{proof}
+%\begin{remark}
+%Note that $f_n$ does not converge to something in $C_0({\mathbb R})$, however this does not pose an issue for completeness because the $f_n$ are not a Cauchy sequence. 
+%\end{remark}
+
+
+
+
+
+
+\subsection*{Infinitesimal generator and the resolvent operator}
+Just as was done for the $Q$-process, we would like characterize the process not by the transition operator $T_t$ (for $Q$ process this was just $P(t)$), but instead by something like the $Q$ matrix. Following the book, we use ${\mathcal A}$ for the generalization of the $Q$ matrix. Recall that for a $Q$- process on $\Omega = \{1,\dots,I\}$, $f = (f(1),\dots,f(I))$ is a vector and we already showed how 
+\begin{equation}\label{eq:Qprocessgenerator}
+({\mathcal A}f)_i  =  (Qf)_i =\lim_{t \downarrow 0} \frac{T_hf(i) - f(i)}{h} = \sum_{j \in \Omega}\lambda_{i,j}f(j) - \lambda_{j,j}f(j)
+\end{equation}
+
+If $T_t$ is known, we can calculate ${\mathcal A}$ by differentiating at $t=0$. For example, in the case the translation operator, 
+%\begin{equation}\label{eq:transgenerator}
+%{\mathcal A}f = \frac{d}{dt}T_tf = \frac{d}{dt}f(x+t)
+%\end{equation}
+%
+\begin{equation}\label{eq:transgenerator}
+{\mathcal A}f =\lim_{t \downarrow 0} \frac{T_hf(x) - f(x)}{h} = \frac{d}{dt}(T_tf)(x)\Big|_{t=0} = \frac{d}{dt}f(x+vt)= vf'(x).
+\end{equation}
+This suggests ${\mathcal A} = vd/dt$, which is correct. However, we need to address the fact that $f$ may not be differentiable, so Equation \ref{eq:transgenerator} does not make sense for all the functions in our Banach space. Moreover, ${\mathcal A}$ is not even a bounded linear operator.  The Hille–Yosida theorem tells us when a bounded linear operator on a dense subset of a Banach spaces it is the generator  of a strongly-continuous semigroup. For our purposes, we will generally be given an ${\mathcal A}$ which we know is the generator of a Markov process and the subtle issues about what space it is defined on will be handled with as needed, not in the abstract.  
+
+Note that more generally, translations in ${\mathbb R}^n$ are generated by $\nabla$, and we have the same problem with differentiability. 
+
+
+
+
+%The concept of the resolvent operator allows us to connect the generator, whose domain is a dense subset of our space, to the Markov semigroup $T_t$ defined on the entire space.  Let's us briefly outline this abstract theory. 
+%\begin{itemize}
+%\item  \textbf{The resolvent operator.}
+%The resolvent provides a way to relate the generator ${\mathcal A}$, which is
+%only partially defined, to the full semigroup $\{T_t\}$.
+%\begin{definition}
+%For $\lambda>0$, the
+%\emph{resolvent operator} is defined by
+%\begin{equation}\label{eq:resolvent-def}
+%R_\lambda f
+%\coloneqq \int_0^\infty e^{-\lambda t} T_t f \, dt,
+%\end{equation}
+%\end{definition}
+%
+%
+%The key point is that $R_\lambda$ is a bounded linear operator defined on all of
+%$B$, even though ${\mathcal A}$ is not. Moreover, one can formally verify that
+%\begin{equation}\label{eq:resolvent-identity}
+%(\lambda I - {\mathcal A})R_\lambda f = f,
+%\end{equation}
+%at least for $f$ in a suitable dense subset. Thus the resolvent allows us to
+%recover information about ${\mathcal A}$ through a bounded operator acting on
+%the entire space.
+%
+%\item \textbf{The Hille–Yosida theorem.}
+%The significance of the resolvent becomes clear in the Hille–Yosida theorem,
+%which gives necessary and sufficient conditions for an operator ${\mathcal A}$
+%to generate a strongly continuous semigroup. Roughly speaking, the theorem says
+%that a densely defined operator ${\mathcal A}$ generates a $C_0$–semigroup if
+%and only if its resolvent exists for all sufficiently large $\lambda$ and
+%satisfies appropriate bounds.
+%
+%From the probabilistic point of view, this means that one can often proceed in
+%the following way:
+%\begin{enumerate}
+%\item Write down a candidate generator ${\mathcal A}$ encoding the local
+%behavior of the process.
+%\item Verify the Hille–Yosida conditions via bounds on the resolvent.
+%\item Conclude the existence of a unique Markov semigroup $\{T_t\}$ associated
+%with ${\mathcal A}$.
+%\end{enumerate}
+%Thus, much of the theory of continuous–time Markov processes can be formulated
+%in terms of generators and resolvents, even though the generator itself is not
+%defined on the entire Banach space.
+%\end{itemize}
+
+\subsection*{Forward--backward structure and duality of Banach spaces}
+
+A continuous–time Markov process naturally gives rise to two complementary
+evolution equations corresponding to the Forward and Backward equations encountered in $Q$-processes. 
+These two viewpoints are most clearly understood through the duality structure
+of Banach spaces.  
+
+Consider the backward viewpoint for the semigroup $\{T_t\}_{t\ge 0}$ acts by
+\[
+T_t f(x)=\mathbb E_x[f(X_t)] = \mathbb E[f(X_t)|X_0 = x],
+\]
+with infinitesimal generator ${\mathcal A}$. Formally, $u(t,x)=T_t f(x)$ satisfies the backward equation
+\[
+\partial_t u(t,x) = {\mathcal A}u(t,x), \qquad u(0,x)=f(x),
+\]
+Just as for $Q$-processes, this description is backward in the sense that one specifies a terminal observable
+and propagates it forward in time by conditioning on the present state.
+
+The forward viewpoint describes the evolution of distributions. If $\mu$ is a
+probability measure on the state space, its time evolution is given by the
+pushforward under the transition kernel,
+\[
+\mu_t(B)=\int p(t,x,B)\,\mu_0(dx).
+\]
+If $\mu_0(B)$ can be expressed as a density $\mu_0(dy) = \rho_0(y)dy$, this becomes
+\[
+\mu_t(B)=\int p(t,x,B)\,\rho_0(x)dx.
+\] 
+Now we introduce the pairing between observables and measures given by the usual inner product, which also happens to be the expectation when viewed as an operator on $B$; that is, for a measure $\mu$ and $f \in B$ we have 
+\begin{equation}
+\langle f,\mu\rangle \coloneqq {\mathbb E}[f(X)] =  \int f(x)\,\mu(dx).
+\end{equation}
+This inner product is viewed as a mapping  $\langle \cdot, \cdot \rangle: B \times B^* \to {\mathbb R}$ where $B^*$ is the dual space of $B^*$. We won't get into this too deeply, but it is good to know that there is a theorem -- the Riesz representation
+theorem -- which identifies the dual space.  For example, when observables are taken in $B = C_0({\mathbb R})$ it can be shown that $B^*= C_0({\mathbb R})^*$ is the space of of finite signed
+Borel measures on ${\mathbb R}$. Modulo normalization these are our probability measures. 
+
+Using this duality structure, we can derive the Forward equation. First note that for $f \in B$, 
+\begin{equation}
+\langle T_tf,\mu_0 \rangle  = \langle f,T_t^*\mu_0 \rangle =  \langle f,\mu_t \rangle.
+\end{equation}
+Therefore, as we would expect, the adjoint semigroup $T_t^*$ propagates
+probability measures in the same way that left multiplication by
+$P(t)=e^{tQ}$ propagates probability vectors for $Q$–processes. 
+
+Differentiating this identity at $t=0$ and using the definition of the
+generator ${\mathcal A}$, we obtain
+\begin{equation}
+\frac{d}{dt}\langle T_t f,\mu_0 \rangle\Big|_{t=0}
+= \langle {\mathcal A}f,\mu_0 \rangle =  \langle f, {\mathcal A}^*\mu_0 \rangle
+\end{equation}
+Since this identity holds for all test functions $f\in B$, it characterizes
+the forward (Kolmogorov) equation in weak form:
+\begin{equation}
+\partial_t \mu_t = {\mathcal A}^* \mu_t,
+\end{equation}
+with initial condition $\mu_{t=0}=\mu_0$. Thus the generator ${\mathcal A}$
+governs the backward evolution of observables, while its adjoint
+${\mathcal A}^*$ governs the forward evolution of probability distributions.
+
+
+
+
+
+\end{document}

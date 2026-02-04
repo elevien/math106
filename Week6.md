@@ -6,9 +6,12 @@ bibliography:
 - refs.bib
 ---
 
+
+## The diffusion Equation
+
 ## Itô integral, Itô formula
 
 
-## SDEs
+
 
 

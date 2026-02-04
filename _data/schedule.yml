@@ -52,12 +52,12 @@
   meetings:
     - day: Tue
       date: Feb 3
-      topics: "General Markov Processes, Infinitesimal generators, Wiener process as a Gaussian process"
-      readings: "5.3,6.1,6.3"
+      topics: "General Markov Processes, Infinitesimal generators"
+      readings: "5.3"
     - day: Thu
       date: Feb 5
-      topics: "Invariance principle, Donsker's theorem, Diffusion equation"
-      readings: "6.2, D7.6 (optional)"
+      topics: "Wiener process as a Gaussian process, Invariance principle, Donsker's theorem, Diffusion equation"
+      readings: "6.1,6.3, 6.2, D7.6 (optional)"
 - week: W6
   meetings:
     - day: Tue
@@ -66,13 +66,13 @@
       readings: "7.1,7.2"
     - day: Thu
       date: Feb 12
-      topics: "Itô's lemma, SDEs"
+      topics: "Itô's lemma"
       readings: "7.3"
 - week: W7
   meetings:
     - day: Tue
       date: Feb 17
-      topics: "Derivation of Fokker–Planck equation"
+      topics: "The Fokker–Planck equation"
       readings: "8.1,8.2"
     - day: Thu
       date: Feb 19
