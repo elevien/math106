@@ -11,7 +11,7 @@ bibliography:
 
 We will introduce general Markov processes and derive the forward backward equations in this setting. We have already seen that the OU process (GP with exponential Kernel) is an example of a Gaussian processes which is also Markov process. 
 
-**Notes**: [General Markov processes and semigroup theory](lecture_notes/week5/2-3-2026_markovprocesses.pdf)
+**Notes**: <a href="{{ '/lecture_notes/week5/2-3-2026_markovprocesses.pdf' | relative_url }}">General Markov processes and semigroup theory</a>
 
 
 ## Wiener processes as limit of RW and KL Expansion (6.1,6.3, 6.2)
