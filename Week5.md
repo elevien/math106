@@ -9,15 +9,20 @@ bibliography:
 
 ## Markov processes (5.3)
 
-We will introduce general Markov processes and derive the forward backward equations in this setting. We have already seen that the OU process (GP with exponential Kernel) is an example of a Gaussian processes which is also Markov process. 
+We will introduce general Markov processes and derive the forward backward equations in this setting. We have already seen that the OU process (GP with exponential Kernel) is an example of a Gaussian process which is also a Markov process. 
 
 **Notes**: <a href="{{ '/lecture_notes/week5/2-3-2026_markovprocesses.pdf' | relative_url }}">General Markov processes and semigroup theory</a>
 
 
-## Wiener processes as limit of RW and KL Expansion (6.1,6.3, 6.2)
+## Wiener processes as the limit of RW and KL Expansion (6.1,6.3, 6.2)
 
-We will introduce the Wiener process as the scaling limit of a Random walk. We will show this is the Gaussian process with min kernel we encountered before and we will compute the KL expansion. 
-You can skip T6.4 (arcsin law). 
+There are many results in this chapter we won't cover. The things we covered in class are: 
+- Derivation of Wiener process as the scaling limit of a symmetric random walk 
+- We will discuss but not prove Donsker’s Theorem (T6.4). You should be familiar with the statement and exactly what we mean by convergence in distribution. 
+- We derived the kernel and KL expansion of a Wiener process (but we did not cover the Haar basis expansion (T6.5) in this section)
+- We did cover Example 6.6 
+- We derived the diffusion equation 
+- We did not discuss Kolmogorov's continuity theorem (T6.10,T6.12) although we did get a taste of this idea when we looked at smoothness of GP kernels.
 
 
 ### Exercises
@@ -27,7 +32,7 @@ You can skip T6.4 (arcsin law).
   {\mathcal A}f(x) = f'(x)
   $$
 
-  is unbounded on both $L^\infty(\mathbb{R})$ and $C_0(\mathbb{R})$.
+  is unbounded on a dense subset $C_0(\mathbb{R})$. In particular, take the domain to be the space $C_c^1(\mathbb{R})$ of continuous and once differentiable functions.
 
 - Consider the ODE
 
