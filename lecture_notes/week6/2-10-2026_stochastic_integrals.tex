@@ -1,0 +1,903 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathtools}
+\usepackage{tikz}
+\usepackage{enumitem}
+\usepackage[margin=1in]{geometry}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem*{theorem*}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{definition}{Definition}
+\newtheorem*{definition*}{Definition}
+\newtheorem{proposition}{Proposition}
+\newtheorem{assumption}{Assumption}
+\newtheorem{remark}{Remark}
+
+
+
+\title{Math 106 -- Notes \\ Week 6: February 10/12, 2026}
+\author{Ethan Levien}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section*{Stochastic integration: Motivation}
+
+In the “physics’’ view, the Wiener process is interpreted as the time integral of a non-existent process called white noise $\dot W_t$. Although the time derivative of a Wiener process does not exist, it is still useful to regard $\dot W_t$ heuristically as a stationary Gaussian process. This viewpoint can be motivated by examining finite–difference approximations to the derivative of a Wiener process over a time interval $h>0$. Observe that
+\begin{align}
+\mathbb{E}\!\left[\frac{W_{t+h}-W_t}{h}\right] &= 0, \\
+\mathbb{E}\!\left[\left(\frac{W_{t+h}-W_t}{h}\right)^2\right] &= \frac{1}{h}\label{eq:whitenoisedh}, \\
+\mathbb{E}\!\left[\left(\frac{W_{t+h}-W_t}{h}\right)\!\left(\frac{W_{s+h}-W_s}{h}\right)\right] &= 0 \qquad \text{for } t+h<s.
+\end{align}
+Thus the increments behave like independent Gaussian variables with variance $1/h$, and in the limit $h\to 0$ this suggests a covariance kernel
+\[
+K(s,t)=\delta(t-s),
+\]
+which is the kernel of idealized white noise. 
+%It also possible to make makes view limiting picture through the Ornstein–Uhlenbeck process: for fixed amplitude $A$, let $l$ denote the correlation length of the OU kernel. As $l\to 0$, the exponential kernel collapses to a delta function, and the OU process converges (in distribution) to white noise. Thus white noise can be regarded as the zero-correlation-length limit of a stationary Gaussian process. %{\bf However, we must be careful because the OU view leads to a different integration rule as we discuss below!}
+
+White noise provides a natural way to construct continuous-state, continuous-time Markov processes by adding uncorrelated perturbations to an ODE:
+\begin{equation}\label{eq:lang}
+\frac{d}{dt}X_t = b(X_t) + \sigma(X_t)\,\dot W_t.
+\end{equation}
+This informal equation says that the instantaneous velocity is perturbed by a Gaussian fluctuation of magnitude $\sigma(X_t)$, independent across time. The stochastic differential equation \eqref{eq:lang} defines a diffusion process. Special cases include the Wiener process ($b=0$, $\sigma=1$) and the Ornstein–Uhlenbeck process ($b(x)=-\gamma x$, $\sigma=\sqrt{2D}$).
+
+Because paths of $X_t$ are nowhere differentiable, the differential form \eqref{eq:lang} must be interpreted as an integral equation:
+\begin{equation}\label{eq:lang_integral}
+X_t = X_0 + \int_0^t b(X_s)\,ds + \int_0^t \sigma(X_s)\,\dot W_s\,ds.
+\end{equation}
+The second term is interpreted as a stochastic integral. Since
+\[
+\int_0^t \sigma(X_s)\,\dot W_s\,ds
+=
+\int_0^t \sigma(X_s)\,dW_s,
+\]
+we must define $\int_0^t f(\omega,s)\,dW_s$ in a mathematically meaningful way where $f(\omega,s)$ is some adapted function. We want to make the approximation
+\begin{equation}
+\int_0^t f(\omega,s)\,dW_s \approx \frac{1}{N}\sum_{i=1}^N f(\omega,t^*)(W_{t_{i+1}}-W_{t_i})
+\end{equation}
+The usual way of defining the Riemann–Stieltjes where the limit is independent of where $t^*$ falls does not hold, as we now show. 
+
+\subsection*{Three definitions of stochastic integrals}
+
+Consider the example where $f(\omega,s)=W_s(\omega)$. Thus the problem is to define
+\begin{equation}\label{eq:I}
+I=\int_0^t W_s\,dW_s.
+\end{equation}
+Let $0=t_0<t_1<\dots<t_N=t$ be a partition with mesh $|\Pi_N| \to 0$.
+
+\paragraph{Left-endpoint (It\^o) sum.}
+\begin{equation}
+I_N^L=\sum_{j=0}^{N-1} W_{t_j}\,\big(W_{t_{j+1}}-W_{t_j}\big).
+\end{equation}
+Because $W_{t_j}$ is measurable with respect to $\mathcal{F}_{t_j}$ and increments are independent with mean zero, $\mathbb{E}[I_N^L]=0$. 
+
+\paragraph{Right-endpoint.}
+\begin{equation}
+I_N^R=\sum_{j=0}^{N-1} W_{t_{j+1}}\,\big(W_{t_{j+1}}-W_{t_j}\big).
+\end{equation}
+Rewrite $W_{t_{j+1}}$ as $W_{t_j}+(W_{t_{j+1}}-W_{t_j})$:
+\begin{equation}
+I_N^R
+=
+\sum_{j=0}^{N-1}
+\big(W_{t_j}+(W_{t_{j+1}}-W_{t_j})\big)\big(W_{t_{j+1}}-W_{t_j}\big).
+\end{equation}
+This expands to
+\begin{equation}
+I_N^R
+=
+\sum_{j=0}^{N-1} W_{t_j}\big(W_{t_{j+1}}-W_{t_j}\big)
++
+\sum_{j=0}^{N-1} (W_{t_{j+1}}-W_{t_j})^2.
+\end{equation}
+Hence
+\begin{equation}
+I_N^R = I_N^L + \sum_{j=0}^{N-1} (W_{t_{j+1}}-W_{t_j})^2.
+\end{equation}
+Taking expectations,
+\begin{equation}
+\mathbb{E}[I_N^R]
+=
+\mathbb{E}[I_N^L]
++
+\sum_{j=0}^{N-1} \mathbb{E}[(W_{t_{j+1}}-W_{t_j})^2]
+=
+0 + \sum_{j=0}^{N-1} (t_{j+1}-t_j)
+=
+t.
+\end{equation}
+
+\paragraph{Midpoint (Stratonovich) sum.}
+Let $t_{j+\frac12} = \frac{t_j + t_{j+1}}{2}$. The midpoint Riemann sum is
+\begin{equation}
+I_N^M
+=
+\sum_{j=0}^{N-1}
+W_{t_{j+\frac12}}\,
+\big(W_{t_{j+1}}-W_{t_j}\big).
+\end{equation}
+Write the increment as
+\begin{equation}
+W_{t_{j+1}} - W_{t_j}
+=
+\big(W_{t_{j+1}} - W_{t_{j+\frac12}}\big)
++
+\big(W_{t_{j+\frac12}} - W_{t_j}\big).
+\end{equation}
+Then
+\begin{equation}
+\mathbb{E}[I_N^M]
+=
+\sum_{j=0}^{N-1}
+\mathbb{E}\Big[
+W_{t_{j+\frac12}}
+\big(W_{t_{j+1}} - W_{t_{j+\frac12}}\big)
+\Big]
++
+\sum_{j=0}^{N-1}
+\mathbb{E}\Big[
+W_{t_{j+\frac12}}
+\big(W_{t_{j+\frac12}} - W_{t_j}\big)
+\Big].
+\end{equation}
+The first sum is zero and the second sum is $(t_{j+1}-t_j)/2$ by the same argument we used for the right hand rule. 
+\begin{equation}
+\mathbb{E}[I_N^M]
+=
+\sum_{j=0}^{N-1}
+\frac{t_{j+1} - t_j}{2}
+=
+\frac{t}{2}.
+\end{equation}
+
+\section*{The It\^o Integral}
+
+There are both physical and mathematical reasons to prefer the left-endpoint (Itô) definition. 
+\begin{itemize}
+\item Mathematically, using the left endpoint ensures that the stochastic integral depends only on information available up to the current time. 
+\item Physically, many stochastic models arise as limits of discrete-time systems in which updates are computed using only the current state before the noise is applied. Taking a continuous-time limit of such adapted, forward-looking update rules naturally leads to the left-endpoint convention. In this sense, the Itô integral directly reflects how real noisy systems are typically constructed from their discrete approximations.
+\end{itemize}
+
+Thus, we shall focus on defining the It\^o integral and it should general be assumed that
+\begin{equation}
+\int_0^tf(\omega,s)dW_s
+\end{equation}
+is referring to the It\^o Integral. 
+
+\subsection*{It\^o isometry}
+
+To rigorously define the It\^o integral, we want to show that the map 
+\begin{equation}
+I(f): f \;\mapsto\; \int_0^T f\, dW
+\end{equation}
+is a well-defined. This mapping is a linear operator from the space  
+\begin{equation}
+{\mathcal V}
+=
+\Big\{\, f(\omega,t):
+\text{$f$ is ${\mathcal F}_t^W$-adapted and }
+\mathbb{E}\!\left[\int_{0}^{T} f(\omega,t)^2\,dt\right]<\infty \Big\}.
+\end{equation} 
+of square-integrable adapted processes to $L_2(\Omega)$. The result that establishes the validity of the It\^o integral is called the It\^o isometry because it establishes an Isometry of the Hilbert spaces ${\mathcal V}$ and $L_2(\Omega)$. Remember an isometry is a distance preserving map and the distance on a Hilbert space is induced by the inner product.  
+
+{\bf Notation:} ${\mathcal V}$ is sometimes denoted $L_{\omega}^2L_t^2$ in the book, and it could also be written $L^2(\Omega \times [0,T])$. Think of it just like the $L^2$ space of real values functions on $[0,T]$, except that now we are considering functions on the larger space $\Omega \times [0,T]$. The expectation therefore plays the role of an outer integral here. In the book they use the interval $[S,T]$ but I'll set $S=0$ to avoid the extra notation. 
+
+
+\subsubsection*{Simple functions}
+
+We begin with \emph{simple} integrands of the form
+\[
+f(\omega,t)
+=
+\sum_{j=1}^{n} e_j(\omega)\,\mathbf{1}_{[t_j,t_{j+1})}(t),
+\]
+where each $e_j$ is $\mathcal{F}_{t_j}$–measurable random variable. I'll use ${\mathcal S} \subset {\mathcal V}$ to denote the space of such functions. 
+
+ We assume throughout that
+$\{ \mathcal{F}_t \}_{t\ge 0}$ is the augmented filtration generated by the Wiener process,
+so $W_t$ is adapted and $e_j$ depends only on information available at time $t_j$.
+
+For such simple functions, the It\^o integral on $[0,T]$ is defined by the left-endpoint rule:
+\[
+\int_0^T f(\omega,t)\,dW_t
+=
+\sum_{j} e_j(\omega)\,\big(W_{t_{j+1}} - W_{t_j}\big).
+\]
+
+\begin{lemma}[T7.1]
+Let $0 \le S \le T$. For a simple integrand $f$ as above, the stochastic integral satisfies
+\begin{equation}\label{eq:t71a}
+\mathbb{E}\!\left[ \int_S^T f(\omega,t)\,dW_t \right] = 0,
+\end{equation}
+and the It\^o isometry
+\begin{equation}\label{eq:t71b}
+\mathbb{E}\left[\left( \int_S^T f(\omega,t)\,dW_t \right)^{2}\right]
+=
+\mathbb{E}\left[ \int_S^T f^2(\omega,t)\,dt \right]
+\end{equation}
+\end{lemma}
+\begin{proof}
+We set $S=0$ throughout. For the second moment, let
+\[
+\delta W_j = W_{t_{j+1}} - W_{t_j}.
+\]
+Then
+\begin{align*}
+\mathbb{E}\left[ \left(\sum_j e_j\,\delta W_j \right)^{2}\right]
+=
+\mathbb{E}\left[\sum_{j,k} e_j e_k\,\delta W_j\,\delta W_k \right] 
+=
+\sum_{j,k} \mathbb{E}\big[e_j e_k\,\delta W_j\,\delta W_k\big].
+\end{align*}
+By independence of the increments, $\delta W_j$ and $\delta W_k$ are independent for $j\neq k$ and have mean zero, so the off–diagonal terms vanish and
+\[
+\mathbb{E}\left[ \left(\sum_j e_j\,\delta W_j \right)^{2}\right]
+=
+\sum_j \mathbb{E}\left[ e_j^2\,(\delta W_j)^2\right]
+=
+\sum_j \mathbb{E}\left[ e_j^2\right](t_{j+1}-t_j),
+\]
+since $\mathbb{E}[(\delta W_j)^2]=t_{j+1}-t_j$.
+For this simple process,
+\[
+\int_0^T f^2(\omega,t)\,dt = \sum_j e_j(\omega,t_{j})^2\, (t_{j+1}-t_j),
+\]
+to taking expectations gives the result
+\end{proof}
+
+\subsubsection*{Extension to ${\mathcal V}$}
+
+Now we want to extend this to any $f \in {\mathcal V}$. 
+If $f \in \mathcal{V}$, then there exists a sequence
+$\{\varphi_n\} \subset {\mathcal S}$ such that
+\[
+\mathbb{E}\!\left[ \int_0^T \big(f(\omega,t) - \varphi_n(\omega,t)\big)^2 dt \right]
+\longrightarrow 0.
+\]
+That is, $\varphi_n \to f$ in the space $L^2(\Omega \times [0,T])$.
+For simple functions, the It\^o integral has already been defined. We therefore set
+\begin{equation}\label{eq:itolim}
+\int_0^T f(\omega,t)\,dW_t
+=
+\lim_{n\to\infty} \int_0^T \varphi_n(\omega,t)\,dW_t,
+\end{equation}
+where the limit is taken in $L^2(\Omega)$. Note how we are going from convergence in $L^2(\Omega \times [0,T])$ to $L^2(\Omega)$.  
+
+As an intermediate step towards proving the general isometry, we need the following facts. 
+\begin{lemma}
+\begin{enumerate}
+\item The limit in Eq. \ref{eq:itolim} is well-defined in the sense of belonging to $L^2(\Omega)$ and
+\item the limiting value does not depend on the choice of $\{\varphi_n\}$ which are used to approximate $f$ (this is E7.1)
+\end{enumerate}
+\end{lemma}
+\begin{proof}
+
+\begin{enumerate}
+\item  Note that $\int_0^T \varphi_n(\omega,t)\,dW_t \in L^2(\Omega)$ by the It\^o isometry for simple functions.  
+Furthermore, for any $n,m$,
+\[
+\mathbb{E}\!\left[
+\left( \int_0^T \varphi_n\,dW_t - \int_0^T \varphi_m\,dW_t \right)^2
+\right]
+=
+\mathbb{E}\!\left[ \int_0^T (\varphi_n - \varphi_m)^2\,dt \right].
+\]
+Because $\{\varphi_n\}$ is a Cauchy sequence in $L^2(\Omega \times[0,T])$, the right-hand
+side tends to zero. Hence the sequence
+\[
+\left\{ \int_0^T \varphi_n\,dW_t \right\}
+\]
+is Cauchy in $L^2(\Omega)$, and therefore converges to a unique limit.
+\item Let $f\in{\mathcal V}$. Suppose $\{\varphi_n\}$ and $\{\psi_n\}$ are two sequences which both converge to $f$ in ${\mathcal V}$. 
+Define
+\[
+X_n := \int_0^T \varphi_n(\omega,t)\,dW_t,
+\qquad
+Y_n := \int_0^T \psi_n(\omega,t)\,dW_t.
+\]
+
+We already know from the It\^o isometry that both $\{X_n\}$ and $\{Y_n\}$ are Cauchy sequences in $L^2(\Omega)$, hence converge in $L^2(\Omega)$ to some limits $X$ and $Y$, respectively. We must show that $X=Y$ a.s. The idea is again to use the It\^{o} isometry for simple functions to leverage the convergence in ${\mathcal V}$. 
+\end{enumerate}
+\end{proof}
+%For any $n$ and $m$, by the It\^o isometry for simple functions we have
+%\[
+%\mathbb{E}\big[(X_n - Y_n)^2\big]
+%=
+%\mathbb{E}\!\left[\left(\int_0^T (\varphi_n - \psi_n)\,dW_t\right)^{\!2}\right]
+%=
+%\mathbb{E}\!\left[\int_0^T (\varphi_n(\omega,t)-\psi_n(\omega,t))^2\,dt\right].
+%\]
+%Insert $f$ by adding and subtracting:
+%\[
+%\varphi_n - \psi_n = (\varphi_n - f) + (f - \psi_n),
+%\]
+%so
+%\begin{align*}
+%\int_0^T (\varphi_n - \psi_n)^2\,dt
+%&\leq 2\int_0^T (\varphi_n - f)^2\,dt
+%  + 2\int_0^T (\psi_n - f)^2\,dt.
+%\end{align*}
+%Taking expectations,
+%\[
+%\mathbb{E}\big[(X_n - Y_n)^2\big]
+%\le
+%2\,\mathbb{E}\!\left[\int_0^T (\varphi_n - f)^2\,dt\right]
+%+
+%2\,\mathbb{E}\!\left[\int_0^T (\psi_n - f)^2\,dt\right].
+%\]
+%
+%Hence $X_n - Y_n \to 0$ in $L^2(\Omega)$ as $n\to\infty$.
+%\end{enumerate}
+%\end{proof}
+
+We can now prove the general It\^o isometry, hence establishing the validity of the It\^o integral. 
+\begin{theorem}[T7.2]
+T7.1 holds for all $f \in \mathcal{V}$. 
+\end{theorem}
+\begin{proof}
+I'll leave Eq. \ref{eq:t71a}  as an exercise.
+So far we've proved that the It\^o Integral viewed as a map $I:L^2(\Omega \times[0,T]) \to L^2(\Omega)$ is well defined and can be computed by approximating $f \in {\mathcal V}$ with simple functions. It remains to show that it is an isometry. For this, we use the following fact: If $X_n \to X$ in some Hilbert space $H$, then $||X_n|| \to ||X||$. We have already seen that
+\begin{equation}
+\int_0^t \varphi_n(\omega,s)dW_s \to \int_0^t f(\omega,s)dW_s 
+\end{equation}
+in $L^2(\Omega \times[0,T])$ and $\varphi_n \to f(\omega,s)$ in $L^2(\Omega)$. The It\^o isometry for the limits follows from the  It\^o isometry for simple functions along with the fact that the norms (and hence their squares) converge as well. 
+\end{proof}
+
+
+\subsection*{Properties of the It\^o integral}
+\begin{proposition}
+Let $f,g \in \mathcal{V}$ and let $u \in [0,T]$. Then the It\^o integral satisfies:
+
+\begin{enumerate}
+\item[(i)] 
+\[
+\int_0^T f\,dW_t
+=
+\int_0^u f\,dW_t
++
+\int_u^T f\,dW_t
+\]
+
+\item[(ii)]
+For any constant $c\in\mathbb{R}$,
+\[
+\int_0^T (f + c g)\,dW_t
+=
+\int_0^T f\,dW_t
++
+c\int_0^T g\,dW_t,
+\]
+
+\item[(iii)]
+The random variable
+\[
+\int_0^T f\,dW_t
+\]
+is $\mathcal{F}_T$–measurable.
+\end{enumerate}
+\end{proposition}
+
+\subsubsection*{Example (E7.5) and Quadratic variation} Now that we've established the It\^o integral exists, let's revisit the integral $I$ defined by Eq. \ref{eq:I}. 
+We now compute the It\^o integral $\int_0^t W_s\,dW_s$ using left-endpoint Riemann sums.  
+Let $\{t_j\}$ be a partition of $[0,t]$. Then
+\[
+\int_0^t W_s\,dW_s
+\;\approx\;
+\sum_j W_{t_j}\,(W_{t_{j+1}} - W_{t_j}).
+\]
+Using the identity
+\[
+2ab = (a^2 - b^2) - (a-b)^2,
+\]
+we rewrite each summand:
+\[
+W_{t_j}(W_{t_{j+1}} - W_{t_j})
+=
+\frac{2W_{t_j}W_{t_{j+1}} - 2W_{t_j}^2}{2}
+=
+\frac{W_{t_{j+1}}^2 - W_{t_j}^2}{2}
+-
+\frac{(W_{t_{j+1}} - W_{t_j})^2}{2}.
+\]
+Summing over $j$ gives
+\[
+\sum_j W_{t_j}(W_{t_{j+1}} - W_{t_j})
+=
+\sum_j \frac{W_{t_{j+1}}^2 - W_{t_j}^2}{2}
+\;-\;
+\frac12 \sum_j (W_{t_{j+1}} - W_{t_j})^2.
+\]
+The first sum telescopes:
+\[
+\sum_j \frac{W_{t_{j+1}}^2 - W_{t_j}^2}{2}
+=
+\frac{W_t^2}{2}.
+\]
+
+
+The second sum is related to the \emph{quadratic variation}, defined as
+\begin{equation}\label{eq:quadvariation}
+[W,W]_t = \lim_{d t \to 0}\sum_j (W_{t_{j+1}} - W_{t_j})^2 
+\end{equation}
+It can be shown that $[W_t,W_t] = t$. To see why, consider that  (as in Eq. \ref{eq:whitenoisedh})
+\begin{equation}
+{\mathbb E}[(W_{t_{j+1}} - W_{t_j})^2] = dt
+\end{equation}
+To connect this back to the initial discussion of White noise, we can formally write 
+\begin{equation}
+(\dot{W}_t)^2 = \left(\frac{dW_t}{dt}\right)^2 \approx \frac{1}{dt}
+\end{equation}
+
+Putting things together yields 
+\[
+\int_0^t W_s\,dW_s
+=
+\frac{W_t^2}{2}
+-
+\frac{t}{2}.
+\]
+
+\medskip
+
+Generalizing Eq.  \ref{eq:quadvariation}, it can be shown that (see P7.6)
+\begin{equation}
+\sum_{j}f(\omega,t_j^*)(W_{t_{j+1}}- W_{t_j})^2 \to \int_0^T f(\omega,t)dt. 
+\end{equation}
+where $t_j^* \in [t_j,t_{j+1}]$ is arbitrary. For this reason, we sometimes write $(dW_t)^2 = dt$. 
+
+\section*{It\^o's formula}
+If we interpret the example above in differential form this says 
+\begin{equation}
+\frac{d}{dt}W_t^2 = 2W_s\dot{W_t} + 1
+\end{equation}
+This illustrates a fundamental difference between standard calculus and so-called It\^{o} calculus: The regular chain rule does not hold. In differential form we would write this as
+\begin{equation}
+d(W_t)^2 = 2W_tdW_t + dt
+\end{equation}
+
+This generalizes to the central result of stochastic integration theory. To state this, 
+we consider a process $X_t$ given by Eq.~\ref{eq:intoint}; that is,
+\begin{equation}\label{eq:intoint}
+X_t = X_0 + \int_0^t b(X_s)\,ds + \int_0^t \sigma(X_s)\,dW_s.
+\end{equation}
+We call this an \emph{It\^o process}. 
+The functions $b$ and $\sigma$ could also depend on time, but I will leave it as an 
+exercise to check that nothing essential changes. We want to understand how such an 
+expression behaves under a change of variables.
+
+It is useful to express Eq.~\ref{eq:intoint} in differential form as
+\begin{equation}\label{eq:dXt}
+dX_t = b(X_t)\,dt + \sigma(X_t)\,dW_t.
+\end{equation}
+Suppose we want to compute $df(X_t)$ for a twice differentiable function $f$. 
+A formal Taylor expansion gives
+\begin{equation}\label{eq:Taylor1}
+df(X_t) = f(X_{t+dt})-f(X_t) \approx  
+    f'(X_t)\,dX_t 
+   + \frac12 f''(X_t)\,(dX_t)^2 
+\end{equation}
+To make sense of this expansion, we need to understand the size of the term 
+$(dX_t)^2$. From Eq.~\ref{eq:dXt},
+\begin{equation}\label{eq:dXt2expand}
+(dX_t)^2 
+= b(X_t)^2 (dt)^2 
+  + 2 b(X_t)\sigma(X_t)\,dt\,dW_t
+  + \sigma(X_t)^2 (dW_t)^2.
+\end{equation}
+We compare each of these terms to $dt$:
+\begin{itemize}
+\item The term $(dt)^2$ is negligible, since $(dt)^2 = o(dt)$.
+\item The mixed term $dt\,dW_t$ is also negligible: because $dW_t = O(\sqrt{dt})$.
+\item We've already seen $(dW_t)^2 = dt$.
+\end{itemize}
+
+Keeping only terms of order $dt$ and discarding terms of smaller order, 
+Eq.~\ref{eq:dXt2expand} reduces to
+\begin{equation}\label{eq:dXt2}
+(dX_t)^2 = \sigma(X_t)^2\,dt.
+\end{equation}
+
+Substituting this into the Taylor expansion \eqref{eq:Taylor1} leads directly to 
+\begin{equation}
+df(X_t) = f'(X_t) dX_t +  f''(X_t) \sigma(X_t)^2dt.
+\end{equation}
+Note again the contrast with the usual Chain rule: 
+\begin{equation}
+\frac{d}{dt}f(X_t) = f'(X_t)\frac{d}{dt}X_t + f''(X_t) \sigma(X_t)^2
+\end{equation}
+
+
+\begin{theorem}[It\^o's formula in one dimension T7.7]
+ 
+Define $Y_t = f(X_t)$. Then $Y_t$ is also an It\^o process, and its differential is
+\[
+dY_t
+=
+\left( b(X_t,t)\,f'(X_t)
+       + \frac12\,\sigma^2(X_t,t)\,f''(X_t) \right) dt
+\;+\;
+\sigma(X_t,t)\,f'(X_t)\,dW_t.
+\]
+\end{theorem}
+The idea of the proof is to approximate $b$ and $\sigma$ using simple functions. 
+
+This generalizes to multidimensional processes
+
+\begin{theorem}[Multidimensional It\^o formula  T7.9]
+Let $\mathbf{X}_t \in \mathbb{R}^n$ be a process of the form
+\[
+\mathbf{X}_t 
+= 
+\mathbf{X}_0 
++ \int_0^t \mathbf{b}(\mathbf{X}_s)\,ds 
++ \int_0^t \boldsymbol{\sigma}(\mathbf{X}_s)\,d\mathbf{W}_s,
+\]
+where 
+$\mathbf{b}:\mathbb{R}^n\to\mathbb{R}^n$, 
+$\boldsymbol{\sigma}:\mathbb{R}^n\to\mathbb{R}^{n\times m}$, 
+and $\mathbf{W}_t\in\mathbb{R}^m$ is an $m$--dimensional Wiener process.
+Let $f:\mathbb{R}^n\to\mathbb{R}$ be twice continuously differentiable and set $Y_t=f(\mathbf{X}_t)$.
+Then $Y_t$ satisfies
+\begin{equation}
+dY_t
+=
+\left(
+\nabla f(\mathbf{X}_t)^{T} \mathbf{b}(\mathbf{X}_t)
++
+\frac12 \, \boldsymbol{\sigma}(\mathbf{X}_t)\boldsymbol{\sigma}(\mathbf{X}_t)^{T} : \nabla^{2} f(\mathbf{X}_t)
+\right) dt
+\;+\;
+\nabla f(\mathbf{X}_t)^{T} \boldsymbol{\sigma}(\mathbf{X}_t)\, d\mathbf{W}_t.
+\end{equation}
+
+In component form, write the SDE as
+\begin{align}
+dX_t^{i}
+=
+b_i(X_t)\,dt
++
+\sum_{k=1}^{m} \sigma_{ik}(X_t)\, dW_t^{k},
+\qquad i=1,\dots,n.
+\end{align}
+Then It\^o's formula becomes
+\begin{align}
+\begin{split}
+dY_t
+&=
+\sum_{i=1}^{n} f_{x_i}(X_t)\, b_i(X_t)\, dt
++
+\frac12
+\sum_{i=1}^{n}\sum_{j=1}^{n}
+\left(
+\sum_{k=1}^{m} \sigma_{ik}(X_t)\, \sigma_{jk}(X_t)
+\right)
+f_{x_i x_j}(X_t)\, dt
+\\
+&\quad\quad\quad +
+\sum_{k=1}^{m}
+\left(
+\sum_{i=1}^{n} f_{x_i}(X_t)\, \sigma_{ik}(X_t)
+\right)
+dW_t^{k}.
+\end{split}
+\end{align}
+\end{theorem}
+
+%\subsection*{Application: Integration by parts (Example 7.11)}
+%Consider the integral
+%\begin{equation}
+%\int_0^t s\, dW_s = t W_t - \int_0^t W_s\, ds.
+%\end{equation}
+%We can evaluate this by applying the multidimensional It\^o formula to the system
+%\begin{equation}
+%dY_t = dW_t,
+%\end{equation}
+%\begin{equation}
+%dX_t = dt,
+%\end{equation}
+%and using the function $f(x,y) = xy$.  Then
+%\[
+%\nabla f(x,y) = \begin{pmatrix} y \\ x \end{pmatrix},
+%\qquad
+%\nabla^2 f(x,y) = 0.
+%\]
+%
+%Applying the multidimensional It\^o formula,
+%\begin{equation}
+%df(X_t,Y_t)
+%=
+%\nabla f(X_t,Y_t)^T 
+%\begin{pmatrix} dX_t \\ dY_t \end{pmatrix}
+%+
+%\frac12 \left( \sigma \sigma^T : \nabla^2 f \right) dt.
+%\end{equation}
+%Here the Hessian term vanishes because $\nabla^2 f = 0$.  Thus
+%\begin{equation}
+%df(X_t,Y_t)
+%=
+%Y_t\, dX_t + X_t\, dY_t.
+%\end{equation}
+%
+%Since $dX_t = dt$ and $dY_t = dW_t$, we obtain
+%\begin{equation}
+%d(X_t Y_t) = Y_t\, dt + X_t\, dW_t.
+%\end{equation}
+%Integrating from $0$ to $t$,
+%\begin{equation}
+%X_t Y_t - X_0 Y_0
+%=
+%\int_0^t Y_s\, ds
+%+
+%\int_0^t X_s\, dW_s.
+%\end{equation}
+%
+%With $X_t = t$ and $Y_t = W_t$ and noting $X_0Y_0=0$, this gives
+%\begin{equation}
+%t W_t = \int_0^t W_s\, ds + \int_0^t s\, dW_s.
+%\end{equation}
+%Rearranging,
+%\begin{equation}
+%\int_0^t s\, dW_s = t W_t - \int_0^t W_s\, ds,
+%\end{equation}
+%which proves the identity.
+
+\section*{Examples}
+Consider the Ornstein--Uhlenbeck SDE
+\begin{equation}
+dX_t = -\gamma X_t\,dt + \sigma\, dW_t.
+\end{equation}
+To solve it using an integrating factor, introduce a second process $Z_t$ defined by
+\begin{equation}
+dZ_t = \gamma Z_t\,dt, \qquad Z_0 = 1,
+\end{equation}
+so that $Z_t = e^{\gamma t}$.  
+We view $(Z_t,X_t)$ as a two--dimensional process for which the drift vector and diffusion matrix are
+\[
+\mathbf{b}(z,x) = 
+\begin{pmatrix} \gamma z \\ -\gamma x \end{pmatrix},\quad \boldsymbol{\sigma}(z,x) = 
+\begin{pmatrix} 0 \\ \sigma \end{pmatrix}
+\]
+Let $Y_t = f(Z_t,X_t)=Z_t X_t$.  
+Since all second derivatives of $f$ vanish, the Hessian term in the It\^o formula is zero.  
+For the drift term,
+\[
+\nabla f(Z_t,X_t)^{T}\mathbf{b}(Z_t,X_t)
+=
+\begin{pmatrix} X_t \\ Z_t \end{pmatrix}^{T}
+\begin{pmatrix} \gamma Z_t \\ -\gamma X_t \end{pmatrix}
+=
+\gamma Z_t X_t - \gamma Z_t X_t = 0.
+\]
+For the diffusion term,
+\[
+\nabla f(Z_t,X_t)^{T} \boldsymbol{\sigma}(Z_t,X_t)
+=
+\begin{pmatrix} X_t \\ Z_t \end{pmatrix}^{T}
+\begin{pmatrix} 0 \\ \sigma \end{pmatrix}
+=
+\sigma Z_t.
+\]
+Therefore,
+\begin{equation}
+d(Z_t X_t) = \sigma Z_t\, dW_t.
+\end{equation}
+
+Integrating from $0$ to $t$ gives
+\[
+Z_t X_t - Z_0 X_0
+=
+\sigma \int_0^t Z_s\, dW_s.
+\]
+Since $Z_0=1$ and $Z_t=e^{\gamma t}$, this becomes
+\[
+e^{\gamma t} X_t
+=
+X_0 + \sigma \int_0^t e^{\gamma s}\, dW_s.
+\]
+Multiplying both sides by $e^{-\gamma t}$ yields the explicit OU solution:
+\begin{equation}
+X_t
+=
+e^{-\gamma t} X_0
++
+\sigma \int_0^t e^{-\gamma (t-s)}\, dW_s.
+\end{equation}
+In this case, we get the same thing as we would get applying ODE methods and treating the $dW_s$ term as time a determinstic dependent component. 
+This gives the classical representation of the Ornstein--Uhlenbeck process as an exponentially damped initial condition plus a stochastic convolution with the Wiener process.
+
+\subsection*{Geometric Brownian Motion}
+
+Consider the stochastic differential equation
+\begin{equation}
+dX_t = \mu X_t\, dt + \sigma X_t\, dW_t,
+\qquad X_0>0,
+\end{equation}
+which defines a geometric Brownian motion.  
+To solve it, we apply It\^o's formula to the function
+\[
+f(x) = \log x.
+\]
+Since $X_t>0$ almost surely, this is well defined.  
+
+Here,
+\[
+b(x)=\mu x, 
+\qquad 
+\sigma(x)=\sigma x.
+\]
+Substituting into the formula:
+\[
+\begin{aligned}
+d(\log X_t)
+&=
+\left(
+\frac{1}{X_t}\,\mu X_t
++
+\frac12\left(-\frac{1}{X_t^2}\right)\sigma^2 X_t^2
+\right) dt
++
+\frac{1}{X_t}\,\sigma X_t\, dW_t \\[0.5em]
+&=
+\left(
+\mu - \tfrac12\sigma^2
+\right) dt
++
+\sigma\, dW_t.
+\end{aligned}
+\]
+
+Thus we obtain the linear SDE
+\begin{equation}
+d(\log X_t)
+=
+\Bigl(\mu - \tfrac12\sigma^2\Bigr)\, dt
++ \sigma\, dW_t.
+\end{equation}
+
+Integrate both sides from $0$ to $t$:
+\[
+\log X_t - \log X_0
+=
+\left(\mu - \tfrac12\sigma^2\right)t
++ \sigma W_t.
+\]
+Exponentiating gives the explicit solution
+\begin{equation}
+X_t
+=
+X_0
+\exp\!\left[
+\left(\mu - \tfrac12\sigma^2\right)t
++ \sigma W_t
+\right].
+\end{equation}
+
+This is the standard closed form for geometric Brownian motion, which underlies the Black--Scholes model and many stochastic growth models.
+
+
+
+\section*{Stochastic differential equations: Existence and uniqueness}
+\begin{theorem}
+Assume the coefficients 
+\[
+b:\mathbb{R}^n\times[0,T]\to\mathbb{R}^n,
+\qquad
+\sigma:\mathbb{R}^n\times[0,T]\to\mathbb{R}^{n\times m},
+\]
+satisfy the global Lipschitz condition
+\begin{equation}
+\|b(x,t)-b(y,t)\| + \|\sigma(x,t)-\sigma(y,t)\|
+\;\le\; K\,\|x-y\|
+\end{equation}
+and the linear growth condition
+\begin{equation}
+\|b(x,t)\|^2 + \|\sigma(x,t)\|^2 
+\;\le\; K^2\,(1+\|x\|^2)
+\end{equation}
+for all $x,y\in\mathbb{R}^n$ and $t\in[0,T]$.  
+Here $\|\sigma\|$ denotes the Frobenius norm:
+\[
+|b|^2 := \sum_{i=1}^n b_i^2,
+\qquad
+\|\sigma\|^2 := \sum_{i=1}^n \sum_{j=1}^m \sigma_{ij}^2.
+\]
+Then the equation
+\begin{equation}
+X_t = X_0 + \int_0^t b(X_s,s)\,ds + \int_0^t \sigma(X_s,s)\,dW_s
+\end{equation}
+has a unique solution such that each component of $X_t$ belongs to $\mathcal{V}$.  
+Moreover, the process $X_t$ is almost surely continuous in $t$.
+\end{theorem}
+
+We will need to recall the following result. 
+
+\begin{theorem}[Gr\"onwall's inequality]
+Let $u:[0,T]\to[0,\infty)$ be a continuous function satisfying
+\begin{equation}
+u(t)
+\;\le\;
+a
++
+\int_0^t b(s)\,u(s)\,ds,
+\end{equation}
+for all $t\in[0,T]$, where $a\ge 0$ is a constant and $b:[0,T]\to[0,\infty)$ is integrable.  
+Then
+\begin{equation}
+u(t)
+\;\le\;
+a\,\exp\!\left( \int_0^t b(s)\,ds \right),
+\qquad 0 \le t \le T.
+\end{equation}
+In particular, if $a=0$ then $u(t)\equiv 0$ on $[0,T]$.
+\end{theorem}
+
+\begin{proof}[Proof of uniqueness] Following the book, we will only do the one-dimensional case and neglect explicit time dependence in $b$ and $\sigma$. I will show uniqueness, showing existence is more complicated. We need to show that if $X_t$ and $\hat{X}_t$ are solutions of the SDE with the same initial value, then they are almost surely equal. Using $(a+b)^2 \le 2a^2 + 2b^2$ and taking expectations, we get
+\begin{equation}
+\mathbb{E}\big[(X_t - \hat{X}_t)^2\big]
+\le 
+2\,\mathbb{E}\left[\left( \int_0^t \big(b(X_s) - b(\hat{X}_s)\big)\,ds\right)^2\right]
++
+2\,\mathbb{E}\left[\left( \int_0^t \big(\sigma(X_s) - \sigma(\hat{X}_s)\big)\,dW_s\right)^2\right].
+\end{equation}
+
+For the drift term, apply Cauchy--Schwarz with the second function equal to $1$:
+\begin{equation}
+\left( \int_0^t \big(b(X_s) - b(\hat{X}_s)\big)\,ds \right)^2
+\le 
+t \int_0^t \big(b(X_s) - b(\hat{X}_s)\big)^2\,ds.
+\end{equation}
+Taking expectations and using the Lipschitz condition $|b(x)-b(y)| \le K|x-y|$,
+\begin{equation}
+\mathbb{E}\left[\left( \int_0^t \big(b(X_s) - b(\hat{X}_s)\big)\,ds \right)^2\right]
+\le 
+K^2 t \int_0^t \mathbb{E}\big[(X_s - \hat{X}_s)^2\big]\,ds.
+\end{equation}
+
+For the stochastic term, we use the It\^o isometry and  Lipschitz condition
+\begin{align}
+\mathbb{E}\left[\left( \int_0^t \big(\sigma(X_s) - \sigma(\hat{X}_s)\big)\,dW_s\right)^2\right]
+&=
+\mathbb{E}\left[ \int_0^t \big(\sigma(X_s) - \sigma(\hat{X}_s)\big)^2\,ds \right]\\
+&\le
+K^2 \int_0^t \mathbb{E}\big[(X_s - \hat{X}_s)^2\big]\,ds.
+\end{align}
+
+Combining these bounds, we obtain
+\begin{equation}
+\mathbb{E}\big[(X_t - \hat{X}_t)^2\big]
+\le
+2K^2 t \int_0^t \mathbb{E}\big[(X_s - \hat{X}_s)^2\big]\,ds
++
+2K^2 \int_0^t \mathbb{E}\big[(X_s - \hat{X}_s)^2\big]\,ds,
+\end{equation}
+that is,
+\begin{equation}
+\mathbb{E}\big[(X_t - \hat{X}_t)^2\big]
+\le
+2K^2(t+1) \int_0^t \mathbb{E}\big[(X_s - \hat{X}_s)^2\big]\,ds.
+\end{equation}
+
+Define
+\begin{equation}
+u(t) = \mathbb{E}\big[(X_t - \hat{X}_t)^2\big].
+\end{equation}
+The last inequality shows that $u(t)$ satisfies
+\begin{equation}
+u(t) \le \int_0^t 2K^2(t+1)\,u(s)\,ds.
+\end{equation}
+By Gr\"onwall's inequality with zero initial term, it follows that $u(t) = 0$ for all $t \in [0,T]$. Hence
+\begin{equation}
+\mathbb{E}\big[(X_t - \hat{X}_t)^2\big] = 0,
+\end{equation}
+which implies $X_t = \hat{X}_t$ almost surely for each $t$, and in particular for all rational $t$. By continuity of the sample paths, $X_t = \hat{X}_t$ almost surely for all $t\in[0,T]$. 
+\end{proof}
+
+
+
+
+\section*{Numerical schemes}
+
+\end{document}
