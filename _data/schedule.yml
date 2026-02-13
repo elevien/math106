@@ -66,24 +66,24 @@
       readings: "7.1,7.2"
     - day: Thu
       date: Feb 12
-      topics: "Itô's lemma"
+      topics: "Itô's lemma, SDEs"
       readings: "7.3"
 - week: W7
   meetings:
     - day: Tue
       date: Feb 17
-      topics: "The Fokker–Planck equation"
-      readings: "8.1,8.2"
+      topics: "Other stochastic integrals and numerical schemes"
+      readings: "7.4,7.5"
     - day: Thu
       date: Feb 19
-      topics: "Boundary conditions for FP equation"
-      readings: "8.3"
+      topics: "The Fokker–Planck equation"
+      readings: "8.1,8.2,8.3"
 - week: W8
   meetings:
     - day: Tue
       date: Feb 24
-      topics: "First passage time problems"
-      readings: "8.4"
+      topics: "Monte Carlo methods"
+      readings: "4.4,4.5"
     - day: Thu
       date: Feb 26
       topics: "Feynman–Kac formula, application to Monte Carlo methods"
@@ -93,7 +93,7 @@
   meetings:
     - day: Tue
       date: Mar 3
-      topics: "Large deviations"
+      topics: "Rare events"
       readings: ""
     - day: Thu
       date: Mar 5

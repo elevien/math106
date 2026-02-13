@@ -183,7 +183,11 @@ is a well-defined. This mapping is a linear operator from the space
 \end{equation} 
 of square-integrable adapted processes to $L_2(\Omega)$. The result that establishes the validity of the It\^o integral is called the It\^o isometry because it establishes an Isometry of the Hilbert spaces ${\mathcal V}$ and $L_2(\Omega)$. Remember an isometry is a distance preserving map and the distance on a Hilbert space is induced by the inner product.  
 
-{\bf Notation:} ${\mathcal V}$ is sometimes denoted $L_{\omega}^2L_t^2$ in the book, and it could also be written $L^2(\Omega \times [0,T])$. Think of it just like the $L^2$ space of real values functions on $[0,T]$, except that now we are considering functions on the larger space $\Omega \times [0,T]$. The expectation therefore plays the role of an outer integral here. In the book they use the interval $[S,T]$ but I'll set $S=0$ to avoid the extra notation. 
+{\bf Notation:} We can also write 
+\begin{equation}
+{\mathcal V} = L^2(\Omega \times [0,T]) \cap \{\text{$f$ is ${\mathcal F}_t^W$-adapted} \}
+\end{equation}
+ where $L^2(\Omega \times [0,T])$ is sometimes denoted $L_{\omega}^2L_t^2$. Think of it just like the $L^2$ space of real values functions on $[0,T]$, except that now we are considering functions on the larger space $\Omega \times [0,T]$. The expectation therefore plays the role of an outer integral here. In the book they use the interval $[S,T]$ but I'll set $S=0$ to avoid the extra notation. 
 
 
 \subsubsection*{Simple functions}
@@ -451,7 +455,7 @@ where $t_j^* \in [t_j,t_{j+1}]$ is arbitrary. For this reason, we sometimes writ
 \section*{It\^o's formula}
 If we interpret the example above in differential form this says 
 \begin{equation}
-\frac{d}{dt}W_t^2 = 2W_s\dot{W_t} + 1
+\frac{d}{dt}W_t^2 = 2W_t\dot{W_t} + 1
 \end{equation}
 This illustrates a fundamental difference between standard calculus and so-called It\^{o} calculus: The regular chain rule does not hold. In differential form we would write this as
 \begin{equation}
@@ -475,7 +479,7 @@ dX_t = b(X_t)\,dt + \sigma(X_t)\,dW_t.
 Suppose we want to compute $df(X_t)$ for a twice differentiable function $f$. 
 A formal Taylor expansion gives
 \begin{equation}\label{eq:Taylor1}
-df(X_t) = f(X_{t+dt})-f(X_t) \approx  
+df(X_t) \approx 
     f'(X_t)\,dX_t 
    + \frac12 f''(X_t)\,(dX_t)^2 
 \end{equation}
@@ -706,46 +710,35 @@ e^{-\gamma t} X_0
 \sigma \int_0^t e^{-\gamma (t-s)}\, dW_s.
 \end{equation}
 In this case, we get the same thing as we would get applying ODE methods and treating the $dW_s$ term as time a determinstic dependent component. 
-This gives the classical representation of the Ornstein--Uhlenbeck process as an exponentially damped initial condition plus a stochastic convolution with the Wiener process.
+This gives the classical representation of the Ornstein--Uhlenbeck process as an exponentially damped initial condition plus a stochastic convolution with the Wiener process. 
 
 \subsection*{Geometric Brownian Motion}
 
 Consider the stochastic differential equation
 \begin{equation}
-dX_t = \mu X_t\, dt + \sigma X_t\, dW_t,
+dX_t = r X_t\, dt + \alpha X_t\, dW_t,
 \qquad X_0>0,
 \end{equation}
 which defines a geometric Brownian motion.  
-To solve it, we apply It\^o's formula to the function
-\[
-f(x) = \log x.
-\]
-Since $X_t>0$ almost surely, this is well defined.  
-
-Here,
-\[
-b(x)=\mu x, 
-\qquad 
-\sigma(x)=\sigma x.
-\]
-Substituting into the formula:
+To solve it, we apply It\^o's formula to $f(x) = \log x$. Since $X_t>0$ almost surely, this is well defined.  
+It\^o's formula gives
 \[
 \begin{aligned}
 d(\log X_t)
 &=
 \left(
-\frac{1}{X_t}\,\mu X_t
+\frac{1}{X_t}\, r X_t
 +
-\frac12\left(-\frac{1}{X_t^2}\right)\sigma^2 X_t^2
+\frac12\left(-\frac{1}{X_t^2}\right)\alpha^2 X_t^2
 \right) dt
 +
-\frac{1}{X_t}\,\sigma X_t\, dW_t \\[0.5em]
+\frac{1}{X_t}\,\alpha X_t\, dW_t \\[0.5em]
 &=
 \left(
-\mu - \tfrac12\sigma^2
+r - \tfrac12\alpha^2
 \right) dt
 +
-\sigma\, dW_t.
+\alpha\, dW_t.
 \end{aligned}
 \]
 
@@ -753,16 +746,15 @@ Thus we obtain the linear SDE
 \begin{equation}
 d(\log X_t)
 =
-\Bigl(\mu - \tfrac12\sigma^2\Bigr)\, dt
-+ \sigma\, dW_t.
+\Bigl(r - \tfrac12\alpha^2\Bigr)\, dt
++ \alpha\, dW_t.
 \end{equation}
-
 Integrate both sides from $0$ to $t$:
 \[
 \log X_t - \log X_0
 =
-\left(\mu - \tfrac12\sigma^2\right)t
-+ \sigma W_t.
+\left(r - \tfrac12\alpha^2\right)t
++ \alpha W_t.
 \]
 Exponentiating gives the explicit solution
 \begin{equation}
@@ -770,15 +762,14 @@ X_t
 =
 X_0
 \exp\!\left[
-\left(\mu - \tfrac12\sigma^2\right)t
-+ \sigma W_t
+\left(r - \tfrac12\alpha^2\right)t
++ \alpha W_t
 \right].
 \end{equation}
 
 This is the standard closed form for geometric Brownian motion, which underlies the Black--Scholes model and many stochastic growth models.
 
-
-
+\end{document}
 \section*{Stochastic differential equations: Existence and uniqueness}
 \begin{theorem}
 Assume the coefficients 

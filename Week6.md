@@ -11,13 +11,11 @@ bibliography:
 
 We covered most of these sections. I didn't prove the  Itô formula. 
 
-## Stochastic differential equations (7.3)
+## Examples (7.3)
 
-We only proved uniqueness. 
+We looked the examples of the OU process and geometric Brownian Motion. 
 
-## Stratonovich Integral (7.4)
-
-**Notes**: <a href="{{ '/lecture_notes/week5/2-10-2026_stochastic_integrals.pdf' | relative_url }}">Stochastic intergrals and SDEs</a>
+**Notes**: <a href="{{ '/lecture_notes/week6/2-10-2026_stochastic_integrals.pdf' | relative_url }}">Stochastic intergrals and SDEs</a>
 
 
 ### Exercises
@@ -31,7 +29,7 @@ We only proved uniqueness.
   X_t = e^{-\gamma t}W_{\frac{\sigma^2}{2\gamma}(e^{2\gamma t}-1)},
   $$
   where $W_t$ is a Wiener process.  
-  Deduce that $X_t$ is a Wiener process in a random time change, and conclude that it satisfies the Ornstein–Uhlenbeck SDE  
+  Deduce that it satisfies the Ornstein–Uhlenbeck SDE  
   $$
   dX_t = -\gamma X_t\,dt + \sigma\, dW_t.
   $$
@@ -44,5 +42,10 @@ We only proved uniqueness.
   $$
   \int_0^t W_s\, dW_s.
   $$
+- Consider the Gaussian process $$
+Q = \int_0^te^{-\gamma(t-s)}dW_s
+$$
+which appeared in the solution of the OU process.
+Derive its covariance function. 
 
 
