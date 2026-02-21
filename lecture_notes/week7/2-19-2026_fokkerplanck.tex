@@ -1,0 +1,723 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathtools}
+\usepackage{tikz}
+\usepackage{enumitem}
+\usepackage[margin=1in]{geometry}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem*{theorem*}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{definition}{Definition}
+\newtheorem*{definition*}{Definition}
+\newtheorem{proposition}{Proposition}
+\newtheorem{assumption}{Assumption}
+\newtheorem{remark}{Remark}
+
+
+
+\title{Math 106 -- Notes \\ Week 7: February 18, 2026}
+\author{Ethan Levien}
+\date{}
+
+\begin{document}
+\maketitle
+
+
+\section*{Forward and backward equations for It\^o Diffusion (Section 8.1/8.5)}
+I will do the 1D case, but the calculations are easily generalized. We consider
+\begin{equation}
+dX_t = b(X_t)dt + \sigma(X_t)dW_t
+\end{equation}
+By It\^o's formula
+\begin{equation}
+f(X_t) = f(X_0) + \int_0^t(f'(X_s)b(X_s) + \frac{1}{2}f''(X_s)\sigma^2(X_s))ds + \int_0^tf'(X_s)\sigma(X_s)dW_s.
+\end{equation}
+Let
+\begin{equation}
+u(x,t) = {\mathbb E}[f(X_t)|X_0=x].
+\end{equation}
+Hence
+\begin{align}
+u(x,t) &= f(x) +  \int_0^t{\mathbb E}[f'(X_s)b(X_s) + \frac{1}{2}f''(X_s)\sigma^2(X_s)]ds\\
+& \implies \partial_t u(x,t)\Big|_{t=0} = f'(x)b(x) + \frac{1}{2}f''(x)\sigma^2(x)
+\end{align}
+This means the generator is 
+\begin{equation}
+{\mathcal L} = b(x)\partial_x + \frac{1}{2}\sigma^2(x)\partial_x^2.
+\end{equation}
+This gives the backward equation
+\begin{equation}
+\partial_t u(x,t) = {\mathcal L} u(x,t),\quad u(x,0) = f(x).
+\end{equation}
+The forward equation is 
+\begin{equation}
+\partial_t p(x,t) = {\mathcal L}^* p(x,t)
+\end{equation}
+This is also called the \emph{Fokker-Planck} equation in the context of diffusions. 
+By the definition of adjoint,
+\begin{equation}
+\langle  {\mathcal L}^*p,f \rangle = \langle p,  {\mathcal L}f \rangle
+\end{equation}
+and we therefore have
+\begin{equation}
+{\mathcal L}p(x) =-\partial_x[ b(x)p(x)] + \frac{1}{2}\partial_x^2[\sigma^2(x)p(x)].
+\end{equation}
+Often we consider the forward equation with initial conditions $p(x,t) = \delta(x-x_0)$, in which case the density does not exist at $0$, but we can still interpret the PDE in the weak sense. 
+
+\section*{Example 8.1: Brownian Dynamics }
+Consider a probability density $p$ which distributions the density of particles in a physical system. We will study a certain gradient flow on the space of probability densities. The starting point is the idea of \emph{free energy}, defined as 
+\begin{equation}
+F[p] = U[p] - T S[p]
+\end{equation}
+where
+\begin{align}
+U[p]  &= \int_{{\mathbb R}^d} U(x)dx\quad \text{(average of internal energy $U(x)$)}\\
+S[p] &= k_B\int_{{\mathbb R}^d}p(x)\ln p(x)dx \quad \text{(entropy -- large means more uncertainty)}
+\end{align}
+A physical system will evolve to a distribution which minimizes $F[p]$, and these can be understood as distributions which minimize the energy while maximizing entropy. The temperature $T$ is a Lagrange multiplier. 
+To do so we consider the variational derivative. For a perturbation $\eta$, 
+\begin{equation}
+\frac{d}{d\varepsilon}F[p + \epsilon \eta]\Big|_{\varepsilon =0} = \int_{{\mathbb R}^d} \left\{ U(x)\eta(x) + k_B T\frac{d}{d\varepsilon}(p + \varepsilon \eta)\ln (p + \varepsilon \eta) \right\} \Big|_{\varepsilon =0} dx
+\end{equation}
+and 
+\begin{equation}
+\frac{d}{d\varepsilon}(p + \varepsilon \eta)\ln (p + \varepsilon \eta) \Big|_{\varepsilon =0} = \eta + \eta \ln p
+\end{equation}
+Therefore, if we Taylor expand $F[p]$, 
+\begin{equation}
+F[p + \varepsilon \eta] = F[p] + \varepsilon \int_{{\mathbb R}^d} \eta(x) \mu(x)dx + O(\varepsilon^2)
+\end{equation}
+we have introduced the \emph{chemical potential}
+\begin{equation}
+\mu(x) = \frac{\delta F}{\delta p} = U(x) + k_B T(1 + \ln p(x)).
+\end{equation}
+The chemical potential tells us how the $O(\varepsilon)$ corrections to the free energy when we change $p$ by $\varepsilon$. For a system in an equilibrium the chemical potential is a constant which is determined by the normalization of $p(x)$. 
+\begin{equation}
+p(x) = \frac{1}{Z} e^{-U(x)/k_BT},\quad Z = \int_{\mathbb R^d}e^{-U(x)/k_BT}dx.
+\end{equation}
+For a probability distribution not in equilibrium, we can consider \emph{Fick's law} tells us that the rate at which a particle 
+\begin{equation}
+u(x) = - \frac{1}{\gamma} \nabla \mu(x)
+\end{equation}
+where $\gamma$ is a friction coefficient. 
+This says that particles will flow along gradients in the chemical potential and the flow is faster with smaller frication. This assumes we are in the over-damped limit where these is no inertia, hence we do not need to treat the velocity as a separate dependence variable.   
+
+The current (a probability per unit time) at point $x$ is 
+\begin{equation}
+j(x,t) = p(x,t)u(x).
+\end{equation}
+Conservation of mass means that in a region $A \subset {\mathbb R}^d$, 
+\begin{equation}
+\frac{d}{dt}\int_A p(x,t)dx = - \int_{\partial A} j(x) \cdot n(x)dx
+\end{equation}
+where $n(x)$ is the normal vector to the boundary $\partial A$ at  $x \in \partial A$. By the divergence Theorem, we have
+\begin{equation}
+ - \int_{\partial A} j(x) \cdot n(x)dx = \int_A \nabla \cdot j(x) dx
+\end{equation}
+and this holds for any $A$, hence
+\begin{equation}
+\partial_t p(x,t) = -\nabla \cdot j(x) =  -\nabla \cdot [\nabla \mu(x)]
+\end{equation}
+Plugging in the formula for $\nabla \mu$ gives
+\begin{equation}
+\partial_t p(x,t)  = \frac{1}{\gamma} \nabla \cdot [\nabla U(x) p(x,t)] + \frac{k_BT}{\gamma}\nabla^2 p(x,t).
+\end{equation}
+which we can recognize as the forward equation for the It\^o SDE
+\begin{equation}
+dX_t = -\frac{1}{\gamma}\nabla U(X_t)dt + \sqrt{\frac{k_B T}{\gamma}}dW_t.
+\end{equation}
+Let us summarize
+\begin{itemize}
+\item We have found that a gradient flow on probability densities corresponds to stochastic gradient descent of at the single particle level. 
+\item Conversely, if we take a gradient ODE $x' = -\gamma^{-1}\nabla U(x)$ and add white noise, the probability density undergoes deterministic gradient decent in the free energy. 
+\end{itemize}
+
+
+\subsection*{Example 8.3: Particle with inertia}
+If we don't make the over-damped assumption, then the FP equation becomes 
+\begin{equation}
+\partial_t p(x,v,t)  = \frac{1}{\gamma} v \cdot \nabla_x p(x,v,t) -  \gamma \nabla \cdot \left(( v +\gamma^{-1} \nabla U(x))p(x,v,t) \right) + \frac{k_BT}{\gamma}\nabla^2 p(x,v,t).
+\end{equation}
+
+\subsection*{Example 8.4: Diffusion on a sphere}
+
+Now we consider another application of probability current, which is to construct the equation for diffusion on the sphere in rectangular coordinates. 
+We will construct an SDE such that
+\begin{equation}
+X_0 \in S^{n-1} = \{x \in \mathbb R^n : \|x\| = 1\}
+\quad \implies \quad
+X_t \in S^{n-1}.
+\end{equation}
+
+There are many such SDEs, but we focus on the simplest corresponding to pure diffusion. 
+For the solution to stay on the sphere, it must be the case that the diffusion term $\sigma(x)\,dW_t$ always produces a noise vector tangent to the sphere. 
+Thus a natural choice is 
+\begin{equation}
+\sigma(x) = I - xx^\top,
+\end{equation}
+since this is the orthogonal projection onto the tangent space.
+
+Indeed, if $\|x\|=1$ and $y\in\mathbb R^n$, then
+\begin{equation}
+x^\top \sigma(x) y 
+= x^\top y - (x^\top x)(x^\top y)
+= 0,
+\end{equation}
+so $\sigma(x)y \in T_x S^{n-1}$, where
+\begin{equation}
+T_x S^{n-1} = \{ v \in \mathbb R^n : v^\top x = 0 \}.
+\end{equation}
+
+Since $\sigma(x)$ is symmetric and idempotent on the sphere, the diffusion matrix is
+\begin{equation}
+A(x) = \sigma(x)\sigma(x)^\top 
+= (I - xx^\top)^2 
+= I - xx^\top,
+\qquad x \in S^{n-1}.
+\end{equation}
+
+Now consider the probability current associated with an It\^o diffusion
+\begin{equation}
+dX_t = b(X_t)\,dt + \sigma(X_t)\,dW_t,
+\end{equation}
+whose density $p(x,t)$ satisfies
+\begin{equation}
+\partial_t p(x,t) = -\nabla \cdot j(x,t),
+\end{equation}
+with current
+\begin{equation}
+j_i(x,t)
+=
+b_i(x)\,p(x,t)
+-
+\frac12 \sum_{j=1}^n
+\partial_{x_j}\!\big( A_{ij}(x)\,p(x,t) \big).
+\end{equation}
+
+To ensure that probability does not flow off the sphere, we impose the zero normal flux condition
+\begin{equation}
+j(x,t)\cdot n(x) = 0,
+\qquad n(x)=x,
+\qquad x\in S^{n-1}.
+\end{equation}
+
+
+
+We compute the normal component of the probability current. Recall that
+\begin{equation}
+j_i(x,t)
+=
+b_i(x)\,p(x,t)
+-
+\frac12 \sum_{j=1}^n
+\frac{\partial}{\partial x_j}
+\big( A_{ij}(x)\,p(x,t) \big).
+\end{equation}
+Taking the dot product with $x$ gives
+\begin{equation}
+j(x,t)\cdot x
+=
+\sum_{i=1}^n x_i b_i(x)\,p(x,t)
+-
+\frac12
+\sum_{i=1}^n
+x_i
+\sum_{j=1}^n
+\frac{\partial}{\partial x_j}
+\big( A_{ij}(x)\,p(x,t) \big).
+\end{equation}
+
+
+Note that 
+\begin{align}
+\frac{\partial}{\partial x_j}
+\big( (A(x)x)_j\,p \big)
+&=
+\sum_{i=1}^n
+\frac{\partial}{\partial x_j}
+\big( A_{ij}(x)\,x_i\,p \big) \\
+&=
+\sum_{i=1}^n
+\left[
+\frac{\partial A_{ij}}{\partial x_j} x_i p
++
+A_{ij} \frac{\partial x_i}{\partial x_j} p
++
+A_{ij} x_i \frac{\partial p}{\partial x_j}
+\right].
+\end{align}
+
+On the other hand,
+\begin{align}
+\sum_{i=1}^n x_i
+\sum_{j=1}^n
+\frac{\partial}{\partial x_j}
+\big( A_{ij} p \big)
+&=
+\sum_{i=1}^n
+\sum_{j=1}^n
+x_i
+\left(
+\frac{\partial A_{ij}}{\partial x_j} p
++
+A_{ij} \frac{\partial p}{\partial x_j}
+\right).
+\end{align}
+
+Comparing the two expressions, the only extra term in the full product rule expansion is
+\[
+\sum_{i=1}^n
+\sum_{j=1}^n
+A_{ij}(x)\,
+\frac{\partial x_i}{\partial x_j}\,p.
+\]
+
+Since
+\[
+\frac{\partial x_i}{\partial x_j}
+=
+\begin{cases}
+1 & i=j, \\
+0 & i\ne j,
+\end{cases}
+\]
+this equals
+\begin{equation}
+\sum_{i=1}^n A_{ii}(x)\,p
+=
+\operatorname{tr}(A(x))\,p.
+\end{equation}
+
+Therefore
+\begin{equation}
+\sum_{i=1}^n
+x_i
+\sum_{j=1}^n
+\frac{\partial}{\partial x_j}
+\big( A_{ij}(x)\,p \big)
+=
+\sum_{j=1}^n
+\frac{\partial}{\partial x_j}
+\big( (A(x)x)_j\,p \big)
+-
+\operatorname{tr}(A(x))\,p.
+\end{equation}
+
+Using the identity
+\begin{equation}
+x_i \partial_{x_j}(A_{ij}p)
+=
+\partial_{x_j}\!\big( (A(x)x)_j\,p \big)
+-
+\operatorname{tr}(A(x))\,p,
+\end{equation}
+and observing that $A(x)x = 0$ on $S^{n-1}$, we obtain
+\begin{equation}
+x_i \partial_{x_j}(A_{ij}p)
+=
+- \operatorname{tr}(A(x))\,p.
+\end{equation}
+
+Since
+\begin{equation}
+\operatorname{tr}(A(x))
+=
+\operatorname{tr}(I - xx^\top)
+=
+n - \|x\|^2
+=
+n-1
+\quad \text{on } S^{n-1},
+\end{equation}
+we conclude
+\begin{equation}
+j(x,t)\cdot x
+=
+\Big(
+b(x)\cdot x
++
+\frac{n-1}{2}
+\Big)
+p(x,t).
+\end{equation}
+
+The zero-flux condition must hold for all $p$, hence
+\begin{equation}
+b(x)\cdot x
+=
+-\frac{n-1}{2},
+\qquad x\in S^{n-1}.
+\end{equation}
+
+By rotational symmetry, the simplest choice is a purely radial drift,
+\begin{equation}
+b(x)
+=
+-\frac{n-1}{2}\,x.
+\end{equation}
+
+Therefore the It\^o SDE for diffusion on the sphere in rectangular coordinates is
+\begin{equation}
+dX_t
+=
+-\frac{n-1}{2}\,X_t\,dt
++
+\bigl(I - X_t X_t^\top\bigr)\,dW_t,
+\qquad
+X_0 \in S^{n-1}.
+\end{equation}
+
+
+\section*{Probability current and boundary conditions (Section 8.2)}
+Now consider a general Fokker-Planck equation 
+\begin{equation}
+\partial_t p(x,t) = -\nabla \cdot [b(x)p(x,t)] + \frac{1}{2} \nabla^2: A(x)p(x,t)
+\end{equation}
+where $A(x) = \sigma(x)\sigma(x)^T$. 
+which we can rewrite as
+\begin{equation}
+\partial_t p(x,t) = -\nabla \cdot j(x,t),\quad j(x,t) = - b(x)p(x,t) + \frac{1}{2} \nabla  \sigma^2(x)p(x,t)
+\end{equation}
+Thus, $j(x,t) \cdot n$ is a probability in the direction $n$. Just like the probability currents we defined in the context of $Q$-processes, it gives us the rate at which probability flows from position $x$ in the direction $n$. In the previous example we saw that for Brownian dynamics in equilibrium $j(x,t) =0$ because the chemical potential vanishes. In general, this need not be the case and we can have non-equilibrium steady-states with non-vanishing probability currents. This will always be the case when $b(x)$ is not the gradient of a potential. 
+
+\subsection*{Diffusion with reflecting boundaries (see also Section 6.6)}
+
+So far we have considered diffusion processes in unbounded domains, or situations where the SDE itself ensures that the process is constrained to a certain region (for example, geometric Brownian motion is constrained to $[0,\infty)$). Often we would like to explicitly enforce the boundary conditions. This can be achieved by placing a constraint on the flux.
+
+For example, suppose we want to consider the diffusion process
+\begin{equation}
+dX_t = \sigma\, dW_t.
+\end{equation}
+on the interval $[0,L]$. This means $X_t$ cannot pass the boundary, but this is not enforced in the SDE itself. We can enforce it in the PDE, however. The forward equation is
+\begin{equation}
+\partial_t p = \frac{1}{2}\sigma^2\,\partial_x^2 p,
+\end{equation}
+and the probability flux is
+\begin{equation}
+j(x) = \frac{\sigma^2}{2}\,\partial_x p.
+\end{equation}
+Reflecting boundary conditions correspond to zero flux, so we impose
+\begin{equation}
+j(0)=j(L)=0,
+\end{equation}
+which is equivalent to the Neumann conditions
+\begin{equation}
+\partial_x p(0,t)=\partial_x p(L,t)=0.
+\end{equation}
+
+Now consider the special case where the initial condition is a point mass at $x_0\in(0,L)$,
+\begin{equation}
+p(x,0) = p_0(x) = \delta(x - x_0).
+\end{equation}
+In this case, the cosine–series coefficients are
+\begin{equation}
+a_0 = \frac{1}{L}, \qquad
+a_n = \frac{2}{L}\cos\!\left(\frac{n\pi x_0}{L}\right), \quad n \ge 1.
+\end{equation}
+The solution (the transition density with reflecting boundaries) is then
+\begin{equation}
+p(x,t\,|\,x_0)
+=
+\frac{1}{L}
++
+\frac{2}{L}
+\sum_{n=1}^\infty
+\cos\!\left(\frac{n\pi x_0}{L}\right)
+\cos\!\left(\frac{n\pi x}{L}\right)
+\exp\!\left[-\frac{\sigma^2}{2}\left(\frac{n\pi}{L}\right)^2 t\right].
+\end{equation}
+
+\subsection*{Local time}
+It is also possible to enforce the reflecting boundary conditions directly in the SDE. The resulting process is reflected Brownian motion on $[0,L]$, which is written
+\begin{equation}
+dX_t = \sigma\, dW_t + dL_t^{(0)} - dL_t^{(L)},
+\end{equation}
+where $L_t^{(0)}$ and $L_t^{(L)}$ are boundary local times that increase only when $X_t=0$ or $X_t=L$, respectively, and push the process back into the interval. This SDE is the stochastic analogue of imposing zero–flux (Neumann) boundary conditions in the PDE.
+
+
+\section*{Equilibrium steady-states}
+
+
+Now consider the infinitesimal generator of Brownian dynamics
+\begin{equation}\label{eq:brownian_generator}
+\mathcal L f = \gamma^{-1} \nabla U \cdot \nabla f + D \nabla^2 f.
+\end{equation}
+where $D = k_BT/\gamma$. As we have already seen, the process processes an equilibrium steady-state where the current $j(x)=0$ for all $x \in {\mathbb R}^d$. We saw with $Q$-processes that equilibrium steady-states are precisely the ones where the reversed process looks the same as the forward process. Let's first consider the time-reversal of this diffusion process. 
+
+
+\subsection*{Time-reversal}
+Consider a general It\^o process
+\begin{equation}
+dX_t = b(X_t)dt + \sigma(X_t)dW_t
+\end{equation}
+which processes a unique time-invariant  steady-state $\pi$ and suppose that $X_0 \sim \pi$. We want to consider the time reversed process
+\begin{equation}
+\tilde{X}_t = X_{T-t}. 
+\end{equation}
+Over an increment $dt$,
+\begin{equation}
+(\tilde{X}_{t+dt} - \tilde{X}_t)|\tilde{X}_t  = (X_{T-t-dt} - X_{T-t})|X_{T-t} 
+\end{equation}
+Using Bayes' formula 
+\begin{equation}
+(X_{T-t-dt} - X_{T-t}) \mid X_{T-t}=x
+\sim 
+\mathcal N\big(-b(x)\,dt + A(x)\,\nabla \log\pi(x)\,dt,\; A(x)\,dt\big).
+\end{equation}
+where $A(x) = \sigma(x)\sigma(x)^T$. This suggests the time-reversal is 
+\begin{equation}
+d\tilde{X}_t = -b(x)dt + A(x)\nabla \log\pi(x)dt + \sigma(x)d\tilde{W}_t
+\end{equation}
+where $\tilde{W}_t$ is another Wiener process. 
+
+Another way to derive this is from the generator view. We have the identity 
+\begin{equation}
+{\mathbb E}_{\pi}[f(X_0)g(X_t)] = {\mathbb E}_{\pi}[f(\tilde{X}_t)g(\tilde{X}_0)] 
+\end{equation}
+By the backward equation 
+\begin{equation}
+\begin{aligned}
+\left.\frac{\partial}{\partial t}\,\mathbb{E}_{\pi}\big[f(X_0)g(X_t)\big]\right|_{t=0}
+&=
+\left.\mathbb{E}_{\pi}\!\left[ \frac{\partial}{\partial t}\,\mathbb{E}\big[f(X_0)g(X_t)\mid X_0\big]\right]\right|_{t=0} \\
+&=
+\mathbb{E}_{\pi}\big[f(X_0)\,\mathcal{L}g(X_0)\big]
+=
+\langle f, \mathcal{L}g\rangle_{\pi}.
+\end{aligned}
+\end{equation}
+where $\langle \cdot,\dot \rangle_{\pi}$ is the inner product on the Hilbert space
+\begin{equation}
+L^2(\pi) = \{f: \int f(x)\pi(x)dx < \infty \}.
+\end{equation}
+That is, 
+\begin{equation}
+\langle f,g \rangle_{\pi} = \int f(x)g(x)\pi(x)dx.
+\end{equation}
+Therefore the generator  $\tilde{ \mathcal{L}}$ of $\tilde{Y}$ must satisfy 
+\begin{equation}
+\langle f, \mathcal{L}g\rangle_{\pi} = \langle \tilde{ \mathcal{L}}f,g\rangle_{\pi}
+\end{equation}
+and hence $\tilde{ \mathcal{L}} =\mathcal{L}^{\dagger}$ is the adjoint with respect to $\pi$. 
+In particular, 
+\begin{align}
+\langle f,\mathcal L g\rangle_{\pi}
+&= \int_{\mathbb R^d} f(x)\,\big(b(x)\cdot\nabla g(x) + D\,\Delta g(x)\big)\,\pi(x)\,dx \\[0.3em]
+&= -\int_{\mathbb R^d} g(x)\,\nabla\!\cdot\!\big(f(x)\,b(x)\,\pi(x)\big)\,dx
+   \;+\;D\int_{\mathbb R^d} g(x)\,\Delta\big(f(x)\,\pi(x)\big)\,dx \\[0.3em]
+&= \int_{\mathbb R^d} g(x)\Big(
+   -b(x)\cdot\nabla f(x)\,\pi(x)
+   -f(x)\,\nabla\!\cdot\!\big(b(x)\,\pi(x)\big) \\
+&\hspace{5em}
+   \qquad\qquad
+   +D\big(\Delta f(x)\,\pi(x)
+         +2\,\nabla f(x)\cdot\nabla\pi(x)
+         +f(x)\,\Delta\pi(x)\big)
+   \Big)\,dx \\[0.3em]
+&\overset{\nabla\cdot(b\pi)=D\Delta\pi}{=}
+   \int_{\mathbb R^d} g(x)\Big(
+   -b(x)\cdot\nabla f(x)\,\pi(x)
+   +D\,\Delta f(x)\,\pi(x)
+   +2D\,\nabla f(x)\cdot\nabla\pi(x)
+   \Big)\,dx \\[0.3em]
+&= \int_{\mathbb R^d} g(x)\Big(
+   \big(-b(x)+2D\,\nabla\log\pi(x)\big)\cdot\nabla f(x)
+   +D\,\Delta f(x)
+   \Big)\,\pi(x)\,dx \\[0.3em]
+&= \langle \mathcal L^{\dagger} f, g\rangle_{\pi},
+\end{align}
+
+\subsection*{Symmetrization and Schr\"odinger representation}
+
+In the equilibrium setting, the Brownian dynamics associated with a potential $U:\mathbb R^d\to\mathbb R$ is reversible with respect to the Gibbs measure
+\begin{equation}
+\pi(x)
+=
+Z^{-1}\exp\!\Big(-\frac{U(x)}{k_B T}\Big),
+\end{equation}
+where $Z$ is the normalizing constant. In the overdamped Langevin form
+\begin{equation}
+dX_t = -D\,\nabla U(X_t)\,dt + \sqrt{2D}\,dW_t,
+\end{equation}
+with $D = k_B T/\gamma$, the generator acting on observables is
+\begin{equation}
+\mathcal L f(x)
+=
+D\,\Delta f(x) - D\,\nabla U(x)\cdot\nabla f(x).
+\end{equation}
+The invariant density $\pi$ satisfies detailed balance, and one checks that
+\begin{equation}
+\langle f,\mathcal L g\rangle_{\pi}
+=
+\langle \mathcal L f,g\rangle_{\pi},
+\qquad
+\langle f,g\rangle_{\pi}
+=
+\int_{\mathbb R^d} f(x)\,g(x)\,\pi(x)\,dx,
+\end{equation}
+so $\mathcal L$ is a symmetric (Hermitian) operator on the Hilbert space $L^2(\pi)$.
+
+It is often convenient to conjugate $\mathcal L$ to a Schr\"odinger operator on $L^2(dx)$ with respect to Lebesgue measure. Define the unitary map $\mathcal U : L^2(\pi)\to L^2(dx)$ by
+\begin{equation}
+(\mathcal U f)(x)
+=
+\pi(x)^{1/2} f(x)
+=
+Z^{-1/2}\exp\!\Big(-\frac{U(x)}{2k_B T}\Big) f(x).
+\end{equation}
+Unitarity follows from
+\begin{equation}
+\int_{\mathbb R^d} |(\mathcal U f)(x)|^2\,dx
+=
+\int_{\mathbb R^d} f(x)^2\,\pi(x)\,dx
+=
+\|f\|_{L^2(\pi)}^2.
+\end{equation}
+We then define the Schr\"odinger operator $\mathcal H$ by the similarity transform
+\begin{equation}
+\mathcal H
+=
+-\,\mathcal U\,\mathcal L\,\mathcal U^{-1},
+\end{equation}
+so that $\mathcal H$ is self-adjoint on $L^2(dx)$ whenever $\mathcal L$ is self-adjoint on $L^2(\pi)$.
+
+To compute $\mathcal H$ explicitly, set $\psi = \mathcal U f$, so that
+\begin{equation}
+f(x) = (\mathcal U^{-1}\psi)(x)
+=
+\pi(x)^{-1/2}\psi(x)
+=
+Z^{1/2}\exp\!\Big(\frac{U(x)}{2k_B T}\Big)\psi(x).
+\end{equation}
+Then
+\begin{equation}
+\mathcal H\psi(x)
+=
+-\,\pi(x)^{1/2}\,\mathcal L\big(\pi^{-1/2}\psi\big)(x).
+\end{equation}
+Write $\beta = (k_B T)^{-1}$ and note that $\pi^{-1/2} = Z^{1/2}e^{\beta U/2}$. A direct computation gives
+\begin{align}
+\nabla\big(\pi^{-1/2}\psi\big)
+&=
+e^{\beta U/2}\Big(\nabla\psi + \tfrac{\beta}{2}\psi\,\nabla U\Big), \\[0.3em]
+\Delta\big(\pi^{-1/2}\psi\big)
+&=
+e^{\beta U/2}\Big(
+\Delta\psi
++
+\beta\,\nabla U\cdot\nabla\psi
++
+\tfrac{\beta}{2}(\Delta U)\,\psi
++
+\tfrac{\beta^2}{4}|\nabla U|^2 \psi
+\Big).
+\end{align}
+Using $\mathcal L f = D\Delta f - D\,\nabla U\cdot\nabla f$, we obtain
+\begin{align}
+\mathcal L\big(\pi^{-1/2}\psi\big)
+&=
+D\,\Delta\big(\pi^{-1/2}\psi\big)
+-
+D\,\nabla U\cdot\nabla\big(\pi^{-1/2}\psi\big) \\[0.3em]
+&=
+D\,e^{\beta U/2}\Big(
+\Delta\psi
++
+\beta\,\nabla U\cdot\nabla\psi
++
+\tfrac{\beta}{2}(\Delta U)\,\psi
++
+\tfrac{\beta^2}{4}|\nabla U|^2 \psi
+\Big) \\[0.3em]
+&\quad
+- D\,e^{\beta U/2}\Big(
+\nabla U\cdot\nabla\psi
++
+\tfrac{\beta}{2}|\nabla U|^2\psi
+\Big) \\[0.3em]
+&=
+D\,e^{\beta U/2}\Big(
+\Delta\psi
++
+\Big(\beta-1\Big)\nabla U\cdot\nabla\psi
++
+\tfrac{\beta}{2}(\Delta U)\,\psi
++
+\Big(\tfrac{\beta^2}{4}-\tfrac{\beta}{2}\Big)|\nabla U|^2 \psi
+\Big).
+\end{align}
+In the equilibrium Langevin case we have $\beta = 1/(k_B T)$ and $D = k_B T/\gamma$, so that $\beta D = 1/\gamma$ and $\beta^2 D = 1/(\gamma k_B T)$. Substituting $\pi^{1/2} = Z^{-1/2}e^{-\beta U/2}$, the prefactors cancel and we obtain
+\begin{align}
+\mathcal H\psi(x)
+&=
+-\,\pi(x)^{1/2}\,\mathcal L\big(\pi^{-1/2}\psi\big)(x) \\[0.3em]
+&=
+- D\,\Delta\psi(x)
++
+\Big[
+\frac{1}{4\gamma k_B T}|\nabla U(x)|^2
+-
+\frac{1}{2\gamma}\,\Delta U(x)
+\Big]\psi(x).
+\end{align}
+Thus $\mathcal H$ has the Schr\"odinger form
+\begin{equation}
+\mathcal H
+=
+- D\,\Delta + V(x),
+\end{equation}
+with effective potential
+\begin{equation}
+V(x)
+=
+\frac{1}{4\gamma k_B T}|\nabla U(x)|^2
+-
+\frac{1}{2\gamma}\,\Delta U(x).
+\end{equation}
+
+Finally, if $f_t$ solves the backward Kolmogorov equation
+\begin{equation}
+\partial_t f_t
+=
+\mathcal L f_t,
+\end{equation}
+and we define
+\begin{equation}
+\psi_t(x)
+=
+(\mathcal U f_t)(x)
+=
+\pi(x)^{1/2} f_t(x),
+\end{equation}
+then
+\begin{equation}
+\partial_t \psi_t
+=
+\mathcal U\,\partial_t f_t
+=
+\mathcal U\,\mathcal L f_t
+=
+-\,\mathcal H(\mathcal U f_t)
+=
+-\,\mathcal H\psi_t.
+\end{equation}
+Therefore $\psi_t$ satisfies the imaginary-time Schr\"odinger equation
+\begin{equation}
+\partial_t \psi_t(x)
+=
+-\,\mathcal H\,\psi_t(x),
+\end{equation}
+and the spectral properties of the symmetric generator $\mathcal L$ on $L^2(\pi)$ are encoded by the spectrum of the Hermitian Schr\"odinger operator $\mathcal H$ on $L^2(dx)$.
+
+
+
+
+
+
+
+
+
+
+
+\end{document}

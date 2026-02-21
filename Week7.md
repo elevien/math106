@@ -6,15 +6,31 @@ bibliography:
 - refs.bib
 ---
 
-## Existance and uniqueness (7.3)
+## Existence and uniqueness (7.3)
 
-We will prove uniqueness 
+We proved the uniqueness part of the existence and uniqueness theorem.
 
-## Additional topics: Stratonovich Integral (7.4) and numerical methods (7.5)
+## Numerical methods (7.5)
 
-# Fokker–Planck equation (8.1,8.2)
+We derived the Itô-Taylor expansion and discussed how it gives rise to the Euler and Milstein methods. I mentioned Runge-Kutta methods but did not derive them. We then covered the concepts of strong and weak order.
 
-The Fokker-Planck equation is the linear differential equation describing the evolution of probability distributions, just like the linear equation we had for the $Q$-process. This now a parabolic differential equation and it is probably the most useful tool for obtaining concrete results about a stochastic differential equations. Especially in the physics literature it is the dominant view of SDEs. 
+We did not talk about Stratonovich SDEs, but you should learn about this on your own (see exercises below).
 
-- The derivation of the FP equation
-- Example 8.2 will be considered in detail
+## Fokker-Planck equation (8.1, 8.2)
+
+The Fokker-Planck equation is a linear differential equation describing the evolution of probability distributions, analogous to the linear equation we had for the $Q$-process. In this setting, it is a parabolic equation, and it is often the most useful tool for obtaining concrete results about stochastic differential equations. In the physics literature, this is often the dominant viewpoint on SDEs.
+
+We derived the FP equation for Itô diffusion, and then I showed how, for Brownian dynamics, it can be derived from a gradient flow on densities starting from thermodynamic considerations (free-energy minimization). Along the way, the concept of a probability current was introduced, extending the analogous idea for the Q-process. We then discussed diffusion on a sphere. This equation can also be understood in terms of probability flux (see exercises).
+
+We closed by deriving the time reversal of an SDE. Next week we will connect this to thermodynamics.
+
+### Exercises
+
+- Spend an hour learning about the Stratonovich integral and try to convince yourself:
+    - Why it makes sense when thinking of white noise as the zero-correlation limit of an OU process
+    - What the generalization of the Itô isometry is
+    - Why we recover the usual chain rule
+- Show that for diffusion on a sphere, the probability current normal to the sphere vanishes.
+- 8.4
+- 8.7
+- 8.8 (hint: It is Gaussian.)

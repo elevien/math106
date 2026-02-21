@@ -1,0 +1,542 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathtools}
+\usepackage{tikz}
+\usepackage{enumitem}
+\usepackage[margin=1in]{geometry}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem*{theorem*}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{definition}{Definition}
+\newtheorem*{definition*}{Definition}
+\newtheorem{proposition}{Proposition}
+\newtheorem{assumption}{Assumption}
+\newtheorem{remark}{Remark}
+
+
+
+\title{Math 106 -- Notes \\ Week 6: February 10/12, 2026}
+\author{Ethan Levien}
+\date{}
+
+\begin{document}
+\maketitle
+
+
+\section*{Stochastic differential equations: Existence and uniqueness}
+\begin{theorem}
+Assume the coefficients 
+\[
+b:\mathbb{R}^n\times[0,T]\to\mathbb{R}^n,
+\qquad
+\sigma:\mathbb{R}^n\times[0,T]\to\mathbb{R}^{n\times m},
+\]
+satisfy the global Lipschitz condition
+\begin{equation}
+\|b(x,t)-b(y,t)\| + \|\sigma(x,t)-\sigma(y,t)\|
+\;\le\; K\,\|x-y\|
+\end{equation}
+and the linear growth condition
+\begin{equation}
+\|b(x,t)\|^2 + \|\sigma(x,t)\|^2 
+\;\le\; K^2\,(1+\|x\|^2)
+\end{equation}
+for all $x,y\in\mathbb{R}^n$ and $t\in[0,T]$.  
+Here $\|\sigma\|$ denotes the Frobenius norm:
+\[
+|b|^2 := \sum_{i=1}^n b_i^2,
+\qquad
+\|\sigma\|^2 := \sum_{i=1}^n \sum_{j=1}^m \sigma_{ij}^2.
+\]
+Then the equation
+\begin{equation}
+X_t = X_0 + \int_0^t b(X_s,s)\,ds + \int_0^t \sigma(X_s,s)\,dW_s
+\end{equation}
+has a unique solution such that each component of $X_t$ belongs to $\mathcal{V}$.  
+Moreover, the process $X_t$ is almost surely continuous in $t$.
+\end{theorem}
+
+We will need to recall the following result. 
+
+\begin{theorem}[Gr\"onwall's inequality]
+Let $u:[0,T]\to[0,\infty)$ be a continuous function satisfying
+\begin{equation}
+u(t)
+\;\le\;
+a
++
+\int_0^t b(s)\,u(s)\,ds,
+\end{equation}
+for all $t\in[0,T]$, where $a\ge 0$ is a constant and $b:[0,T]\to[0,\infty)$ is integrable.  
+Then
+\begin{equation}
+u(t)
+\;\le\;
+a\,\exp\!\left( \int_0^t b(s)\,ds \right),
+\qquad 0 \le t \le T.
+\end{equation}
+In particular, if $a=0$ then $u(t)\equiv 0$ on $[0,T]$.
+\end{theorem}
+
+\begin{proof}[Proof of uniqueness] Following the book, we will only do the one-dimensional case and neglect explicit time dependence in $b$ and $\sigma$. I will show uniqueness, showing existence is more complicated. We need to show that if $X_t$ and $\hat{X}_t$ are solutions of the SDE with the same initial value, then they are almost surely equal. Using $(a+b)^2 \le 2a^2 + 2b^2$ and taking expectations, we get
+\begin{equation}
+\mathbb{E}\big[(X_t - \hat{X}_t)^2\big]
+\le 
+2\,\mathbb{E}\left[\left( \int_0^t \big(b(X_s) - b(\hat{X}_s)\big)\,ds\right)^2\right]
++
+2\,\mathbb{E}\left[\left( \int_0^t \big(\sigma(X_s) - \sigma(\hat{X}_s)\big)\,dW_s\right)^2\right].
+\end{equation}
+
+For the drift term, apply Cauchy--Schwarz with the second function equal to $1$:
+\begin{equation}
+\left( \int_0^t \big(b(X_s) - b(\hat{X}_s)\big)\,ds \right)^2
+\le 
+t \int_0^t \big(b(X_s) - b(\hat{X}_s)\big)^2\,ds.
+\end{equation}
+Taking expectations and using the Lipschitz condition $|b(x)-b(y)| \le K|x-y|$,
+\begin{equation}
+\mathbb{E}\left[\left( \int_0^t \big(b(X_s) - b(\hat{X}_s)\big)\,ds \right)^2\right]
+\le 
+K^2 t \int_0^t \mathbb{E}\big[(X_s - \hat{X}_s)^2\big]\,ds.
+\end{equation}
+
+For the stochastic term, we use the It\^o isometry and  Lipschitz condition
+\begin{align}
+\mathbb{E}\left[\left( \int_0^t \big(\sigma(X_s) - \sigma(\hat{X}_s)\big)\,dW_s\right)^2\right]
+&=
+\mathbb{E}\left[ \int_0^t \big(\sigma(X_s) - \sigma(\hat{X}_s)\big)^2\,ds \right]\\
+&\le
+K^2 \int_0^t \mathbb{E}\big[(X_s - \hat{X}_s)^2\big]\,ds.
+\end{align}
+
+Combining these bounds, we obtain
+\begin{equation}
+\mathbb{E}\big[(X_t - \hat{X}_t)^2\big]
+\le
+2K^2 t \int_0^t \mathbb{E}\big[(X_s - \hat{X}_s)^2\big]\,ds
++
+2K^2 \int_0^t \mathbb{E}\big[(X_s - \hat{X}_s)^2\big]\,ds,
+\end{equation}
+that is,
+\begin{equation}
+\mathbb{E}\big[(X_t - \hat{X}_t)^2\big]
+\le
+2K^2(t+1) \int_0^t \mathbb{E}\big[(X_s - \hat{X}_s)^2\big]\,ds.
+\end{equation}
+
+Define
+\begin{equation}
+u(t) = \mathbb{E}\big[(X_t - \hat{X}_t)^2\big].
+\end{equation}
+The last inequality shows that $u(t)$ satisfies
+\begin{equation}
+u(t) \le \int_0^t 2K^2(t+1)\,u(s)\,ds.
+\end{equation}
+By Gr\"onwall's inequality with zero initial term, it follows that $u(t) = 0$ for all $t \in [0,T]$. Hence
+\begin{equation}
+\mathbb{E}\big[(X_t - \hat{X}_t)^2\big] = 0,
+\end{equation}
+which implies $X_t = \hat{X}_t$ almost surely for each $t$, and in particular for all rational $t$. By continuity of the sample paths, $X_t = \hat{X}_t$ almost surely for all $t\in[0,T]$. 
+\end{proof}
+
+
+
+
+\section*{Numerical schemes}
+
+\subsection*{Brief review of numerical solutions to ODE}
+
+Consider the ODE
+\begin{equation}
+\frac{d}{dt} x_t = b(x_t).
+\end{equation}
+We formulate numerical algorithms by taking the integral form 
+\begin{equation}
+x_{t+dt} = x_t + \int_t^{t+dt} b(x_s)\,ds
+\end{equation}
+and approximating the integral: 
+\begin{equation}
+ \int_t^{t+dt} b(x_s)\,ds 
+ =
+ \sum_{j=1}^n b(x_{t+h_j})\, w_j,
+ \qquad
+ h_j \in [0,dt).
+\end{equation}
+Here the nodes $h_j$ and weights $w_j$ define a quadrature rule on $[0,dt]$.
+
+On the other hand, we have the Taylor expansion 
+\begin{equation}
+x_{t + dt} 
+=
+x_t 
++
+\sum_{i=1}^{\infty}
+\frac{(dt)^i}{i!}
+\frac{d^i}{dt^i}x_t.
+\end{equation}
+This can be written in operator form. Consider 
+\begin{equation}
+\frac{d}{dt} f(x_t) 
+= f'(x_t)b(x_t) 
+= ({\mathcal L} f)(x_t),
+\end{equation}
+where ${\mathcal L}$ is the generator (Koopman operator)
+\begin{equation}
+{\mathcal L} f(x) = b(x) f'(x).
+\end{equation}
+Hence time derivatives of functions of $x_t$ are obtained by iterative application of ${\mathcal L}$:
+\begin{equation}
+x_{t + dt} 
+=
+x_t 
++
+\sum_{i=1}^{\infty}
+\frac{(dt)^i}{i!}
+{\mathcal L}^i f(x_t),
+\qquad
+f(x)=x.
+\end{equation}
+Equivalently,
+\begin{equation}
+x_{t + dt} 
+=
+x_t 
++
+\sum_{i=1}^{\infty}
+\frac{(dt)^i}{i!}
+{\mathcal L}^i x_t.
+\end{equation}
+Note that ${\mathcal L}$ acts on $x_t$ as the function $f(x)=x$ of the state variable $x$, not on the time variable $t$.
+
+For a $k$th order method, the quadrature rule must reproduce the Taylor expansion up to order $k$, i.e.
+\begin{equation}
+\sum_{j=1}^n b(x_{t+h_j})\, w_j
+=
+\sum_{i=1}^{k}
+\frac{(dt)^i}{i!}
+{\mathcal L}^i x_t
++
+\mathcal O(dt^{k+1}).
+\end{equation}
+Runge--Kutta methods are constructed precisely so that this matching holds without explicitly computing derivatives of $b$. A key point is that the $h_j$ depend on $x$. 
+
+\medskip
+
+The two most important examples are:
+
+\begin{itemize}
+
+\item Euler's method: This corresponds to the left endpoint rule and is first order,
+\begin{equation}
+x_{n+1} = x_n + dt\, b(x_n).
+\end{equation}
+
+\item Runge--Kutta 4 (fourth order): This method evaluates $b$ at several intermediate points in order to approximate the integral
+\(
+\int_t^{t+dt} b(x_s)\,ds
+\)
+with fourth-order accuracy. Writing
+\begin{align}
+k_1 &= b(x_n), \\
+k_2 &= b\!\left(x_n + \frac{dt}{2}k_1\right), \\
+k_3 &= b\!\left(x_n + \frac{dt}{2}k_2\right), \\
+k_4 &= b(x_n + dt\, k_3),
+\end{align}
+the update is
+\begin{equation}
+x_{n+1}
+=
+x_n
++
+\frac{dt}{6}
+\left(
+k_1 + 2k_2 + 2k_3 + k_4
+\right).
+\end{equation}
+
+Each stage $k_j$ approximates the vector field along an approximate trajectory inside the time interval $[t,t+dt]$. The particular weights
+\(
+\frac{1}{6}(1,2,2,1)
+\)
+are chosen so that, when the method is expanded in powers of $dt$, it agrees with the Taylor expansion of the true solution up to terms of order $dt^4$. Thus RK4 achieves fourth-order accuracy using only evaluations of $b$, without requiring $b'$ or higher derivatives.
+
+\end{itemize}
+
+\subsection*{The It\^o-Taylor expansion}
+
+For the SDE
+\begin{equation}
+dX_t = b(X_t)\,dt + \sigma(X_t)\,dW_t,
+\end{equation}
+the structure is formally the same as in the deterministic case, but now the flow map is random.  Writing the integral form,
+\begin{equation}
+X_{t+dt}
+=
+X_t
++
+\int_t^{t+dt} b(X_s)\,ds
++
+\int_t^{t+dt} \sigma(X_s)\,dW_s,
+\end{equation}
+we again seek to approximate the integrals.  The difference is that the (1) second integral is stochastic and must be simulated and (2) we need to apply It\^o's formula to obtain the Taylor expansion, which will now be called the It\^o-Taylor expansion. 
+
+In particular, for a suitable function $f$, 
+ It\^{o}'s formula gives
+\begin{equation}
+df(X_t)
+=
+(\mathcal L_1 f)(X_t)
++
+(\mathcal L_2 f) (X_2)
+\end{equation}
+where we now have two operators
+\begin{align}
+\mathcal L_1 f(x)
+&=
+b(x) f'(x)
++
+\frac12 \sigma(x)^2 f''(x)\\
+\mathcal L_2 f(x) &= \sigma(x)f'(x)
+\end{align}
+and It\^{o}'s formula gives
+\begin{equation}
+df(X_t)
+=
+(\mathcal L_1 f)(X_t)\,dt
++
+(\mathcal L_2 f)(X_t)dW_t.
+\end{equation}
+Iterating this identity produces the It\^{o}--Taylor expansion.  The key structural difference from the ODE case is the scaling
+\begin{equation}
+\Delta W := W_{t+dt}-W_t \sim {\rm Normal}(0,dt),
+\qquad
+\Delta W = O(dt^{1/2}),
+\qquad
+(\Delta W)^2 = dt + O(dt^{3/2}),
+\end{equation}
+so the expansion is graded in powers of $dt^{1/2}$ rather than $dt$.
+
+
+Integrating from $t$ to $t+dt$ gives
+\begin{equation}\label{eq:first_step}
+f(X_{t+dt})
+=
+f(X_t)
++
+\int_t^{t+dt} (\mathcal L_1 f)(X_s)\,ds
++
+\int_t^{t+dt} (\mathcal L_2 f)(X_s)\,dW_s.
+\end{equation}
+Just as with Taylor expansion, we now expand the integrands 
+$(\mathcal L_i f)(X_s)$ for $i\in\{1,2\}$ around time $t$ by applying It\^{o}'s formula again.  
+Let $g(x) := (\mathcal L_i f)(x)$. Then
+\begin{equation}
+d g(X_u)
+=
+(\mathcal L_1 g)(X_u)\,du
++
+(\mathcal L_2 g)(X_u)\,dW_u.
+\end{equation}
+Integrating from $u=t$ to $u=s$ gives
+\begin{equation}
+(\mathcal L_i f)(X_s)
+=
+(\mathcal L_i f)(X_t)
++
+\int_t^s (\mathcal L_1 \mathcal L_i f)(X_u)\,du
++
+\int_t^s (\mathcal L_2 \mathcal L_i f)(X_u)\,dW_u.
+\end{equation}
+
+Substituting this back into \eqref{eq:first_step} yields
+\begin{align}
+f(X_{t+dt})
+&=
+f(X_t)
++
+(\mathcal L_1 f)(X_t)\,dt
++
+(\mathcal L_2 f)(X_t)\,\Delta W \nonumber \\
+&\quad
++
+\int_t^{t+dt}
+\int_t^{s}
+(\mathcal L_1 \mathcal L_1 f)(X_u)\,du\,ds
++
+\int_t^{t+dt}
+\int_t^{s}
+(\mathcal L_2 \mathcal L_1 f)(X_u)\,dW_u\,ds \nonumber \\
+&\quad
++
+\int_t^{t+dt}
+\int_t^{s}
+(\mathcal L_1 \mathcal L_2 f)(X_u)\,du\,dW_s
++
+\int_t^{t+dt}
+\int_t^{s}
+(\mathcal L_2 \mathcal L_2 f)(X_u)\,dW_u\,dW_s.
+\end{align}
+
+We now recognize the appearance of iterated time and stochastic integrals.  
+Freezing coefficients at $X_t$ (which is sufficient for deriving a truncated scheme) gives
+\begin{align}
+f(X_{t+dt})
+&=
+f(X_t)
++
+(\mathcal L_1 f)(X_t)\,dt
++
+(\mathcal L_2 f)(X_t)\,\Delta W \nonumber \\
+&\quad
++
+(\mathcal L_1^2 f)(X_t)\, I_{(1,1)}
++
+(\mathcal L_2 \mathcal L_1 f)(X_t)\, I_{(2,1)} \nonumber \\
+&\quad
++
+(\mathcal L_1 \mathcal L_2 f)(X_t)\, I_{(1,2)}
++
+(\mathcal L_2^2 f)(X_t)\, I_{(2,2)}
++
+\mathcal O(dt^{3/2}),
+\end{align}
+where the iterated integrals are defined by
+\begin{align}
+I_{(1,1)} &= \int_t^{t+dt}\!\!\int_t^{s} du\,ds = \frac12 (dt)^2, \\
+I_{(2,1)} &= \int_t^{t+dt}\!\!\int_t^{s} dW_u\,ds, \\
+I_{(1,2)} &= \int_t^{t+dt}\!\!\int_t^{s} du\,dW_s, \\
+I_{(2,2)} &= \int_t^{t+dt}\!\!\int_t^{s} dW_u\,dW_s
+= \frac12\big((\Delta W)^2 - dt\big).
+\end{align}
+
+This is the It\^{o}--Taylor expansion up to strong order $1$.  
+Truncating this expansion at different levels yields the Euler--Maruyama and Milstein schemes.
+
+
+
+\subsection*{Euler--Maruyama and Milstein schemes}
+
+Specializing the It\^{o}--Taylor expansion to $f(x)=x$, we have
+\begin{equation}
+\mathcal L_1 f(x)=b(x),
+\qquad
+\mathcal L_2 f(x)=\sigma(x),
+\qquad
+\mathcal L_2^2 f(x)=\sigma(x)\sigma'(x).
+\end{equation}
+
+Keeping terms in the expansion according to their order in $dt^{1/2}$ yields the following schemes:
+
+\begin{itemize}
+
+\item \textbf{Euler--Maruyama (strong order $1/2$):}
+
+Truncate after the terms involving $dt$ and $\Delta W$,
+\begin{equation}
+X_{n+1}
+=
+X_n
++
+(\mathcal L_1 f)(X_n)\,dt
++
+(\mathcal L_2 f)(X_n)\,\Delta W_n,
+\end{equation}
+that is,
+\begin{equation}
+X_{n+1}
+=
+X_n
++
+b(X_n)\,dt
++
+\sigma(X_n)\,\Delta W_n,
+\qquad
+\Delta W_n \sim \mathrm{Normal}(0,dt).
+\end{equation}
+
+\item \textbf{Milstein (strong order $1$):}
+
+Retain also the iterated integral $I_{(2,2)}$ term,
+\begin{equation}
+X_{n+1}
+=
+X_n
++
+(\mathcal L_1 f)(X_n)\,dt
++
+(\mathcal L_2 f)(X_n)\,\Delta W_n
++
+\frac12 (\mathcal L_2^2 f)(X_n)\big((\Delta W_n)^2 - dt\big),
+\end{equation}
+that is,
+\begin{equation}
+X_{n+1}
+=
+X_n
++
+b(X_n)\,dt
++
+\sigma(X_n)\,\Delta W_n
++
+\frac12 \sigma(X_n)\sigma'(X_n)
+\big((\Delta W_n)^2 - dt\big).
+\end{equation}
+
+\end{itemize}
+\noindent
+\textbf{Strong convergence (mean square convergence).}
+Let $X_t^{\delta t}$ denote the numerical solution of the SDE with (maximal) step size $\delta t$, and let $X_t$ denote the exact solution.  
+We say that $\{X_t^{\delta t}\}$ converges strongly to $X_t$ with order $\alpha$ if
+\begin{equation}
+\max_{0 \le t \le T}
+\mathbb E \big| X_t^{\delta t} - X_t \big|^2
+\le
+C (\delta t)^{2\alpha},
+\end{equation}
+where $C$ is a constant independent of $\delta t$.
+
+Equivalently,
+\begin{equation}
+\max_{0 \le t \le T}
+\left(
+\mathbb E \big| X_t^{\delta t} - X_t \big|^2
+\right)^{1/2}
+\le
+C (\delta t)^{\alpha}.
+\end{equation}
+
+Euler--Maruyama has strong order $\alpha = \tfrac12$, while the Milstein scheme has strong order $\alpha = 1$.
+
+\medskip
+
+\noindent
+\textbf{Weak convergence (convergence with respect to expectation).}
+We say that $\{X_t^{\delta t}\}$ converges weakly to $X_t$ with order $\beta$ if for every $f \in C_b^\infty(\mathbb R)$,
+\begin{equation}
+\max_{0 \le t \le T}
+\left|
+\mathbb E f(X_t^{\delta t})
+-
+\mathbb E f(X_t)
+\right|
+\le
+C_f (\delta t)^{\beta},
+\end{equation}
+where $C_f$ is independent of $\delta t$ (but may depend on $f$).
+
+Euler--Maruyama has weak order $\beta = 1$, even though its strong order is $\alpha = \tfrac12$.
+\medskip
+
+\noindent
+\textbf{Interpretation.}
+Strong order controls pathwise error and therefore requires matching terms in
+the It\^{o}--Taylor expansion involving powers of $\Delta W$.
+Weak order only requires matching expectations, so many stochastic terms vanish
+after taking expectation.  As a result, weak schemes can achieve higher order
+with less structure than strong schemes.
+
+Thus the distinction is intrinsic to the stochastic setting: in deterministic
+ODEs, strong and weak notions coincide, while for SDEs they differ because the
+object being approximated is a probability law rather than a single trajectory.
+\end{document}
