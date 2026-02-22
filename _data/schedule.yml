@@ -82,18 +82,18 @@
   meetings:
     - day: Tue
       date: Feb 24
-      topics: "Monte Carlo methods"
-      readings: "4.4,4.5"
+      topics: "Time reversal continued, Monte Carlo methods, importance sampling, variance reduction"
+      readings: "4.2,4.3,4.4"
     - day: Thu
       date: Feb 26
-      topics: "Feynman–Kac formula, application to Monte Carlo methods"
+      topics: "Feynman–Kac formula, and particle filtering"
       readings: "8.5,8.6"
 
 - week: W9
   meetings:
     - day: Tue
       date: Mar 3
-      topics: "Rare events"
+      topics: "Rare events, large deviations"
       readings: ""
     - day: Thu
       date: Mar 5
