@@ -11,3 +11,5 @@ bibliography:
 - <a href="{{ '/exams/quiz1.pdf' | relative_url }}">Quiz 1</a>
 
 <h3>Final</h3>
+
+- <a href="{{ '/exams/final_practice.pdf' | relative_url }}">Final practice problems</a>

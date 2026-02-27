@@ -1,0 +1,364 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathtools}
+\usepackage{tikz}
+\usepackage{enumitem}
+\usepackage[margin=1in]{geometry}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem*{theorem*}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{definition}{Definition}
+\newtheorem*{definition*}{Definition}
+\newtheorem{proposition}{Proposition}
+\newtheorem{assumption}{Assumption}
+\newtheorem{remark}{Remark}
+
+
+
+\title{Math 106 -- Notes \\ Week 7: February 18, 2026}
+\author{Ethan Levien}
+\date{}
+
+\begin{document}
+\maketitle
+
+
+
+\section*{Equilibrium steady-states}
+
+
+Previously we derived the infinitesimal generator of Brownian dynamics, which is given by 
+\begin{equation}\label{eq:brownian_generator}
+\mathcal L f = \gamma^{-1} \nabla U \cdot \nabla f + D \nabla^2 f.
+\end{equation}
+where $D = k_BT/\gamma$. As we have already seen, the process processes an equilibrium steady-state where the current $j(x)=0$ for all $x \in {\mathbb R}^d$. We saw with $Q$-processes that equilibrium steady-states are precisely the ones where the reversed process looks the same as the forward process. Let's first consider the time-reversal of this diffusion process. 
+
+
+\subsection*{Time-reversal of a It\^o diffusion}
+
+Consider the It\^o diffusion on ${\mathbb R}^d$
+\begin{equation}
+dX_t = b(X_t)\,dt + \sqrt{2D}\,dW_t,
+\end{equation}
+where $D>0$ is a constant scalar and $W_t$ is a standard $d$-dimensional Wiener process. The results can be extended to non-constant diffusion, but some formulas become messier. Assume $X_t$ is a stationary process. In particular, $X_t$ processes a unique invariant density $\pi$ and $X_0\sim \pi$. Fix $T>0$ and define the time-reversed process
+\begin{equation}
+\tilde X_t \coloneqq X_{T-t},\qquad 0\le t\le T.
+\end{equation}
+We compute the drift of $\tilde X$ by identifying the conditional law of a backward increment.
+
+
+For small $dt>0$, conditional on $X_t=x$,
+\begin{equation}
+X_{t+dt}\mid (X_t=x) \sim  {\rm Normal}\big(x+b(x)\,dt,\;2D\,dt\,I\big),
+\end{equation}
+so the short-time transition density is
+\begin{align}
+p_{dt}(y\mid x)dy&= {\mathbb P}(X_{t+dt} \in dy|X_t = x)  \\
+&=
+(4\pi D dt)^{-d/2}
+\exp\!\left(
+-\frac{1}{4Ddt}\,\|y-x-b(x)dt\|^2
+\right)dy.
+\end{align}
+
+%\paragraph{Step 2: Bayes formula for the backward step.}
+Stationarity implies $X_t\sim \pi$ for every $t$. Hence the joint density of $(X_t,X_{t+dt})$ is
+\begin{equation}
+\mathbb P(X_t\in dx, X_{t+dt}\in dy)
+=
+\pi(x)\,p_{dt}(y\mid x)\,dx\,dy.
+\end{equation}
+Bayes' rule gives the conditional density of the \emph{previous} state given the current state:
+\begin{equation}
+\mathbb P(X_t\in dx \mid X_{t+dt}=y)
+=
+\frac{\pi(x)\,p_{dt}(y\mid x)}{\pi(y)}\,dx.
+\end{equation}
+We now analyze this density for small $dt$.
+
+
+Fix $y$ and write $x=y-\delta$. 
+Adding the $\ln\pi$ and $\ln p$ contributions and dropping constants independent of $\delta$ gives
+\begin{align}
+\ln( \pi(x)\,p_{dt}(y\mid x)) &= \log\pi(y-\delta)+\ln p_{dt}(y\mid y-\delta)\\
+&=
+-\frac{1}{4Ddt}\,\|\delta\|^2
++\left(\frac{1}{2D}b(y)-\nabla\ln\pi(y)\right)\cdot \delta
++O(1).
+\end{align}
+This is the log-density of a Gaussian in $\delta$. Completing the square yields the approximation
+\begin{equation}
+\delta \mid (X_{t+dt}=y)
+\;\approx\;
+\mathcal N\!\Big(\big(b(y)-2D\nabla\ln\pi(y)\big)\,dt,\;2D\,dt\,I\Big).
+\end{equation}
+
+Since $x=y-\delta$, the backward increment satisfies
+\begin{align}
+(X_t-X_{t+dt})\mid (X_{t+dt}=y)
+&=
+(x-y)\mid (X_{t+dt}=y)\\
+&\sim_{\text{approx}}  
+\mathcal {\rm Normal}\Big(\big(-b(y)+2D\nabla\ln\pi(y)\big)\,dt,\;2D\,dt\,I\Big).
+\end{align}
+Therefore, the time-reversed process is the It\^o diffusion
+\begin{equation}
+d\tilde X_t
+=
+\tilde b(\tilde X_t)\,dt + \sqrt{2D}\,d\tilde W_t,
+\qquad
+\tilde b(x) = -b(x)+2D\nabla\ln\pi(x),
+\end{equation}
+where $\tilde W_t$ is a $d$-dimensional Wiener process.
+
+As we did for $Q$-processes, a natural question is: When is the time-reversed process indistinguishable from the actual process? 
+Here, this happens when $\tilde{b}(x) = b(x)$, or equivalently when $b(x) = D\nabla \ln \pi(x)$. Thus, we require that $b(x)$ is the gradient of a potential. The equivalent condition for $Q$ processes was that 
+\begin{equation}
+\ln\frac{q_{i,j}}{q_{j,i}} = \ln \pi_j - \ln \pi_i. 
+\end{equation}
+where $E_j = \ln \pi_j$ is the energy of state $j$, similar to $U(x)$ in the Brownian dynamics model. 
+
+
+
+\subsection*{Symmetric structure of equilibrium SDE}
+
+
+Another way to derive this is from the generator view. We have the identity 
+\begin{equation}
+{\mathbb E}_{\pi}[f(X_0)g(X_t)] = {\mathbb E}_{\pi}[f(\tilde{X}_t)g(\tilde{X}_0)] 
+\end{equation}
+By the backward equation 
+\begin{equation}
+\begin{aligned}
+\left.\frac{\partial}{\partial t}\,\mathbb{E}_{\pi}\big[f(X_0)g(X_t)\big]\right|_{t=0}
+&=
+\left.\mathbb{E}_{\pi}\!\left[f(X_0) \frac{\partial}{\partial t}\,\mathbb{E}\big[g(X_t)\mid X_0\big]\right]\right|_{t=0} \\
+&=
+\mathbb{E}_{\pi}\big[f(X_0)\,\mathcal{L}g(X_0)\big]
+=
+\langle f, \mathcal{L}g\rangle_{\pi}.
+\end{aligned}
+\end{equation}
+where $\langle \cdot,\cdot \rangle_{\pi}$ is the inner product on the Hilbert space
+\begin{equation}
+L^2(\pi)=L^2(\mathbb R^d,\pi(x)\,dx)
+=
+\left\{f:\mathbb R^d\to\mathbb R:\int_{\mathbb R^d}|f(x)|^2\pi(x)\,dx<\infty\right\}
+\end{equation}
+
+Therefore the generator  $\tilde{ \mathcal{L}}$ of $\tilde{Y}$ must satisfy 
+\begin{equation}
+\langle f, \mathcal{L}g\rangle_{\pi} = \langle \tilde{ \mathcal{L}}f,g\rangle_{\pi}.
+\end{equation}
+In other words, $\tilde{\mathcal{L}}$ is the adjoint of $\mathcal{L}$ in $L^2(\pi)$. 
+This gives rise to another condition for time-reversibility/equilibrium: The operator $\mathcal{L}$ is self-adjoint on $L^2(\pi)$. 
+
+The adjoint on $L^2(\pi)$ is not to be confused with the adjoint on the Banach space $B$ and its dual $B^*$, which was discussed earlier in the context of Markov semigroups. Recall that $B$ and $B^*$ are spaces on which observables and densities live and the inner product $\langle \cdot ,\cdot \rangle: B \times B^* \to {\mathbb R}$ defines the adjoint  
+\begin{equation}
+\langle {\mathcal L}f,\mu\rangle = \langle f,{\mathcal L}^*\mu\rangle
+\end{equation}
+The adjoint $\tilde{{\mathcal L}}$ is related to this via 
+\begin{align}
+\langle {{\mathcal L}} f,g\rangle_\pi &= \langle {{\mathcal L}} f, \pi g\rangle = \langle f,  {{\mathcal L}} ^*( \pi g)\rangle   \\
+&= \langle f,\tilde{{\mathcal L}}g\rangle_\pi= \langle f,\pi \tilde{{\mathcal L}}g \rangle
+\end{align}
+Therefore
+\begin{equation}
+\tilde{{\mathcal L}}g =  \pi^{-1}{{\mathcal L}} ^*( \pi g)
+\end{equation}
+
+
+\subsection*{Symmetrization and Schr\"odinger representation}
+
+In the equilibrium setting, the Brownian dynamics associated with a potential $U:\mathbb R^d\to\mathbb R$ is reversible with respect to the Gibbs measure
+\begin{equation}
+\pi(x)
+=
+Z^{-1}\exp\!\Big(-\frac{U(x)}{k_B T}\Big),
+\end{equation}
+where $Z$ is the normalizing constant. In the overdamped Langevin form
+\begin{equation}
+dX_t = -D\,\nabla U(X_t)\,dt + \sqrt{2D}\,dW_t,
+\end{equation}
+with $D = k_B T/\gamma$, the generator acting on observables is
+\begin{equation}
+\mathcal L f(x)
+=
+D\,\Delta f(x) - D\,\nabla U(x)\cdot\nabla f(x).
+\end{equation}
+The invariant density $\pi$ satisfies detailed balance, and one checks that
+\begin{equation}
+\langle f,\mathcal L g\rangle_{\pi}
+=
+\langle \mathcal L f,g\rangle_{\pi},
+\qquad
+\langle f,g\rangle_{\pi}
+=
+\int_{\mathbb R^d} f(x)\,g(x)\,\pi(x)\,dx,
+\end{equation}
+so $\mathcal L$ is a symmetric (Hermitian) operator on the Hilbert space $L^2(\pi)$.
+
+It is often convenient to conjugate $\mathcal L$ to a Schr\"odinger operator on $L^2(dx)$ with respect to Lebesgue measure. Define the unitary map $\mathcal U : L^2(\pi)\to L^2(dx)$ by
+\begin{equation}
+(\mathcal U f)(x)
+=
+\pi(x)^{1/2} f(x)
+=
+Z^{-1/2}\exp\!\Big(-\frac{U(x)}{2k_B T}\Big) f(x).
+\end{equation}
+Unitarity follows from
+\begin{equation}
+\int_{\mathbb R^d} |(\mathcal U f)(x)|^2\,dx
+=
+\int_{\mathbb R^d} f(x)^2\,\pi(x)\,dx
+=
+\|f\|_{L^2(\pi)}^2.
+\end{equation}
+We then define the Schr\"odinger operator $\mathcal H$ by the similarity transform
+\begin{equation}
+\mathcal H
+=
+-\,\mathcal U\,\mathcal L\,\mathcal U^{-1},
+\end{equation}
+so that $\mathcal H$ is self-adjoint on $L^2(dx)$ whenever $\mathcal L$ is self-adjoint on $L^2(\pi)$.
+
+To compute $\mathcal H$ explicitly, set $\psi = \mathcal U f$, so that
+\begin{equation}
+f(x) = (\mathcal U^{-1}\psi)(x)
+=
+\pi(x)^{-1/2}\psi(x)
+=
+Z^{1/2}\exp\!\Big(\frac{U(x)}{2k_B T}\Big)\psi(x).
+\end{equation}
+Then
+\begin{equation}
+\mathcal H\psi(x)
+=
+-\,\pi(x)^{1/2}\,\mathcal L\big(\pi^{-1/2}\psi\big)(x).
+\end{equation}
+Write $\beta = (k_B T)^{-1}$ and note that $\pi^{-1/2} = Z^{1/2}e^{\beta U/2}$. A direct computation gives
+\begin{align}
+\nabla\big(\pi^{-1/2}\psi\big)
+&=
+e^{\beta U/2}\Big(\nabla\psi + \tfrac{\beta}{2}\psi\,\nabla U\Big), \\[0.3em]
+\Delta\big(\pi^{-1/2}\psi\big)
+&=
+e^{\beta U/2}\Big(
+\Delta\psi
++
+\beta\,\nabla U\cdot\nabla\psi
++
+\tfrac{\beta}{2}(\Delta U)\,\psi
++
+\tfrac{\beta^2}{4}|\nabla U|^2 \psi
+\Big).
+\end{align}
+Using $\mathcal L f = D\Delta f - D\,\nabla U\cdot\nabla f$, we obtain
+\begin{align}
+\mathcal L\big(\pi^{-1/2}\psi\big)
+&=
+D\,\Delta\big(\pi^{-1/2}\psi\big)
+-
+D\,\nabla U\cdot\nabla\big(\pi^{-1/2}\psi\big) \\[0.3em]
+&=
+D\,e^{\beta U/2}\Big(
+\Delta\psi
++
+\beta\,\nabla U\cdot\nabla\psi
++
+\tfrac{\beta}{2}(\Delta U)\,\psi
++
+\tfrac{\beta^2}{4}|\nabla U|^2 \psi
+\Big) \\[0.3em]
+&\quad
+- D\,e^{\beta U/2}\Big(
+\nabla U\cdot\nabla\psi
++
+\tfrac{\beta}{2}|\nabla U|^2\psi
+\Big) \\[0.3em]
+&=
+D\,e^{\beta U/2}\Big(
+\Delta\psi
++
+\Big(\beta-1\Big)\nabla U\cdot\nabla\psi
++
+\tfrac{\beta}{2}(\Delta U)\,\psi
++
+\Big(\tfrac{\beta^2}{4}-\tfrac{\beta}{2}\Big)|\nabla U|^2 \psi
+\Big).
+\end{align}
+In the equilibrium Langevin case we have $\beta = 1/(k_B T)$ and $D = k_B T/\gamma$, so that $\beta D = 1/\gamma$ and $\beta^2 D = 1/(\gamma k_B T)$. Substituting $\pi^{1/2} = Z^{-1/2}e^{-\beta U/2}$, the prefactors cancel and we obtain
+\begin{align}
+\mathcal H\psi(x)
+&=
+-\,\pi(x)^{1/2}\,\mathcal L\big(\pi^{-1/2}\psi\big)(x) \\[0.3em]
+&=
+- D\,\Delta\psi(x)
++
+\Big[
+\frac{1}{4\gamma k_B T}|\nabla U(x)|^2
+-
+\frac{1}{2\gamma}\,\Delta U(x)
+\Big]\psi(x).
+\end{align}
+Thus $\mathcal H$ has the Schr\"odinger form
+\begin{equation}
+\mathcal H
+=
+- D\,\Delta + V(x),
+\end{equation}
+with effective potential
+\begin{equation}
+V(x)
+=
+\frac{1}{4\gamma k_B T}|\nabla U(x)|^2
+-
+\frac{1}{2\gamma}\,\Delta U(x).
+\end{equation}
+
+Finally, if $f_t$ solves the backward Kolmogorov equation
+\begin{equation}
+\partial_t f_t
+=
+\mathcal L f_t,
+\end{equation}
+and we define
+\begin{equation}
+\psi_t(x)
+=
+(\mathcal U f_t)(x)
+=
+\pi(x)^{1/2} f_t(x),
+\end{equation}
+then
+\begin{equation}
+\partial_t \psi_t
+=
+\mathcal U\,\partial_t f_t
+=
+\mathcal U\,\mathcal L f_t
+=
+-\,\mathcal H(\mathcal U f_t)
+=
+-\,\mathcal H\psi_t.
+\end{equation}
+Therefore $\psi_t$ satisfies the imaginary-time Schr\"odinger equation
+\begin{equation}
+\partial_t \psi_t(x)
+=
+-\,\mathcal H\,\psi_t(x),
+\end{equation}
+and the spectral properties of the symmetric generator $\mathcal L$ on $L^2(\pi)$ are encoded by the spectrum of the Hermitian Schr\"odinger operator $\mathcal H$ on $L^2(dx)$.
+
+
+
+
+
+
+
+
+
+
+
+\end{document}

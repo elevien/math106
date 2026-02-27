@@ -1,0 +1,391 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathtools}
+\usepackage{tikz}
+\usepackage{enumitem}
+\usepackage[margin=1in]{geometry}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem*{theorem*}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{definition}{Definition}
+\newtheorem*{definition*}{Definition}
+\newtheorem{proposition}{Proposition}
+\newtheorem{assumption}{Assumption}
+\newtheorem{remark}{Remark}
+
+
+
+\title{Math 106 -- Notes \\ Week 8: February 24, 2026}
+\author{Ethan Levien}
+\date{}
+
+\begin{document}
+\maketitle
+
+
+
+\section*{Monte Carlo simulation and variance reduction}
+
+The goal of Monte Carlo simulation is to approximate expectations with simulations. Consider the expectation 
+\begin{equation}
+\mu(f) = {\mathbb E}_{\mu}[f(X)]
+\end{equation}
+ where $f(X) \in L^2(\mu)$. We want to find an estimator $\hat{f}$ of $\mu(f)$ which has a small mean-squared error
+ \begin{equation}
+ {\rm MSE}_{\hat{f}} = {\mathbb E}[(\hat{f}-\mu(f))^2]
+ \end{equation}
+ This breaks down into Bias and variance: 
+ \begin{equation}
+  {\rm MSE}_{\hat{f}} = {\rm var}(\hat{f}) + \big({\mathbb E}[\hat{f}]-\mu(f)\big)^2
+ \end{equation}
+ A consistent estimator is one for which ${\rm MSE}_{\hat{f}}  \to 0$ as $m \to \infty$. 
+ 
+ In the simplest case we have iid samples $X_1,\dots,X_m \sim \mu$ which are used to obtain the approximation 
+\begin{equation}
+\hat{f}_m \approx \frac{1}{m}\sum_{i=1}^mf(X_i)
+\end{equation}
+This is an unbiased estimator whose variance is ${\rm var}(\hat{f}_m) = {\rm var}_{\mu}(f(X))/m$. Thus, 
+\begin{equation}
+  {\rm MSE}_{\hat{f}_m}= {\rm var}(\hat{f}_m)< \epsilon^2 \implies  m > \frac{{\rm var}_{\mu}(f(X))}{\epsilon^2}
+\end{equation}
+This idea of variance reduction is to find a new variable $\tilde{X}$ which has the same expectation but a smaller variance. 
+
+\subsection*{Importance sampling (Section 4.3)}
+Importance sampling is one of the main variance reduction techniques. It essentially amounts to performing a change of variables in the expectation in order to sample from a lower variance distribution. Let us suppose that $\mu$ has a density and (abusing notation) write $\mu(x)$ for this density. Now let $q(x)$ be another density such that $\mu/q>0$ for all $x$. 
+We can write
+\begin{equation}
+{\mathbb E}_{\mu}[f(X)] = {\mathbb E}_{q}\left[f(X)L(X)\right],\quad L(X) = \frac{\mu(X)}{q(X)}
+\end{equation}
+This suggests the estimator 
+\begin{equation}
+\hat{f}_{m,q} \approx \frac{1}{m}\sum_{i=1}^mf(\tilde{X}_i)L(\tilde{X}_i)
+\end{equation}
+where $\tilde{X}_i$ are iid samples from $q$. This works to our advantage if 
+\begin{equation}
+{\rm var}_q(f(X)L(X)) < {\rm var}_{\mu}(f(X)). 
+\end{equation}
+
+
+\section*{Motiving Example: Estimating the time to a rare event}
+
+ Now let's see how we can perform a change of measure to perform importance sampling on the path space with a concrete example. Consider again an OU process, 
+\begin{equation}\label{eq:sdeexample}
+dX_t = -\theta X_t\,dt + \sqrt{2D}\,dW_t,
+\end{equation}
+and suppose we are interested in an event that occurs with (state-dependent) rate $\lambda(X_t)$. We assume $\lambda$ is an increasing function of $x$. Conditional on ${\mathcal F}_t^X$, the survival probability is
+\begin{equation}
+{\mathbb P}(\tau>t\mid {\mathcal F}_t^X)
+=
+\exp\!\left(-\int_0^t \lambda(X_s)\,ds\right),
+\end{equation}
+and therefore
+\begin{equation}
+{\mathbb P}(\tau>t)
+=
+{\mathbb E}_{\mu}\!\left[
+\exp\!\left(-\int_0^t \lambda(X_s)\,ds\right)
+\right],
+\end{equation}
+where $\mu$ denotes the law of the path $\{X_s\}_{0\le s\le t}$.
+
+We would like to sample from another SDE where $\tau$ happens sooner (and hopefully we don't pay a price in the simulation cost). 
+
+\subsection*{Detour: Radon--Nikodym derivatives}
+
+To make use of importance sampling in the context of SDEs we need to understand when a change of measure on \emph{path space} is valid. In finite dimensions we often write densities $\mu(x)$ and $q(x)$, but for diffusion processes the relevant objects are probability measures on a space of paths. In this setting, the analogue of having a density is \emph{absolute continuity}.
+
+Let $(\Omega,\mathcal F,(\mathcal F_t))$ be a filtered measurable space, and let $\mu$ and $q$ be probability measures on $(\Omega,\mathcal F)$. 
+\begin{definition}
+We say that $\mu$ is absolutely continuous with respect to $q$ if 
+\begin{equation}
+\mu \ll q
+\end{equation}
+if $q(A)=0$ implies $\mu(A)=0$ for all $A\in\mathcal F$. 
+\end{definition}
+In this case, the Radon--Nikodym theorem guarantees the existence of a nonnegative observable $L$ such that
+\begin{equation}
+\mu(A) = \int_A L(x)q(dx) \qquad \text{for all } A\in\mathcal F.
+\end{equation}
+We then write $L = d\mu/dq$ and call it the Radon--Nikodym derivative (or likelihood ratio). Equivalently, for a random variable $f$,
+\begin{equation}
+\mu(f) = {\mathbb E}_{\mu}[f] = {\mathbb E}_{q}[f\,L] = q(fL).
+\end{equation}
+In applications to SDEs we typically consider $\mathcal F_t$ (the information up to time $t$) and require absolute continuity \emph{locally in time},
+\begin{equation}
+\mu\big|_{\mathcal F_t} \ll q\big|_{\mathcal F_t},
+\end{equation}
+so that a likelihood ratio $L_t = d\mu/dq|_{\mathcal F_t}$ exists as an adapted process.
+
+\subsection*{What goes wrong when changing measures on path space}
+As an example, consider two OU processes on $[0,T]$:
+\begin{align}
+dX_t &= -\theta X_t\,dt +\sqrt{2D}\,dW_t^{(1)},\\
+dY_t &= -\theta Y_t\,dt + \sqrt{2\tilde{D}}\,dW_t^{(2)},
+\end{align}
+where $W^{(1)}$ and $W^{(2)}$ are Wiener processes (possibly on different probability spaces). Let $\mu$ and $q$ denote the laws on the path space of $X_t$ and $Y_t$ respectively. 
+
+A quick way to see what goes wrong is to consider the case $D\neq \tilde D$. 
+As I showed in class, the quadratic variations of $X_t$ and $Y_t$ are 
+\begin{equation}
+[X,X]_T = 2DT
+\qquad
+[Y,Y]_T = 2\tilde D T
+\end{equation}
+respectively where the equalities should be interpreted in the almost sure sense (meaning they occur with probability 1 under $\mu$ and $q$ respectively). 
+Define the measurable event in path space
+\begin{equation}
+A \coloneqq \{\omega\in C([0,T]) : [\omega]_T = 2DT\}.
+\end{equation}
+Here $\omega$ could be replaced by $X$ or $Y$ but we write it this way to indicate this is an event that can be considered under either $\mu$ or $q$. 
+Then
+\begin{equation}
+\mu(A)=1,
+\qquad
+q(A)=0 \quad \text{if } \tilde D\neq D,
+\end{equation}
+Therefore $\mu$ is \emph{not} absolutely continuous with respect to $q$. In fact the measures are mutually singular,
+meaning there exists an event of probability one under $\mu$ and probability zero under $q$ (and vice versa). Consequently, the Radon--Nikodym derivative $d\mu/dq$ does not exist on path space when $D\neq \tilde D$, and there is no likelihood ratio that can convert $\mu$--expectations into $q$--expectations for general path functionals.
+
+
+Note that even when $D\neq \tilde D$, the finite-dimensional distributions at fixed times $\{t_1,\dots,t_n\}$ are mutually absolutely continuous (both are nondegenerate Gaussians on ${\mathbb R}^n$). The problem, however, is that the likelihood ratio blows up as $dt \to 0$. 
+To see this, consider the finite-dimensional distribution of $\sqrt{2D}W_t$ at times $0,dt,2dt,\dots,ndt$: 
+\begin{equation}
+\rho_D(w_1,\dots,w_n) = \prod_{i=1}^n (4 \pi D dt)^{-1/2}e^{-(\Delta w_i)^2/(4D dt)} = (4 \pi D dt)^{-n/2}e^{-1/(4D dt) \sum_{i=1}^n(\Delta w_i)^2} 
+\end{equation}
+The ratio
+\begin{equation}
+\frac{\rho_D(w_1,\dots,w_n)}{\rho_{\tilde{D}}(w_1,\dots,w_n)} = \left(\tilde{D}/D \right)^{n/2} e^{(\tilde{D}^{-1}-D^{-1})\sum_{i=1}^n(\Delta w_i)^2/(4 dt)}.
+\end{equation}
+Although $dt$ has canceled in the ratio, there is still a factor of $1/dt$ in the exponent which causes it to blow-up as $dt \to 0$. 
+ 
+ 
+ \subsection*{Changing the drift and Girsanov's Theorem}
+Since we cannot change the diffusion coefficient, we need to adjust the drift term. Returning to the context of our modeling example -- that is, the problem of estimating the CDF of $\tau$ -- let's explore this possibility.  
+To this end, let $\{u_t\}_{0\le t\le T}$ be an adapted control (often $u_t=u(X_t)$). Define a new probability measure $q$ on ${\mathcal F}_t$ under which $X$ solves
+\begin{equation}
+dX_t
+=
+\Big(-\theta X_t + \sqrt{2D}\,u_t\Big)\,dt
++
+\sqrt{2D}\,dW_t^{(q)}.
+\end{equation}
+Let $q$ denote the induced law of the path $\{X_s\}_{0\le s\le t}$.
+
+% Grid: t_i = i\,dt, i=0,1,\dots,n with dt = T/n. Write x_i \approx X_{t_i}.
+% Let u_{i-1} denote u_{t_{i-1}} (or u(x_{i-1}) if feedback).
+% NOTE: in the q-transition below, the OU drift term should be +\theta x_{i-1}dt, not +\theta dt.
+
+
+Using the Euler--Maruyama approximation (we will eventually take the limit $dt \to 0$, so the order of the approximation doesn't matter), we get
+\begin{equation}
+p_q(x_i\mid x_{i-1})
+=
+\frac{1}{\sqrt{4\pi D\,dt}}
+\exp\!\left(
+-\frac{\big(x_i - x_{i-1} + \theta x_{i-1}dt - \sqrt{2D}\,u_{i-1}dt\big)^2}{4D\,dt}
+\right),
+\end{equation}
+while under the original OU law $\mu$,
+\begin{equation}
+p_{\mu}(x_i\mid x_{i-1})
+=
+\frac{1}{\sqrt{4\pi D\,dt}}
+\exp\!\left(
+-\frac{\big(x_i - x_{i-1} + \theta x_{i-1}dt \big)^2}{4D\,dt}
+\right).
+\end{equation}
+
+
+Since the prefactors match, their ratio is
+\begin{align}
+\frac{\rho_\mu(x_1,\dots,x_n\mid x_0)}{\rho_q(x_1,\dots,x_n\mid x_0)}
+&=
+\exp\!\left\{
+-\frac{1}{4D\,dt}\sum_{i=1}^n
+\Big[
+\big(\Delta x_i+\theta x_{i-1}dt\big)^2
+-
+\big(\Delta x_i+\theta x_{i-1}dt-\sqrt{2D}\,u_{i-1}dt\big)^2
+\Big]
+\right\},
+\end{align}
+Using $(a)^2-(a-b)^2 = 2ab-b^2$ with
+\(
+a=\Delta x_i+\theta x_{i-1}dt
+\)
+and
+\(
+b=\sqrt{2D}\,u_{i-1}dt,
+\)
+we obtain
+\begin{align}
+\log\frac{\rho_\mu}{\rho_q}
+&=
+-\frac{1}{4D\,dt}\sum_{i=1}^n
+\left[
+2\big(\Delta x_i+\theta x_{i-1}dt\big)\big(\sqrt{2D}\,u_{i-1}dt\big)
+-\big(\sqrt{2D}\,u_{i-1}dt\big)^2
+\right] \\
+&=
+-\sum_{i=1}^n u_{i-1}\,\frac{\Delta x_i+\theta x_{i-1}dt}{\sqrt{2D}}
++\frac12\sum_{i=1}^n u_{i-1}^2\,dt.
+\end{align}
+Now, under $q$ the Euler increment can be written as
+\begin{equation}
+\Delta x_i+\theta x_{i-1}dt
+=
+\sqrt{2D}\,u_{i-1}dt + \sqrt{2D}\,\Delta W_i^{(q)}
+\end{equation}
+so
+\begin{align}
+\log\frac{\rho_\mu}{\rho_q}
+&=
+-\sum_{i=1}^n u_{i-1}\,\big(u_{i-1}dt+\Delta W_i^{(q)}\big)
++\frac12\sum_{i=1}^n u_{i-1}^2\,dt \\
+&=
+-\sum_{i=1}^n u_{i-1}\,\Delta W_i^{(q)}
+-\frac12\sum_{i=1}^n u_{i-1}^2\,dt.
+\end{align}
+Therefore the finite-dimensional likelihood ratio is
+\begin{equation}
+\frac{\rho_\mu(x_1,\dots,x_n\mid x_0)}{\rho_q(x_1,\dots,x_n\mid x_0)}
+=
+\exp\!\left(
+-\sum_{i=1}^n u_{i-1}\,\Delta W_i^{(q)}
+-\frac12\sum_{i=1}^n u_{i-1}^2\,dt
+\right).
+\end{equation}
+So the continuous-time Radon--Nikodym derivative is
+\begin{equation}
+L_t \coloneqq \frac{d\mu}{dq}\Big|_{\mathcal F_t}
+=
+\exp\!\left(
+-\int_0^t u_s\,dW_s^{(q)}
+-\frac12\int_0^t u_s^2\,ds
+\right).
+\end{equation}
+
+Combining everything: 
+\begin{equation}\label{eq:muimportance}
+\mu(f) =  q(fL_t) = {\mathbb E}_{q}\!\left[
+\exp\!\left(-\int_0^t \lambda(X_s)\,ds-\int_0^t u_s\,dW_s^{(q)}
+-\frac12\int_0^t u_s^2\,ds
+\right)
+\right] 
+\end{equation}
+This is an application of \emph{Girsanov's theorem}, which tells us how to change measure of Wiener paths. 
+
+\subsection*{Precise statement of Girsanov's Theorem 1}
+
+\begin{theorem}[Special case of T9.2]
+Consider the It\^o process 
+\begin{equation}
+d\tilde{W}_t = \phi(t,\omega)dt + dW_t, \quad \tilde{W}_0 = 0
+\end{equation}
+defined on some probability space $(\Omega, {\mathcal F},{\mathbb P})$. 
+Assume 
+\begin{equation}
+{\mathbb E}\left[\exp\left(\frac{1}{2}\int_0^T|\phi(s,\omega)|^2ds \right) \right]< \infty
+\end{equation}
+Now let $\tilde{\mathbb P}$ be another probability measure on $(\Omega, {\mathcal F})$ defined by 
+\begin{equation}
+\frac{d\tilde{\mathbb P}}{d{\mathbb P}}\Big|_{{\mathcal F}_t} =  \exp\left(- \int_0^t\phi(s,\omega)dW_s - \frac{1}{2}\int_0^t\phi(s,\omega)^2ds \right)
+\end{equation}
+Then $\tilde{W}_t$ is a Wiener process under $\tilde{\mathbb P}$. 
+\end{theorem}
+
+\begin{remark}
+To connect to our notation, the distribution of $W_t$ under ${\mathbb P}$ is $\mu$ -- $\mu$ is the law of a Wiener process. ${\mathbb P}$ induces a distribution over $\tilde{W}_t$ which is our $q$. $q$ is not the law of a Wiener process because of the drfit term, but the change of measure converts it back to one. 
+\end{remark}
+
+
+\section*{Feynman-Kac formula (Section 8.6)}
+In the previous example we encountered the path expectation 
+\begin{equation}
+{\mathbb E}_{\mu}\!\left[
+\exp\!\left(-\int_0^t \lambda(X_s)\,ds\right)
+\right]
+\end{equation}
+The challenge of sampling from these expectations is pervasive. Because this is not the expectation of $X_t$ at a fixed time conditional on the initial point, it does not obey the usual backward equation. It does however have a semigroup structure.
+\begin{equation}
+v(x,t)  = {\mathbb E}_{\mu}\!\left[f(X_t)
+\exp\!\left(-\int_0^t \lambda(X_s)\,ds\right)|X_0=x
+\right]. 
+\end{equation}
+Note that if we define $Z_t = Z_0+\int_0^t\lambda(X_s)\,ds$, we have a new system of SDEs
+\begin{align}
+dZ_t &= \lambda(X_t)dt\\
+dX_t &= b(X_t)dt + \sigma(X_t)dW_t
+\end{align}
+with this definition of $Z_t$. 
+This has the generator 
+\begin{equation}
+({\mathcal A}g)(x,z) = ({\mathcal L}g)(x,z) + \lambda(x)\partial_z g(x,z)
+\end{equation}
+If we consider 
+\begin{equation}
+w(x,z,t) = {\mathbb E}_{\mu}\!\left[f(X_t)
+\exp\!\left(-Z_t\right)\mid X_0=x,Z_0=z
+\right]
+\end{equation}
+Then, with $g(x,z) = f(x)e^{-z}$, we have
+\begin{equation}
+\partial_t w(x,z,t) = {\mathcal A}w(x,z,t),\quad w(x,z,0) = f(x)e^{-z}
+\end{equation}
+Now observe that $v(x,t) = w(x,0,t)$, hence 
+\begin{equation}
+\partial_t v(x,t) = {\mathcal L}v(x,t) +\lambda(x) \partial_z w(x,z,t)\Big|_{z=0}
+\end{equation}
+Due to 
+\begin{align}
+\partial_z w(x,z,t)
+&=
+\mathbb E_{\mu}\!\left[
+f(X_t)\,\partial_z \exp\!\left(-\int_0^t\lambda(X_s)\,ds-z\right)
+\;\middle|\; X_0=x
+\right]\\
+&=
+-\mathbb E_{\mu}\!\left[
+f(X_t)\,\exp\!\left(-\int_0^t\lambda(X_s)\,ds-z\right)
+\;\middle|\; X_0=x
+\right].
+\end{align}
+hence 
+\begin{equation}
+\partial_z w(x,0,t) = -v(x,t).
+\end{equation}
+and therefore we arrive at the \emph{Feynman-Kac} PDE
+\begin{equation}\label{eq:fk}
+\partial_t v(x,t) = {\mathcal L}v(x,t) -\lambda(x) v(x,t).
+\end{equation}
+In particular, with $v(x,0) =1$, this becomes 
+\begin{equation}
+v(x,t) = {\mathbb E}_{\mu} \left[\exp\left(- \int_0^t\lambda(X_s)ds \right)\middle| X_0 = x \right]
+\end{equation}
+The problem of computing $\mu_t(f) = {\mathbb E}[v(X_0,t)]$ has thus transformed into a problem of solving a PDE. 
+
+
+
+
+\subsection*{Particle interpretation of Feynman-Kac formula}
+In the case of Brownian dynamics we gave an interpretation of the density from a many-particle view. In particular, we viewed the probability density as describing a normalized concentration for a large particle system. The same can be done for the Feynman-Kac PDE, but we now need to view it as relating to densities in a system with changing particle number.
+
+ To see this, consider a population of particles which die at rate $\lambda(X_t)$. Define $N(X_t \in B\mid X_0)$ to be the number of particles alive whose positions are in a measurable set $B$ and started from initial point $X_0$. We then define a number density $n(x,t)$, similarly to a probability density, as 
+\begin{equation}
+N(X_t \in B\mid X_0) = \int_B n(x,t)\,dx
+\end{equation}
+Consider how $n(x,t)$ changes due to flux and particle death; by a conservation of mass argument similar to the one we used when deriving the flux for Brownian dynamics, we have 
+\begin{equation}
+\partial_t n(x,t) = -\nabla \cdot j(x,t) - \lambda(x)n(x,t) = {\mathcal L}^*n(x,t) - \lambda(x)n(x,t).
+\end{equation}
+We can then define  
+\begin{equation}
+v_t(f) = \int n(x,t)\,f(x)\,dx 
+\end{equation}
+Thus $v_t(f)$ has the adjoint equation. We can create a normalized density associated with $n$ to obtain population expectations. This means that another way to obtain $\mu(f)$ is via a population simulation. This is generally more stable than evaluating the expectation directly. 
+
+
+
+
+\end{document}
