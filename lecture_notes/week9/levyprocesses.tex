@@ -1,0 +1,515 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathtools}
+\usepackage{tikz}
+\usepackage{enumitem}
+\usepackage[margin=1in]{geometry}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem*{theorem*}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{definition}{Definition}
+\newtheorem*{definition*}{Definition}
+\newtheorem{proposition}{Proposition}
+\newtheorem{assumption}{Assumption}
+\newtheorem{remark}{Remark}
+
+\title{Math 106 --Levy processes and rare events }
+\author{Ethan Levien}
+\date{}
+
+\begin{document}
+\maketitle
+
+
+\section{Prelude: The generalized CLT}\label{sec:genclt}
+
+Recall that Wiener processes can be understood as the scaling limit of a random walk where the steps have mean zero and finite variance. This result is a functional version of the CLT known as Donsker's theorem. 
+L\'evy processes generalize Brownian motion by allowing step sizes with infinite variance (and, possibly, infinite mean). To understand this, we first discuss the generalized CLT for heavy-tailed increments. Power laws are representative of random variables with divergent moments and lead to stable limits.
+
+Let $X_1,X_2,\dots$ be a sequence of i.i.d.\ random variables such that for some $\alpha \in (0,\infty)$
+\begin{equation}\label{eq:tail_powerlaw}
+\bar{F}(x) \coloneqq {\mathbb P}(X_1>x) \sim C x^{-\alpha},\quad \text{ as } x \to \infty.
+\end{equation}
+Therefore, the density of $X_1$ obeys 
+\begin{equation}\label{eq:density_powerlaw}
+f(x) \sim C\alpha\, x^{-\alpha-1},\quad x \to \infty.
+\end{equation}
+We assume the same tail behavior as $x\to -\infty$ with the \emph{same constant} $C$:
+\begin{equation}\label{eq:two_sided_symmetric_tail}
+{\mathbb P}(X_1>x)\sim C x^{-\alpha},
+\qquad
+{\mathbb P}(X_1<-x)\sim C x^{-\alpha},
+\qquad x\to\infty.
+\end{equation}
+This symmetry assumption implies that the limiting stable law will be \emph{symmetric} (skewness parameter $\beta=0$). 
+
+The mean does not exist if $\alpha\le 1$ and the variance does not exist if $\alpha\le 2$.
+
+\begin{remark}[Mean in the symmetric case]
+One might wonder whether the symmetry assumption \eqref{eq:two_sided_symmetric_tail} causes the divergences to cancel, making the mean well-defined even for $\alpha\le 1$. The answer is no, at least not in the standard sense. The mean is defined as ${\mathbb E}[X_1]=\int x\,f(x)\,dx$, which requires \emph{absolute} integrability: ${\mathbb E}[|X_1|]=\int_{0}^{\infty}{\mathbb P}(|X_1|>x)\,dx\asymp \int_1^\infty x^{-\alpha}\,dx$. This integral diverges when $\alpha\le 1$, regardless of symmetry.
+
+What symmetry \emph{does} give is that the \emph{principal-value} integral $\lim_{R\to\infty}\int_{-R}^{R}x\,f(x)\,dx=0$ is well-defined and equal to zero, since the integrand is odd. This is why no centering ($A_n=0$) is needed in the generalized CLT even for $\alpha<1$: the characteristic function is real and even by symmetry, so the limiting law is automatically symmetric around zero. But this is a property of symmetry, not of the mean existing.
+\end{remark}
+
+We study the partial sums
+\begin{equation}\label{eq:Sn_def}
+S_n = \sum_{i=1}^n X_i.
+\end{equation}
+
+\subsection{Goal and characteristic functions}\label{subsec:goal_cf}
+
+Motivated by the classical CLT, we ask: can we find a normalization $B_n\to\infty$ such that
+\begin{equation}\label{eq:goal_Sn}
+\frac{S_n}{B_n}\;\Rightarrow\; Z
+\quad \text{as } n\to\infty,
+\end{equation}
+for some non-degenerate limit random variable $Z$?
+
+It is easier to work with characteristic functions. Define
+\begin{equation}\label{eq:phi_def}
+\phi(t)\coloneqq {\mathbb E}\!\left[e^{-itX_1}\right],
+\end{equation}
+and
+\begin{equation}\label{eq:phi_n_def}
+\phi_n(u) \coloneqq {\mathbb E}\!\left[e^{-iuS_n/B_n}\right]
+= \left({\mathbb E}\!\left[e^{-iuX_1/B_n}\right]\right)^n
+= \left(\phi(u/B_n)\right)^n.
+\end{equation}
+Thus the problem reduces to understanding the small-$t$ asymptotics of $\phi(t)$ as $t\to 0$.
+
+\subsection{A Tauberian theorem in the symmetric power-law case}\label{subsec:tauberian_symmetric}
+
+The link between power-law tails and small-$t$ characteristic functions is a Tauberian theorem. In our symmetric setting \eqref{eq:two_sided_symmetric_tail}, it takes a particularly clean form.
+
+\begin{theorem}[Tauberian theorem (symmetric power-law tails $\leftrightarrow$ fractional characteristic exponent)]\label{thm:tauberian_symmetric}
+Fix $\alpha\in(0,2)$ with $\alpha\neq 1$. Assume the two-sided symmetric tail condition \eqref{eq:two_sided_symmetric_tail}. Then as $t\to 0$,
+\begin{equation}\label{eq:tauberian_forward}
+1-\phi(t)
+\;=\;
+2C\,\Gamma(1-\alpha)\,\cos\!\Big(\frac{\pi\alpha}{2}\Big)\,|t|^\alpha
+\;+\; o(|t|^\alpha).
+\end{equation}
+Conversely, if for some $K>0$ one has
+\begin{equation}\label{eq:tauberian_converse_assump}
+1-\phi(t) = K|t|^\alpha + o(|t|^\alpha)
+\quad \text{as } t\to 0,
+\end{equation}
+then $X_1$ has two-sided regularly varying tails of index $\alpha$ and, in the symmetric case,
+\begin{equation}\label{eq:tauberian_converse_tail}
+{\mathbb P}(X_1>x)\sim C x^{-\alpha},
+\qquad
+{\mathbb P}(X_1<-x)\sim C x^{-\alpha},
+\qquad x\to\infty,
+\end{equation}
+with
+\begin{equation}\label{eq:C_from_K}
+C \;=\; \frac{K}{2\,\Gamma(1-\alpha)\,\cos(\pi\alpha/2)}.
+\end{equation}
+\end{theorem}
+
+\subsection{Sketch proof of Theorem \ref{thm:tauberian_symmetric}}\label{subsec:tauberian_proof_sketch}
+
+We sketch the forward direction \eqref{eq:tauberian_forward} under \eqref{eq:two_sided_symmetric_tail}; the converse is a reverse Tauberian argument using the same integral identities.
+
+Because the tails are symmetric, $\phi(t)$ is real and even:
+\begin{equation}\label{eq:phi_real_even}
+\phi(t)= {\mathbb E}[\cos(tX_1)],
+\qquad
+1-\phi(t) = {\mathbb E}[1-\cos(tX_1)].
+\end{equation}
+By symmetry $\phi(t)={\mathbb E}[\cos(tX_1)]$, so $1-\phi(t)={\mathbb E}[1-\cos(tX_1)]$. Applying integration by parts: for any nonnegative, smooth $g$ with $g(0)=0$,
+\begin{equation}\label{eq:ibp_template}
+{\mathbb E}[g(|X_1|)]
+= \int_0^\infty g'(x)\,{\mathbb P}(|X_1|>x)\,dx.
+\end{equation}
+Apply \eqref{eq:ibp_template} with $g(x)=1-\cos(tx)$ (note $g(0)=0$ and $g'(x)=t\sin(tx)$):
+\begin{equation}\label{eq:ibp_cos}
+1-\phi(t)
+= \int_0^\infty t\sin(tx)\,{\mathbb P}(|X_1|>x)\,dx.
+\end{equation}
+Under \eqref{eq:two_sided_symmetric_tail}, we have ${\mathbb P}(|X_1|>x)\sim 2C x^{-\alpha}$, so heuristically
+\begin{equation}\label{eq:asympt_substitution}
+1-\phi(t)
+\sim \int_0^\infty t\sin(tx)\, (2C x^{-\alpha})\,dx.
+\end{equation}
+Change variables $y=tx$:
+\begin{equation}\label{eq:change_var}
+\int_0^\infty t\sin(tx)\,x^{-\alpha}\,dx
+= |t|^\alpha \int_0^\infty \sin y \, y^{-\alpha}\,dy,
+\end{equation}
+where the power of $|t|$ comes from $x^{-\alpha}=(y/|t|)^{-\alpha}$ and $dx=dy/|t|$.
+Thus we expect
+\begin{equation}\label{eq:1_minus_phi_constant}
+1-\phi(t)\sim 2C |t|^\alpha \int_0^\infty \sin y\, y^{-\alpha}\,dy.
+\end{equation}
+The remaining integral is classical and can be evaluated via analytic continuation of the Gamma function:
+\begin{equation}\label{eq:sin_integral}
+\int_0^\infty \sin y\, y^{-\alpha}\,dy
+= \Gamma(1-\alpha)\cos\!\Big(\frac{\pi\alpha}{2}\Big),
+\qquad \alpha\in(0,2),\ \alpha\neq 1,
+\end{equation}
+which yields exactly \eqref{eq:tauberian_forward}.
+
+To justify replacing ${\mathbb P}(|X_1|>x)$ by its asymptotic $2C x^{-\alpha}$ inside \eqref{eq:ibp_cos}, one splits the integral at $x=1/|t|$:
+\begin{equation}\label{eq:split_scale}
+\int_0^\infty t\sin(tx)\,{\mathbb P}(|X_1|>x)\,dx
+=
+\int_0^{1/|t|} (\cdots)\,dx \;+\; \int_{1/|t|}^{\infty}(\cdots)\,dx,
+\end{equation}
+uses that $\sin(tx)\approx tx$ on $[0,1/|t|]$ together with regular variation to control the first piece, and uses boundedness of $\sin$ plus the power-law tail to control the second piece. The $o(|t|^\alpha)$ remainder comes from the fact that the ratio ${\mathbb P}(|X_1|>x)/(2C x^{-\alpha})\to 1$ slowly but uniformly on the relevant $x$-scales after the change of variables $y=tx$.
+
+\subsection{Heuristic derivation of the (symmetric) stable characteristic function}\label{subsec:stable_cf_heuristic}
+
+Assume $\alpha\in(0,2)$, $\alpha\neq 1$, and the symmetric tail condition \eqref{eq:two_sided_symmetric_tail}. By Theorem \ref{thm:tauberian_symmetric},
+\begin{equation}\label{eq:small_t_phi_symmetric}
+\phi(t)
+=
+1 - K|t|^\alpha + o(|t|^\alpha),
+\qquad
+K \coloneqq 2C\,\Gamma(1-\alpha)\cos\!\Big(\frac{\pi\alpha}{2}\Big).
+\end{equation}
+Plugging $t=u/B_n$ into \eqref{eq:phi_n_def} gives
+\begin{equation}\label{eq:phi_expand}
+\phi(u/B_n)
+=
+1 - K|u|^\alpha B_n^{-\alpha} + o(B_n^{-\alpha}).
+\end{equation}
+Therefore
+\begin{align}
+\log \phi_n(u)
+&= n\log(\phi(u/B_n))
+\label{eq:log_phi_n_1}\\
+&= n\log\Big(1 - K|u|^\alpha B_n^{-\alpha} + o(B_n^{-\alpha})\Big)
+\label{eq:log_phi_n_2}\\
+&= -nK|u|^\alpha B_n^{-\alpha} + o\!\left(nB_n^{-\alpha}\right),
+\label{eq:log_phi_n_3}
+\end{align}
+using $\log(1-z)=-z+o(z)$. Choosing the normalization
+\begin{equation}\label{eq:Bn_choice}
+B_n = n^{1/\alpha},
+\end{equation}
+we obtain $nB_n^{-\alpha}=1$ and hence
+\begin{equation}\label{eq:phi_n_limit}
+\phi_n(u)\;\longrightarrow\;\exp\!\left(-K|u|^\alpha\right).
+\end{equation}
+The limit characteristic function \eqref{eq:phi_n_limit} defines the \emph{symmetric $\alpha$-stable} law (Gaussian when $\alpha=2$). This is the heavy-tailed analogue of the classical CLT: after normalization by $n^{1/\alpha}$, the sum converges to a universal family indexed by $\alpha$ (and, in the nonsymmetric case, by an additional skewness parameter).
+
+\subsection{The limit law has a power-law tail of the same index}\label{subsec:stable_tail}
+
+The same Tauberian theorem also explains why the stable limit has a power-law tail of index $\alpha$. Let $Z$ have characteristic function
+\begin{equation}\label{eq:stable_cf_symmetric}
+{\mathbb E}[e^{-iuZ}] = \exp(-K|u|^\alpha),
+\end{equation}
+so that for small $u$,
+\begin{equation}\label{eq:stable_small_u}
+1-\phi_Z(u) = K|u|^\alpha + o(|u|^\alpha).
+\end{equation}
+Applying the \emph{converse} direction in Theorem \ref{thm:tauberian_symmetric} yields
+\begin{equation}\label{eq:stable_tail_conclusion}
+{\mathbb P}(Z>x)\sim \widetilde C x^{-\alpha},
+\qquad
+{\mathbb P}(Z<-x)\sim \widetilde C x^{-\alpha},
+\qquad x\to\infty,
+\end{equation}
+with $\widetilde C$ related to $K$ by \eqref{eq:C_from_K}. In particular, the tail exponent $\alpha$ is preserved by the scaling limit.
+
+\section{Scaling and extremes: why $B_n\sim n^{1/\alpha}$}\label{sec:scaling_extremes}
+
+The normalization $B_n=n^{1/\alpha}$ can also be motivated directly from the order of the maximum. Let
+\begin{equation}\label{eq:max_def}
+M_n \coloneqq \max_{1\le i\le n} |X_i|.
+\end{equation}
+Under \eqref{eq:two_sided_symmetric_tail},
+\begin{equation}\label{eq:abs_tail}
+{\mathbb P}(|X_1|>x) \sim 2C x^{-\alpha}.
+\end{equation}
+For any fixed $x>0$,
+\begin{align}
+{\mathbb P}\!\left(M_n \le n^{1/\alpha}x\right)
+&=
+{\mathbb P}\!\left(|X_1|\le n^{1/\alpha}x\right)^n
+=
+\left(1-{\mathbb P}\!\left(|X_1|>n^{1/\alpha}x\right)\right)^n
+\label{eq:max_cdf_1}\\
+&\approx
+\left(1- 2C (n^{1/\alpha}x)^{-\alpha}\right)^n
+=
+\left(1-\frac{2C}{n}x^{-\alpha}\right)^n
+\label{eq:max_cdf_2}\\
+&\longrightarrow \exp(-2C x^{-\alpha})
+\qquad (n\to\infty).
+\label{eq:max_limit}
+\end{align}
+Thus $M_n$ is typically of order $n^{1/\alpha}$. Since the dominant contribution to $S_n$ comes from the largest terms, which are of order $n^{1/\alpha}$, it is natural to normalize by $B_n = n^{1/\alpha}$.
+
+
+
+\section{Generalized CLT (Fisher--Gnedenko / Gnedenko--Kolmogorov)}\label{sec:gclt_statement}
+
+An $\alpha$-stable random variable $Z$ ($0<\alpha\le 2$) is characterized by stability under summation: for independent copies $Z_1,Z_2$ with the same law as $Z$,
+\begin{equation}\label{eq:stability_property}
+Z_1+Z_2 \stackrel{d}{=} 2^{1/\alpha} Z
+\end{equation}
+(in the symmetric, zero-drift case). This follows directly from the characteristic function: ${\mathbb E}[e^{iu(Z_1+Z_2)}] = e^{-2\sigma^\alpha|u|^\alpha} = {\mathbb E}[e^{iu\cdot 2^{1/\alpha}Z}]$.
+
+In the symmetric case relevant to our standing assumption \eqref{eq:two_sided_symmetric_tail}, the characteristic function takes the form
+\begin{equation}\label{eq:symmetric_stable_cf}
+{\mathbb E}\!\left[e^{iuZ}\right] = \exp\!\left(-\sigma^\alpha |u|^\alpha\right),
+\qquad 0<\alpha\le 2,
+\end{equation}
+for some scale parameter $\sigma>0$. When $\alpha=2$ this is Gaussian. When $\alpha<2$, $Z$ has power-law tails of the same index:
+\begin{equation}\label{eq:stable_tail_again}
+{\mathbb P}(Z>z)\sim \widetilde C z^{-\alpha},
+\qquad z\to\infty,
+\end{equation}
+(and symmetrically for $Z<-z$).
+More generally (dropping symmetry), one introduces an additional skewness parameter $\beta\in[-1,1]$ in the exponent; we omit this here since our tails are symmetric.
+
+
+The full theorem classifies all possible non-degenerate scaling limits of i.i.d.\ sums. In our notes we only need the heavy-tail stable cases and the classical CLT as a comparison.
+
+\begin{theorem}[Generalized CLT / Fisher--Gnedenko theorem]\label{thm:gclt}
+Let $X_1,X_2,\dots$ be i.i.d.\ and set $S_n=\sum_{i=1}^n X_i$. Suppose there exist sequences $A_n\in\mathbb R$ and $B_n>0$ such that
+\begin{equation}\label{eq:gclt_conv}
+\frac{S_n-A_n}{B_n}\Rightarrow \eta
+\quad \text{as } n\to\infty,
+\end{equation}
+where $\eta$ is non-degenerate. Then $\eta$ is either Gaussian (the classical CLT case) or an $\alpha$-stable law for some $\alpha\in(0,2]$.
+
+Moreover, if $X_1$ has power-law tails of index $\alpha\in(0,2)$ then one may take $B_n$ of order $n^{1/\alpha}$, and $\eta$ is $\alpha$-stable (symmetric under \eqref{eq:two_sided_symmetric_tail}). If $X_1$ has finite variance, then one may take $B_n$ of order $\sqrt{n}$ and $\eta$ is Gaussian.
+\end{theorem}
+
+A convenient summary (in our notation, with symmetry so $A_n=0$ in the $\alpha<2$ rows) is:
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lllll}
+\hline
+Tail index $\alpha$ & ${\mathbb E}[X_1]$ & ${\rm var}(X_1)$ & Typical $B_n$ & Limit law $\eta$ \\
+\hline
+$2<\alpha$ (finite variance) & finite & finite & $B_n=O(\sqrt{n})$ & Standard Normal \\
+$1<\alpha<2$ & finite & $\infty$ & $B_n=O(n^{1/\alpha})$ & $\alpha$-stable \\
+$0<\alpha<1$ & $\infty$ & $\infty$ & $B_n=O(n^{1/\alpha})$ & $\alpha$-stable \\
+\hline
+\end{tabular}
+\caption{Generalized CLT scaling regimes. Under our symmetric tail assumption, the stable limits are symmetric.}
+\label{tab:gclt}
+\end{table}
+
+
+\section{From random walks to L\'evy processes via heavy-tailed invariance principles}\label{sec:rw_to_levy}
+
+\subsection{L\'evy processes and symmetric $\alpha$-stable processes}\label{subsec:levy_def_stable}
+
+\begin{definition}[L\'evy process]\label{def:levy_process}
+A stochastic process $\{L_t\}_{t\ge 0}$ is a \emph{L\'evy process} if:
+\begin{enumerate}[label=(\roman*)]
+\item $L_0=0$ almost surely;
+\item $L$ has \emph{stationary increments}: for $0\le s<t$, $L_t-L_s$ has the same law as $L_{t-s}$;
+\item $L$ has \emph{independent increments}: for $0\le t_0<t_1<\cdots<t_m$, the increments $L_{t_1}-L_{t_0},\dots,L_{t_m}-L_{t_{m-1}}$ are independent;
+\item $L$ is \emph{stochastically continuous}: for every $t\ge 0$, $L_{t+h}\to L_t$ in probability as $h\to 0$.
+\end{enumerate}
+\end{definition}
+
+A L\'evy process admits a modification with c\`adl\`ag sample paths (right-continuous with left limits). In general, such paths need not be continuous and typically have jumps.
+
+\begin{definition}[Symmetric $\alpha$-stable L\'evy process]\label{def:saslp}
+Fix $\alpha\in(0,2]$ and a scale parameter $\sigma>0$. A L\'evy process $\{Z_t\}_{t\ge 0}$ is called a \emph{symmetric $\alpha$-stable process} if for each $t\ge 0$,
+\begin{equation}\label{eq:sas_char}
+{\mathbb E}\!\left[e^{iuZ_t}\right]
+= \exp\!\left(-t\,\sigma^\alpha |u|^\alpha\right),
+\qquad u\in\mathbb R.
+\end{equation}
+Equivalently, $Z_t$ is $\alpha$-stable for each $t$ and the increments are stable under addition:
+\begin{equation}\label{eq:stable_increments}
+Z_t-Z_s \;\stackrel{d}{=}\; Z_{t-s},
+\qquad 0\le s<t,
+\end{equation}
+with the stability property that for independent copies $Z^{(1)}_{t},Z^{(2)}_{t}$,
+\begin{equation}\label{eq:stability_addition}
+Z^{(1)}_{t}+Z^{(2)}_{t} \;\stackrel{d}{=}\; 2^{1/\alpha} Z_{t}.
+\end{equation}
+\end{definition}
+
+When $\alpha=2$, \eqref{eq:sas_char} is Gaussian and $Z$ is Brownian motion (up to variance normalization). When $\alpha\in(0,2)$, $Z$ has jumps and heavy-tailed increments.
+
+\subsection{Why the limiting sample paths are no longer continuous (heuristic)}\label{subsec:paths_not_continuous}
+
+Consider the random walk partial sums $S_n=\sum_{k=1}^n X_k$ with i.i.d.\ increments satisfying the symmetric tail assumption
+\begin{equation}\label{eq:symm_tail_again}
+{\mathbb P}(|X_1|>x)\sim 2C x^{-\alpha},
+\qquad x\to\infty,
+\end{equation}
+for some $\alpha\in(0,2)$. Define the linearly time-rescaled process
+\begin{equation}\label{eq:scaled_rw_process}
+X^{(n)}(t)\;\coloneqq\;\frac{1}{n^{1/\alpha}}\sum_{k=1}^{\lfloor nt\rfloor} X_k,
+\qquad t\in[0,T].
+\end{equation}
+The generalized CLT suggests that $\{X^{(n)}(t)\}$ converges (in $D([0,T])$) to a symmetric $\alpha$-stable L\'evy process $\{Z_t\}$.
+
+The key qualitative point is that, under the $n^{1/\alpha}$ scaling, \emph{macroscopic jumps persist in the limit}. Fix $\varepsilon>0$ and consider the number of increments among the first $\lfloor nt\rfloor$ steps whose \emph{rescaled} size exceeds $\varepsilon$:
+\begin{equation}\label{eq:big_jumps_count}
+N^{(n)}_{\varepsilon}(t)\;\coloneqq\;\sum_{k=1}^{\lfloor nt\rfloor}\mathbf 1\{|X_k|>\varepsilon n^{1/\alpha}\}.
+\end{equation}
+Then
+\begin{equation}\label{eq:mean_big_jumps}
+{\mathbb E}[N^{(n)}_{\varepsilon}(t)]
+=
+\lfloor nt\rfloor\,{\mathbb P}(|X_1|>\varepsilon n^{1/\alpha})
+\sim
+nt \cdot 2C (\varepsilon n^{1/\alpha})^{-\alpha}
+=
+2Ct\,\varepsilon^{-\alpha}.
+\end{equation}
+Thus the expected number of $\varepsilon$-jumps over a fixed time horizon is of order $1$, not of order $o(1)$ as in the finite-variance (Brownian) scaling. In fact, a standard rare-event heuristic says
+\begin{equation}\label{eq:poisson_heuristic}
+N^{(n)}_{\varepsilon}(t) \;\approx\; \mathrm{Poisson}(2Ct\,\varepsilon^{-\alpha}),
+\end{equation}
+so
+\begin{equation}\label{eq:jump_probability}
+{\mathbb P}\!\left(\sup_{0\le s\le t} |X^{(n)}(s)-X^{(n)}(s-)|>\varepsilon\right)
+=
+{\mathbb P}\!\left(N^{(n)}_{\varepsilon}(t)\ge 1\right)
+\;\to\;
+1-\exp(-2Ct\,\varepsilon^{-\alpha}).
+\end{equation}
+The right-hand side is strictly positive for every $t>0$. Therefore, in the limit one cannot have continuous sample paths: with positive probability there is a jump of size at least $\varepsilon$ on $[0,t]$, for every $\varepsilon>0$.
+
+This contrasts with the Brownian case: under $\sqrt{n}$ scaling, the probability of an $O(1)$ rescaled jump vanishes because ${\mathbb P}(|X_1|>\varepsilon\sqrt{n})$ is too small when ${\mathbb E}[X_1^2]<\infty$.
+
+\subsection{Generator of a symmetric $\alpha$-stable process}\label{subsec:stable_generator}
+
+\paragraph{The fractional Laplacian.}
+Before identifying the generator, we define the key operator that will appear.
+
+\begin{definition}[Fractional Laplacian]\label{def:frac_lap}
+For $\beta>0$, the \emph{fractional Laplacian} $(-\Delta)^{\beta}$ is the operator defined on the Schwartz class (or $L^2$) by its Fourier multiplier:
+\begin{equation}\label{eq:frac_lap_def}
+\widehat{(-\Delta)^{\beta} f}(\xi) \;=\; |\xi|^{2\beta}\,\hat f(\xi).
+\end{equation}
+The notation $(-\Delta)^{\beta}$ reflects that $-\Delta$ has Fourier symbol $|\xi|^2$, so raising it to the power $\beta$ replaces $|\xi|^2$ by $|\xi|^{2\beta}$. The case $\beta=1/2$ gives $(-\Delta)^{1/2}$ with symbol $|\xi|$; more generally $(-\Delta)^{\alpha/2}$ has symbol $|\xi|^\alpha$.
+\end{definition}
+
+\paragraph{Deriving the generator from the semigroup.}
+
+A symmetric $\alpha$-stable process is a (translation-invariant) Markov process, so it possesses a generator. Recall that the generator $\mathcal{A}$ of a semigroup $\{P_t\}_{t\ge 0}$ is defined as the operator
+\begin{equation}\label{eq:generator_def}
+\mathcal{A}f \;\coloneqq\; \lim_{t\downarrow 0}\frac{P_t f - f}{t},
+\end{equation}
+for functions $f$ in the domain of $\mathcal{A}$, where $P_t f(x) = {\mathbb E}[f(x + Z_t)]$ is the \emph{Markov semigroup}:
+\begin{equation}\label{eq:stable_semigroup}
+(P_t f)(x)\;\coloneqq\;{\mathbb E}\!\left[f(x+Z_t)\right].
+\end{equation}
+To identify $\mathcal{A}$, we work in the Fourier domain. Taking the Fourier transform of $P_t f$ and using the characteristic function \eqref{eq:sas_char}:
+\begin{align}
+\widehat{P_t f}(\xi)
+&= \int_{\mathbb R} e^{-i\xi x}\,{\mathbb E}[f(x+Z_t)]\,dx \notag\\
+&= {\mathbb E}\!\left[\int_{\mathbb R} e^{-i\xi x} f(x+Z_t)\,dx\right] \notag\\
+&= {\mathbb E}\!\left[e^{i\xi Z_t}\right]\hat f(\xi)
+\;=\;
+e^{-t\sigma^\alpha|\xi|^\alpha}\,\hat f(\xi).
+\label{eq:fourier_symbol}
+\end{align}
+(The change of variables $x \mapsto x - Z_t$ yields the factor ${\mathbb E}[e^{i\xi Z_t}]$, which is the characteristic function of $Z_t$ at $\xi$; by \eqref{eq:sas_char} this equals $e^{-t\sigma^\alpha|\xi|^\alpha}$.) Now apply the definition \eqref{eq:generator_def} in the Fourier domain:
+\begin{equation}
+\widehat{\mathcal{A}f}(\xi)
+= \lim_{t\downarrow 0}\frac{\widehat{P_t f}(\xi)-\hat f(\xi)}{t}
+= \lim_{t\downarrow 0}\frac{e^{-t\sigma^\alpha|\xi|^\alpha}-1}{t}\,\hat f(\xi)
+= -\sigma^\alpha|\xi|^\alpha\,\hat f(\xi).
+\label{eq:generator_symbol}
+\end{equation}
+Comparing with Definition \ref{def:frac_lap} (with $2\beta=\alpha$, i.e.\ $\beta=\alpha/2$), we recognize this as the fractional Laplacian:
+\begin{equation}\label{eq:frac_lap}
+\mathcal{A}f(x) = -\sigma^\alpha\,(-\Delta)^{\alpha/2} f(x).
+\end{equation}
+
+Equivalently, $\mathcal{A}$ can be written as an integro-differential operator via the L\'evy measure
+\begin{equation}\label{eq:stable_levy_measure}
+\nu(dy) = \frac{\kappa_\alpha\,\sigma^\alpha}{|y|^{1+\alpha}}\,dy,
+\qquad y\in\mathbb R\setminus\{0\},
+\end{equation}
+for an explicit constant $\kappa_\alpha>0$ (its exact value depends on the normalization convention for $(-\Delta)^{\alpha/2}$). For sufficiently smooth $f$ (e.g.\ $f\in C_c^2(\mathbb R)$),
+\begin{equation}\label{eq:generator_levy_form}
+\mathcal{A}f(x)
+=
+\int_{\mathbb R\setminus\{0\}}
+\Big(
+f(x+y)-f(x)-y f'(x)\mathbf 1_{\{|y|<1\}}
+\Big)\,\nu(dy).
+\end{equation}
+The subtraction term is needed precisely when $\int_{|y|<1}|y|\,\nu(dy)=\infty$, i.e.\ when $\alpha\ge 1$:
+\begin{equation}\label{eq:compensation_condition}
+\int_{|y|<1}|y|\,\nu(dy)
+\asymp \int_0^1 r\cdot r^{-1-\alpha}\,dr
+=
+\int_0^1 r^{-\alpha}\,dr
+=
+\begin{cases}
+\frac{1}{1-\alpha}, & \alpha<1,\\
+\infty, & \alpha\ge 1.
+\end{cases}
+\end{equation}
+Hence for $\alpha\in(0,1)$, one may omit the compensation term and simply write
+\begin{equation}\label{eq:generator_alpha_lt_1}
+\mathcal{A}f(x)
+=
+\int_{\mathbb R\setminus\{0\}}
+\big(f(x+y)-f(x)\big)\,\nu(dy),
+\qquad \alpha\in(0,1).
+\end{equation}
+
+\subsection{From compound Poisson to stable processes, and beyond}\label{subsec:compound_poisson_to_levy}
+
+The jump structure above can be motivated by approximating stable processes using compound Poisson processes, and this also motivates the general L\'evy--Khintchine representation.
+
+\paragraph{Step 1: compound Poisson approximation by truncating small jumps.}
+Fix $\varepsilon>0$ and consider the truncated L\'evy measure
+\begin{equation}\label{eq:truncated_levy_measure}
+\nu_\varepsilon(dy)\;\coloneqq\;\mathbf 1_{\{|y|>\varepsilon\}}\,\nu(dy).
+\end{equation}
+Since $\nu_\varepsilon(\mathbb R)<\infty$, there is a compound Poisson process $Z^{(\varepsilon)}$ with jump intensity
+\begin{equation}\label{eq:lambda_eps}
+\lambda_\varepsilon \;\coloneqq\;\nu_\varepsilon(\mathbb R)
+=
+\int_{|y|>\varepsilon}\nu(dy)
+\asymp \varepsilon^{-\alpha},
+\end{equation}
+and jump distribution proportional to $\nu_\varepsilon$, such that
+\begin{equation}\label{eq:compound_poisson_form}
+Z^{(\varepsilon)}_t = \sum_{j=1}^{N_t^{(\varepsilon)}} Y_j^{(\varepsilon)},
+\end{equation}
+where $N_t^{(\varepsilon)}\sim \mathrm{Poisson}(\lambda_\varepsilon t)$ and the jumps $Y_j^{(\varepsilon)}$ are i.i.d.\ with law $\nu_\varepsilon(dy)/\lambda_\varepsilon$.
+
+This process has only finitely many jumps on compact time intervals, hence piecewise-constant paths. As $\varepsilon\downarrow 0$, the intensity $\lambda_\varepsilon\to\infty$ and one sees more and more small jumps; the limiting object has infinitely many small jumps on every interval (infinite activity), yet still has c\`adl\`ag paths.
+
+\paragraph{Step 2: taking $\varepsilon\downarrow 0$ recovers the stable process.}
+Heuristically, the family $Z^{(\varepsilon)}$ converges (after adding the compensation term when $\alpha\ge 1$) to the full symmetric $\alpha$-stable process $Z$. This is the simplest instance of the general L\'evy--It\^o decomposition: a L\'evy process can be built by superposing jumps across all scales according to a L\'evy measure $\nu$.
+
+\paragraph{Step 3: motivation for general L\'evy processes and the L\'evy--Khintchine formula.}
+The stable case corresponds to the special choice $\nu(dy)\propto |y|^{-1-\alpha}dy$. If instead we allow an arbitrary jump intensity across sizes, plus a Gaussian component and a deterministic drift, we obtain the general class of L\'evy processes.
+
+The characteristic exponent of a general L\'evy process has the L\'evy--Khintchine form:
+\begin{equation}\label{eq:levy_khintchine}
+{\mathbb E}\!\left[e^{iuL_t}\right]
+=
+\exp\!\left(
+t\,\Psi(u)
+\right),
+\qquad
+\Psi(u)
+=
+i b u
+-\frac{1}{2}\sigma^2 u^2
++
+\int_{\mathbb R\setminus\{0\}}
+\left(e^{iuy}-1-iuy\,\mathbf 1_{\{|y|<1\}}\right)\nu(dy),
+\end{equation}
+where $b\in\mathbb R$ is a drift, $\sigma\ge 0$ is a Brownian volatility, and $\nu$ is a L\'evy measure satisfying
+\begin{equation}\label{eq:levy_measure_condition}
+\int_{\mathbb R\setminus\{0\}} (1\wedge y^2)\,\nu(dy) < \infty.
+\end{equation}
+In this representation, the integral term encodes the aggregate effect of jumps of all sizes, with the same compensation mechanism as in \eqref{eq:generator_levy_form}. The symmetric $\alpha$-stable process is recovered by setting $b=0$, $\sigma=0$ (no Brownian component), and $\nu(dy)=c_\alpha |y|^{-1-\alpha}dy$ for an appropriate constant $c_\alpha>0$.
+
+
+\end{document}

@@ -14,7 +14,7 @@
 \newtheorem{assumption}{Assumption}
 \newtheorem{remark}{Remark}
 
-\title{Math 106 -- Notes }
+\title{Math 106 -- Notes: Properties of Feynman-Kac Semigroups and application to the filtering problem }
 \author{Ethan Levien}
 \date{}
 
@@ -22,7 +22,67 @@
 \maketitle
 
 
-\subsection*{The filtering problem}
+\subsection*{Feynman-kac semigroups}
+Previously we were introduced to the Feynman-Kac formula, which gives us a PDE representation of the path expectations 
+\begin{equation}
+v(x,t)  = {\mathbb E}_{\mu}\!\left[f(X_t)
+\exp\!\left(-\int_0^t \lambda(X_s)\,ds\right)|X_0=x
+\right]. 
+\end{equation}
+The idea what that we can connect this expectation to the backward equation to the SDE
+\begin{align}
+dZ_t &= \lambda(X_t)dt\\
+dX_t &= b(X_t)dt + \sigma(X_t)dW_t
+\end{align}
+because $Z_t = Z_0+\int_0^t\lambda(X_s)\,ds$. This led to the 
+\emph{Feynman-Kac} PDE
+\begin{equation}\label{eq:fk}
+\partial_t v^f(x,t) = {\mathcal L}v^f(x,t) -\lambda(x) v^f(x,t).
+\end{equation}
+I've introduced the superscript to make explicit that the solution depends on the initial condition $v^f(x,0) = f(x)$. As we see below, it will be important to have this explicit dependence in our notation.
+\begin{remark}
+In the literature on Feynman-Kac formula, one often considers starting from an initial distribution $\mu$ instead of $X_0 =x$ and write $v_t(f) \coloneqq {\mathbb E}_{\mu}[v^f(x,t)]$. 
+\end{remark}
+We saw that we can interpret $v^f(x,t)$ as the expectation with respect to an (unnormalized) density function $n(x',x,t)$: 
+\begin{equation}
+v^f(x,t) = \int n(x',x,t)f(x')dx'
+\end{equation}
+where $n(x',x,0) = N_0\delta(x'-x)$ with $N_0$ being the initial number of particles. 
+
+Now define 
+\begin{equation}
+\gamma^f(x,t) = \frac{v^f(x,t)}{v^1(x,t)}
+\end{equation}
+We can expression this as an expectation 
+\begin{equation}
+\gamma^f(x,t) = \int p(x',x,t) f(x')dx',\quad p(x',x,t) = \frac{n(x',x,t)}{\int n(x',x,t)dx'}
+\end{equation}
+Where $p(x',x,t)$ is exactly the density of surviving particles. 
+
+\subsection*{Time-change and long-term behavior}
+Now let us consider how we can get a handle on what the solution to the Feynman-Kac PDE looks like. To do so, it is helpful to transform the time axis in a way that makes the death events independent of $X_t$. Let
+\begin{equation}
+T_t \coloneqq Z_t - Z_0  = \int_0^t\lambda(X_s)ds
+\end{equation}
+at the new time variable and set $\hat{X}_T = X_t$. Then, since $dt = dT/\lambda(X_t)$, we have
+\begin{equation}\label{eq:Xtil}
+d\hat{X}_T = \frac{b(\hat{X}_T)}{\lambda(\hat{X}_T)}dT + \frac{\sigma(\hat{X}_T)}{\sqrt{\lambda(\hat{X}_T)}}dW_T
+\end{equation}
+
+The generator of this process is ${\mathcal L}/\lambda$ and hence that the Feynman-Kac PDE $\hat{X}_T$ is 
+\begin{equation}
+\partial_t \hat{v}^f(x,t) = \frac{1}{\lambda(x)} {\mathcal L}v(x,t) -v^f(x,t)
+\end{equation}
+The operator ${\mathcal L}/\lambda$ and the identity operator commute as do their exponentials $e^{t{\mathcal L}/\lambda}$ and $e^t$. We can therefore express the solution as 
+\begin{equation}
+\hat{v}^f(x,t) = e^{-t}e^{t{\mathcal L}/\lambda}f(x)
+\end{equation}
+Since ${\mathcal L}/\lambda$ is the generator of a Markov process, $e^{{\mathcal L}/\lambda} 1 = 1$. It is therefore the case that the long-time behavior of $\gamma^f$, the population expectations is given by the stationary density of the SDE.  
+
+
+
+
+\section*{The filtering problem}
 
 Let $(\Omega,\mathcal F,\mathbb P)$ be a filtered probability space satisfying the usual conditions.  
 Let $X_t$ be a time-homogeneous Markov process on $\mathbb R^d$ with generator $\mathcal L$.  
