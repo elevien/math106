@@ -9,6 +9,7 @@ bibliography:
 
 - <a href="{{ '/exams/midterm_practice.pdf' | relative_url }}">Midterm practice problems</a>
 - <a href="{{ '/exams/quiz1.pdf' | relative_url }}">Quiz 1</a>
+- <a href="{{ '/exams/midterm.pdf' | relative_url }}">Midterm solutions</a>
 
 <h3>Final</h3>
 
